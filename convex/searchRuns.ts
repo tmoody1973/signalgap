@@ -1,0 +1,37 @@
+import { v } from "convex/values";
+import { query } from "./_generated/server";
+import { requireUser } from "./lib/auth";
+import * as V from "./lib/validators";
+
+const vSafeSearchRun = v.object({
+  _id: v.id("searchRuns"),
+  templateId: v.string(),
+  purpose: V.vPurpose,
+  engine: V.vEngine,
+  query: v.string(),
+  language: V.vLanguage,
+  status: V.vSearchRunStatus,
+  attemptCount: v.number(),
+  resultCount: v.number(),
+  durationMs: v.number(),
+  errorCode: v.optional(v.string()),
+  errorMessage: v.optional(v.string()),
+  reservedAt: v.number(),
+  completedAt: v.optional(v.number()),
+});
+
+export const listForScan = query({
+  args: { scanId: v.id("scans") },
+  returns: v.array(vSafeSearchRun),
+  handler: async (ctx, { scanId }) => {
+    const user = await requireUser(ctx);
+    const scan = await ctx.db.get(scanId);
+    if (!scan || scan.ownerId !== user._id) return [];
+    const runs = await ctx.db.query("searchRuns").withIndex("by_scan_purpose", (q) => q.eq("scanId", scanId)).take(200);
+    return runs.map((r) => ({
+      _id: r._id, templateId: r.templateId, purpose: r.purpose, engine: r.engine, query: r.query, language: r.language,
+      status: r.status, attemptCount: r.attemptCount, resultCount: r.resultCount, durationMs: r.durationMs,
+      errorCode: r.errorCode, errorMessage: r.errorMessage, reservedAt: r.reservedAt, completedAt: r.completedAt,
+    }));
+  },
+});

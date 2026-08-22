@@ -13,6 +13,8 @@ import type * as config_searchBudget from "../config/searchBudget.js";
 import type * as lib_auth from "../lib/auth.js";
 import type * as lib_validators from "../lib/validators.js";
 import type * as scans from "../scans.js";
+import type * as searchRuns from "../searchRuns.js";
+import type * as testing from "../testing.js";
 import type * as users from "../users.js";
 
 import type {
@@ -27,6 +29,8 @@ declare const fullApi: ApiFromModules<{
   "lib/auth": typeof lib_auth;
   "lib/validators": typeof lib_validators;
   scans: typeof scans;
+  searchRuns: typeof searchRuns;
+  testing: typeof testing;
   users: typeof users;
 }>;
 
