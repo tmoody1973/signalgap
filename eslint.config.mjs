@@ -15,6 +15,7 @@ const eslintConfig = defineConfig([
     // Private gitignored tooling directories, not part of the app.
     ".remember/**",
     ".superpowers/**",
+    "convex/_generated/**",
   ]),
 ]);
 
