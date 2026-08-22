@@ -23,6 +23,18 @@ export default defineConfig({
           environment: "edge-runtime",
         },
       },
+      {
+        // Opt-in only: every test here self-skips unless LIVE_TESTS=1, so this
+        // project is safe to leave in the default `npm test` run.
+        extends: true,
+        test: {
+          name: "live",
+          include: ["tests/live/**/*.test.ts"],
+          environment: "node",
+          setupFiles: ["tests/live/setup.ts"],
+          fileParallelism: false,
+        },
+      },
     ],
   },
 });
