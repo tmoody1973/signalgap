@@ -28,6 +28,21 @@ async function scanFor(t: ReturnType<typeof setup>) {
   return { scanId, alice };
 }
 
+// Ruling 18 invariant: every paid attempt ever authorized (searchesReserved)
+// ends up in exactly one bucket — succeeded, failed, or still in flight
+// (reserved/running). If this breaks, either money is being under-counted
+// (reserved undercounts real calls) or a run is stuck unaccounted for.
+async function assertScanInvariant(t: ReturnType<typeof setup>, scanId: Id<"scans">) {
+  const { scan, runs } = await t.run(async (ctx) => ({
+    scan: await ctx.db.get(scanId),
+    runs: await ctx.db.query("searchRuns").withIndex("by_scan_status", (q) => q.eq("scanId", scanId)).collect(),
+  }));
+  if (!scan) throw new Error("scan not found");
+  const inFlight = runs.filter((r) => r.status === "reserved" || r.status === "running").length;
+  expect(scan.searchesSucceeded + scan.searchesFailed + inFlight).toBe(scan.searchesReserved);
+  expect(scan.searchesReserved).toBeLessThanOrEqual(120);
+}
+
 describe("executeSearch slice", () => {
   it("reserves once, archives raw JSON, and ingests deduplicated results", async () => {
     const t = setup();
@@ -53,6 +68,7 @@ describe("executeSearch slice", () => {
     expect(results[0].redditPostId).toBe("1abc23");
     expect(scan?.searchesReserved).toBe(1);
     expect(scan?.searchesSucceeded).toBe(1);
+    await assertScanInvariant(t, scanId);
   });
 
   it("re-running the same spec does not double-reserve or duplicate results", async () => {
@@ -94,6 +110,7 @@ describe("executeSearch slice", () => {
     expect(runs[0].errorCode).toBe("http_503");
     expect(results).toHaveLength(0);
     expect(scan?.searchesFailed).toBe(1);
+    await assertScanInvariant(t, scanId);
   });
 
   it("routes a thrown ingest error to a truthful failed run, never leaving it stuck running", async () => {
@@ -183,7 +200,7 @@ describe("executeSearch slice", () => {
     expect(r.status).toBe("succeeded");
   });
 
-  it("retries a reused run that previously failed, without skipping", async () => {
+  it("a failed-run retry that succeeds re-opens the run as a new paid attempt and clears the stale error (Ruling 18)", async () => {
     const t = setup();
     const { scanId } = await scanFor(t);
     vi.stubEnv("SERPAPI_API_KEY", "test-key");
@@ -195,19 +212,77 @@ describe("executeSearch slice", () => {
     await t.run((ctx) => ctx.db.patch(runId, {
       status: "failed", errorCode: "network_error", errorMessage: "prior attempt", completedAt: Date.now(),
     }));
+    await t.run((ctx) => ctx.db.patch(scanId, { searchesFailed: 1 }));
 
     const r = await t.action(internal.integrations.serpapi.executeSearch.executeSearch, { scanId, spec: SPEC });
     expect(fetchImpl).toHaveBeenCalled();
     expect(r.status).toBe("succeeded");
 
-    // Known gap (pre-existing, not introduced here): markRunning/complete are
-    // idempotent no-ops on a terminal run (Ruling 8), so retrying a "failed" row
-    // never flips it back to "succeeded" even though the retry worked and a
-    // result was ingested. The action's own return value is accurate; the
-    // persisted searchRuns row is not. Flagged for the controller, not fixed
-    // here — out of this round's named scope.
-    const run = await t.run((ctx) => ctx.db.get(runId));
+    const { run, scan } = await t.run(async (ctx) => ({ run: await ctx.db.get(runId), scan: await ctx.db.get(scanId) }));
+    expect(run?.status).toBe("succeeded");
+    // A stale error from the first attempt must not survive a successful retry.
+    expect(run?.errorCode).toBeUndefined();
+    expect(run?.errorMessage).toBeUndefined();
+    // The reopen is its own authorized paid attempt: reserved goes up by 1 even
+    // though no new row was inserted.
+    expect(scan?.searchesReserved).toBe(2);
+    expect(scan?.searchesSucceeded).toBe(1);
+    await assertScanInvariant(t, scanId);
+  });
+
+  it("a failed-run retry that fails again counts a second failed attempt on the same run (Ruling 18)", async () => {
+    const t = setup();
+    const { scanId } = await scanFor(t);
+    vi.stubEnv("SERPAPI_API_KEY", "test-key");
+    vi.stubGlobal("fetch", vi.fn(async () => new Response("{}", { status: 503 })));
+
+    const reserved = await t.mutation(internal.searchRuns.reserve, { scanId, spec: SPEC });
+    const { runId } = reserved as { runId: Id<"searchRuns"> };
+    await t.run((ctx) => ctx.db.patch(runId, {
+      status: "failed", errorCode: "network_error", errorMessage: "prior attempt", completedAt: Date.now(),
+    }));
+    await t.run((ctx) => ctx.db.patch(scanId, { searchesFailed: 1 }));
+
+    const r = await t.action((ctx) => runExecuteSearch(ctx, { scanId, spec: SPEC }, { sleep: noSleep }));
+    expect(r.status).toBe("failed");
+
+    const { run, scan } = await t.run(async (ctx) => ({ run: await ctx.db.get(runId), scan: await ctx.db.get(scanId) }));
     expect(run?.status).toBe("failed");
+    expect(run?.errorCode).toBe("http_503"); // the new failure, not the stale one
+    expect(scan?.searchesReserved).toBe(2);
+    expect(scan?.searchesFailed).toBe(2); // a distinct paid attempt failing, counted again
+    await assertScanInvariant(t, scanId);
+  });
+
+  it("refuses to reopen a failed run at the budget cap, without a network call (Ruling 18)", async () => {
+    const t = setup();
+    const { scanId, alice } = await scanFor(t);
+    const ownerId = await alice.mutation(api.users.ensureCurrent, {});
+    vi.stubEnv("SERPAPI_API_KEY", "test-key");
+    const fetchImpl = vi.fn();
+    vi.stubGlobal("fetch", fetchImpl);
+
+    const reserved = await t.mutation(internal.searchRuns.reserve, { scanId, spec: SPEC });
+    const { runId } = reserved as { runId: Id<"searchRuns"> };
+    await t.run(async (ctx) => {
+      await ctx.db.patch(runId, { status: "failed", errorCode: "network_error", errorMessage: "prior", completedAt: Date.now() });
+      // Fill the rest of the budget with real rows, not a synthetic counter —
+      // the invariant only means something if it corresponds to actual rows.
+      for (let i = 0; i < 119; i++) {
+        await ctx.db.insert("searchRuns", {
+          scanId, ownerId, idempotencyKey: `filler-${i}`, templateId: `filler-${i}`,
+          queryCatalogVersion: "t", purpose: "discovery" as const, engine: "google" as const, query: `q-${i}`,
+          parameters: {}, language: "en" as const, status: "succeeded" as const, attemptCount: 1, resultCount: 0,
+          durationMs: 0, reservedAt: 1, completedAt: 2,
+        });
+      }
+      await ctx.db.patch(scanId, { searchesReserved: 120, searchesSucceeded: 119, searchesFailed: 1 });
+    });
+
+    const r = await t.action(internal.integrations.serpapi.executeSearch.executeSearch, { scanId, spec: SPEC });
+    expect(r.status).toBe("skipped");
+    expect(fetchImpl).not.toHaveBeenCalled();
+    await assertScanInvariant(t, scanId);
   });
 
   it("skips without calling SerpApi when the budget is exhausted", async () => {

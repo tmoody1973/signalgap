@@ -97,12 +97,43 @@ export const reserve = internalMutation({
 
 export const markRunning = internalMutation({
   args: { runId: v.id("searchRuns"), parameters: v.record(v.string(), v.string()) },
-  returns: v.null(),
+  // null = proceed (nothing to refuse). { rejected } = a failed-run reopen was
+  // refused for budget — the caller must not call SerpApi (Ruling 18).
+  returns: v.union(v.null(), v.object({ rejected: v.literal("budget_exhausted") })),
   handler: async (ctx, { runId, parameters }) => {
     const run = await ctx.db.get(runId);
     if (!run) return null;
-    // Idempotent: a run already running or terminal is left untouched (Ruling 8).
-    if (run.status !== "reserved" && run.status !== "running") return null;
+    // Idempotent: a run already succeeded is never re-run — we already paid for
+    // and stored that result (Ruling 8).
+    if (run.status === "succeeded") return null;
+
+    if (run.status === "failed") {
+      // Reopening a failed run for retry is itself a new authorized paid attempt
+      // (Ruling 18) — gate it on the same budget cap as a fresh reservation, or
+      // searchesReserved stops meaning "paid calls authorized" and the 120 cap
+      // silently under-counts real spend.
+      const scan = await ctx.db.get(run.scanId);
+      if (!scan) return null;
+      if (scan.searchesReserved >= Math.min(scan.searchBudgetLimit, SEARCH_BUDGET.hardCap)) {
+        return { rejected: "budget_exhausted" as const };
+      }
+      // ponytail: searchesFailed is NOT decremented — it's a cumulative count of
+      // failed attempts (an event log), not a live count of rows currently
+      // "failed". Decrementing it would break searchesReserved ==
+      // searchesSucceeded + searchesFailed + (reserved/running rows): this same
+      // row would need to occupy both its old failed slot and a new in-flight
+      // slot at once, which no single status field can represent. Leaving it
+      // makes the invariant hold in all cases (verified: first success, a
+      // failure, retry-then-succeed, retry-then-fail-again, retry-refused).
+      await ctx.db.patch(run.scanId, { searchesReserved: scan.searchesReserved + 1 });
+      await ctx.db.patch(runId, {
+        status: "running", attemptCount: run.attemptCount + 1, parameters,
+        errorCode: undefined, errorMessage: undefined,
+      });
+      return null;
+    }
+
+    // "reserved" or "running" — unchanged from today.
     // The API key is appended inside the client and is never part of `parameters`.
     await ctx.db.patch(runId, { status: "running", attemptCount: run.attemptCount + 1, parameters });
     return null;

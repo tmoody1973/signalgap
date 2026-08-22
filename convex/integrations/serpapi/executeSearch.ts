@@ -49,7 +49,8 @@ export async function runExecuteSearch(
   const apiKey = process.env.SERPAPI_API_KEY;
   if (!apiKey) throw new Error("SERPAPI_API_KEY is not configured");
 
-  await ctx.runMutation(internal.searchRuns.markRunning, { runId, parameters: buildParams(spec) });
+  const marked = await ctx.runMutation(internal.searchRuns.markRunning, { runId, parameters: buildParams(spec) });
+  if (marked) return { runId, status: "skipped", resultCount: 0 };
 
   const result = await callSerpApi(spec, { apiKey, ...options });
   if (!result.ok) {
