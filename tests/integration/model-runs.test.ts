@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import type { Doc } from "../../convex/_generated/dataModel";
 import { api, internal } from "../../convex/_generated/api";
 import { scanDoc } from "../fixtures/factories";
 import { asUser, setup } from "./helpers";
@@ -46,13 +47,14 @@ describe("modelRuns", () => {
     const t = setup();
     const { scanId } = await seed(t);
     const created = await t.mutation(internal.modelRuns.create, { scanId, ...baseArgs });
-    if (!("runId" in created)) throw new Error("create rejected");
+    const runId = "runId" in created ? created.runId : undefined;
+    if (!runId) throw new Error("create rejected");
 
     await t.mutation(internal.modelRuns.complete, {
-      runId: created.runId, durationMs: 1_200, inputTokens: 1_000_000, outputTokens: 1_000_000,
+      runId, durationMs: 1_200, inputTokens: 1_000_000, outputTokens: 1_000_000,
     });
 
-    const run = await t.run(async (ctx) => await ctx.db.get(created.runId));
+    const run = (await t.run(async (ctx) => await ctx.db.get(runId))) as Doc<"modelRuns"> | null;
     expect(run?.status).toBe("succeeded");
     expect(run?.estimatedCostUsd).toBeCloseTo(18, 6); // 3 in + 15 out per 1M
   });
@@ -61,12 +63,13 @@ describe("modelRuns", () => {
     const t = setup();
     const { scanId } = await seed(t);
     const created = await t.mutation(internal.modelRuns.create, { scanId, ...baseArgs, modelId: "some-new-model" });
-    if (!("runId" in created)) throw new Error("create rejected");
+    const runId = "runId" in created ? created.runId : undefined;
+    if (!runId) throw new Error("create rejected");
 
     await t.mutation(internal.modelRuns.complete, {
-      runId: created.runId, durationMs: 10, inputTokens: 100, outputTokens: 100,
+      runId, durationMs: 10, inputTokens: 100, outputTokens: 100,
     });
-    const run = await t.run(async (ctx) => await ctx.db.get(created.runId));
+    const run = (await t.run(async (ctx) => await ctx.db.get(runId))) as Doc<"modelRuns"> | null;
     expect(run?.estimatedCostUsd).toBeUndefined();
   });
 
@@ -74,14 +77,15 @@ describe("modelRuns", () => {
     const t = setup();
     const { scanId } = await seed(t);
     const created = await t.mutation(internal.modelRuns.create, { scanId, ...baseArgs });
-    if (!("runId" in created)) throw new Error("create rejected");
+    const runId = "runId" in created ? created.runId : undefined;
+    if (!runId) throw new Error("create rejected");
 
     await t.mutation(internal.modelRuns.invalidate, {
-      runId: created.runId, status: "invalid", validationErrors: ["headline: expected string"], durationMs: 300,
+      runId, status: "invalid", validationErrors: ["headline: expected string"], durationMs: 300,
     });
-    await t.mutation(internal.modelRuns.complete, { runId: created.runId, durationMs: 999 });
+    await t.mutation(internal.modelRuns.complete, { runId, durationMs: 999 });
 
-    const run = await t.run(async (ctx) => await ctx.db.get(created.runId));
+    const run = (await t.run(async (ctx) => await ctx.db.get(runId))) as Doc<"modelRuns"> | null;
     expect(run?.status).toBe("invalid");
     expect(run?.validationErrors).toEqual(["headline: expected string"]);
     expect(run?.durationMs).toBe(300);
@@ -91,7 +95,8 @@ describe("modelRuns", () => {
     const t = setup();
     const { scanId } = await seed(t);
     const created = await t.mutation(internal.modelRuns.create, { scanId, ...baseArgs });
-    if (!("runId" in created)) throw new Error("create rejected");
+    const runId = "runId" in created ? created.runId : undefined;
+    if (!runId) throw new Error("create rejected");
 
     const mine = await asUser(t, "owner").query(api.modelRuns.listForScan, { scanId });
     expect(mine).toHaveLength(1);
