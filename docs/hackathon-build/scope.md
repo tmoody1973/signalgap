@@ -92,7 +92,7 @@ The MVP includes:
 - YouTube enrichment for relevant public meetings, organizational channels, and community video
 - Google Maps enrichment to verify an organization or location and identify possible human sources
 
-The Reddit source represents only content Google has indexed and returned. A Reddit post is labeled **Unverified signal**, can originate a candidate, and never counts as independent corroboration.
+The Reddit source represents only content Google has indexed and returned. A Reddit post is labeled **Unverified tip**, can originate a candidate, and never counts as independent corroboration.
 
 ## AI Responsibilities
 
@@ -149,7 +149,7 @@ A candidate can become a reporting brief only when:
 
 Coverage checks must explicitly include the approved general, community, Black, Latino, neighborhood, and culturally specific Milwaukee outlets defined in the feasibility design. Qualifying original reporting counts equally regardless of outlet size.
 
-When evidence conflicts, SignalGap preserves both accounts, applies a **Conflicting evidence** label, and blocks disputed material from **Confirmed facts**. It does not choose a preferred account without an explicit evidentiary basis.
+When evidence conflicts, SignalGap preserves both accounts, applies a **Conflicting reports** label, and blocks disputed material from **Confirmed facts**. It does not choose a preferred account without an explicit evidentiary basis.
 
 ## Scoring Scope
 
@@ -202,7 +202,7 @@ The score ranks reporting opportunities; it does not measure social importance o
 - Accessible dark mode
 - Compact feed with an expanded evidence view
 - Curious, cautious, and direct product voice
-- Approved labels include **Possible development**, **Unverified signal**, **Coverage gap detected**, and **Conflicting evidence**
+- Approved labels include **Worth a look**, **Unverified tip**, **Coverage gap**, and **Conflicting reports**
 
 ## What We Are Not Building
 

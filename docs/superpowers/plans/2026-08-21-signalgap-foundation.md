@@ -15,10 +15,10 @@
 - Market literal: `milwaukee-wi`. Beats: `housing`, `transportation`, `culture` (user text: "Housing and neighborhood development", "Transportation and access", "Arts, culture, and neighborhood life").
 - Discovery window: 7 days. Coverage window: 30 days. Search hard cap: `120` per scan.
 - Eligibility needs **at least two independent signal categories**. One primary source alone is NOT eligible.
-- `Coverage gap detected` requires `coveragePassStatus === "complete"` AND qualifying original reports `<= 2`.
+- `Coverage gap` requires `coveragePassStatus === "complete"` AND qualifying original reports `<= 2`.
 - Score weights: Milwaukee evidence 25, cross-source 20, freshness 15, coverage scarcity 25, relevance 15. Total = sum of components. Only eligible candidates are scored.
 - Reddit (`community_discussion`), `trend`, and `map` sources may initiate but never confirm.
-- Exact product labels (copy verbatim): `Possible development`, `Unverified signal`, `Coverage gap detected`, `Conflicting evidence`, `Reverification needed`, `Eligibility changed`, `Partial`, `Canceled—incomplete`, `Outdated`, `Saved—not live`.
+- Exact product labels (copy verbatim): `Worth a look`, `Unverified tip`, `Coverage gap`, `Conflicting reports`, `Needs a recheck`, `No longer qualifies`, `Incomplete scan`, `Stopped early`, `Outdated`, `Saved copy`.
 - Stage text: `discovery`→"Discovering signals", `evidence`→"Checking local evidence", `coverage`→"Reviewing existing coverage", `briefs`→"Preparing leads".
 - No shadcn/ui, no Radix, no second token system, no Untitled UI PRO source. Every copied component is recorded in `THIRD_PARTY_NOTICES.md` in the same commit.
 - Never commit `.env*`. `.env.example` has names only.
@@ -625,7 +625,7 @@ git commit -m "feat(ui): add MIT Untitled UI Button and Badge with notices guard
 - Create: `src/lib/source-labels.ts`, `tests/unit/source-labels.test.ts`, `src/components/ui/editorial/status-label.tsx`
 
 **Interfaces:**
-- Produces: `PRODUCT_LABELS` const, `ProductLabel` type, `STAGE_TEXT`, `BEAT_TEXT`, `labelTone(label)`; `<StatusLabel label="Coverage gap detected" />` renders visible text + tone.
+- Produces: `PRODUCT_LABELS` const, `ProductLabel` type, `STAGE_TEXT`, `BEAT_TEXT`, `labelTone(label)`; `<StatusLabel label="Coverage gap" />` renders visible text + tone.
 
 - [ ] **Step 1: Failing test** — `tests/unit/source-labels.test.ts`
 
@@ -636,16 +636,16 @@ import { BEAT_TEXT, PRODUCT_LABELS, STAGE_TEXT, labelTone } from "@/lib/source-l
 describe("source labels", () => {
   it("uses the exact PRD label text", () => {
     expect(Object.values(PRODUCT_LABELS)).toEqual([
-      "Possible development",
-      "Unverified signal",
-      "Coverage gap detected",
-      "Conflicting evidence",
-      "Reverification needed",
-      "Eligibility changed",
-      "Partial",
-      "Canceled—incomplete",
+      "Worth a look",
+      "Unverified tip",
+      "Coverage gap",
+      "Conflicting reports",
+      "Needs a recheck",
+      "No longer qualifies",
+      "Incomplete scan",
+      "Stopped early",
       "Outdated",
-      "Saved—not live",
+      "Saved copy",
     ]);
   });
 
@@ -678,16 +678,16 @@ Run: `npm test -- tests/unit/source-labels` → Expected: FAIL.
 
 ```ts
 export const PRODUCT_LABELS = {
-  possibleDevelopment: "Possible development",
-  unverifiedSignal: "Unverified signal",
-  coverageGap: "Coverage gap detected",
-  conflictingEvidence: "Conflicting evidence",
-  reverificationNeeded: "Reverification needed",
-  eligibilityChanged: "Eligibility changed",
-  partial: "Partial",
-  canceled: "Canceled—incomplete",
+  possibleDevelopment: "Worth a look",
+  unverifiedSignal: "Unverified tip",
+  coverageGap: "Coverage gap",
+  conflictingEvidence: "Conflicting reports",
+  reverificationNeeded: "Needs a recheck",
+  eligibilityChanged: "No longer qualifies",
+  partial: "Incomplete scan",
+  canceled: "Stopped early",
   outdated: "Outdated",
-  savedNotLive: "Saved—not live",
+  savedNotLive: "Saved copy",
 } as const;
 
 export type ProductLabel = (typeof PRODUCT_LABELS)[keyof typeof PRODUCT_LABELS];
@@ -712,31 +712,31 @@ export type Beat = keyof typeof BEAT_TEXT;
 export type LabelTone = "neutral" | "caution" | "conflict" | "positive";
 
 const TONES: Record<ProductLabel, LabelTone> = {
-  "Possible development": "neutral",
-  "Unverified signal": "caution",
-  "Coverage gap detected": "positive",
-  "Conflicting evidence": "conflict",
-  "Reverification needed": "caution",
-  "Eligibility changed": "caution",
-  Partial: "caution",
-  "Canceled—incomplete": "conflict",
+  "Worth a look": "neutral",
+  "Unverified tip": "caution",
+  "Coverage gap": "positive",
+  "Conflicting reports": "conflict",
+  "Needs a recheck": "caution",
+  "No longer qualifies": "caution",
+  "Incomplete scan": "caution",
+  "Stopped early": "conflict",
   Outdated: "caution",
-  "Saved—not live": "caution",
+  "Saved copy": "caution",
 };
 
 export const labelTone = (label: ProductLabel): LabelTone => TONES[label];
 
 export const LABEL_EXPLANATIONS: Record<ProductLabel, string> = {
-  "Possible development": "A candidate that may merit review but has not completed all eligibility or coverage work.",
-  "Unverified signal": "A source useful for discovery that does not establish the underlying claim.",
-  "Coverage gap detected": "An eligible lead whose 30-day coverage pass completed and found no more than two qualifying original reports.",
-  "Conflicting evidence": "Material sources disagree and the issue remains unresolved.",
-  "Reverification needed": "Previously cited support is currently inaccessible or no longer qualifies.",
-  "Eligibility changed": "A saved or assigned lead no longer satisfies the current rules.",
-  Partial: "A scan completed with one or more named source-family or search failures.",
-  "Canceled—incomplete": "The user stopped a scan before all required work completed.",
-  Outdated: "A reporting brief no longer reflects the current evidence set.",
-  "Saved—not live": "Saved evidence from an earlier scan shown with its original timestamp.",
+  "Worth a look": "Might be a story. Checks are not finished yet.",
+  "Unverified tip": "Points to something, but does not prove it.",
+  "Coverage gap": "Two or fewer local outlets reported this in the last 30 days.",
+  "Conflicting reports": "Sources disagree. Not sorted out yet.",
+  "Needs a recheck": "A source link broke or changed. Check it again.",
+  "No longer qualifies": "This lead stopped meeting the rules.",
+  "Incomplete scan": "Some searches failed. Results may be missing.",
+  "Stopped early": "You stopped this scan before it finished.",
+  Outdated: "New evidence came in. Regenerate the brief.",
+  "Saved copy": "From an earlier scan. May not be current.",
 };
 ```
 
@@ -1111,7 +1111,7 @@ export async function signIn(page: Page) {
 ```ts
 import { expect, test } from "@playwright/test";
 
-const LABELS = ["Possible development", "Unverified signal", "Coverage gap detected", "Conflicting evidence", "Reverification needed"];
+const LABELS = ["Worth a look", "Unverified tip", "Coverage gap", "Conflicting reports", "Needs a recheck"];
 
 test("labels are text, not color alone", async ({ page }) => {
   await page.goto("/");
@@ -1249,8 +1249,8 @@ export const vSignalCategory = v.union(
 );
 export const vCandidateStatus = v.union(v.literal("processing"), v.literal("eligible"), v.literal("excluded"), v.literal("needs_reverification"));
 export const vProductLabel = v.union(
-  v.literal("Possible development"), v.literal("Unverified signal"), v.literal("Coverage gap detected"),
-  v.literal("Conflicting evidence"), v.literal("Reverification needed"), v.literal("Eligibility changed"),
+  v.literal("Worth a look"), v.literal("Unverified tip"), v.literal("Coverage gap"),
+  v.literal("Conflicting reports"), v.literal("Needs a recheck"), v.literal("No longer qualifies"),
 );
 export const vDisposition = v.union(v.literal("new"), v.literal("rejected"), v.literal("monitoring"), v.literal("assigned"));
 export const vCoveragePassStatus = v.union(v.literal("pending"), v.literal("complete"), v.literal("failed"));
@@ -2709,10 +2709,10 @@ git commit -m "feat(editorial): fixed-band 100-point score with evidence referen
 
 **Interfaces:**
 - Produces:
-  - `derivePrimaryLabel({ eligible, coverage, hasMaterialConflict, needsReverification }) → ProductLabel` (one of `Possible development`, `Coverage gap detected`, `Conflicting evidence`, `Reverification needed`).
+  - `derivePrimaryLabel({ eligible, coverage, hasMaterialConflict, needsReverification }) → ProductLabel` (one of `Worth a look`, `Coverage gap`, `Conflicting reports`, `Needs a recheck`).
   - `evaluateCandidate(input: CandidateInput) → CandidateEvaluation = { status: "eligible"|"excluded", label, reasons, score, independence, coverage }`.
   - `applyCorrection(input, correction: Partial<Pick<CandidateInput, "beat"|"localityBand"|"relevanceBand">> & { sourceGroups?: Record<string,string>; sourceCategories?: Record<string, SignalCategory> }) → CandidateInput` (immutable).
-  - `eligibilityTransition(before, after) → "none" | "Eligibility changed"`.
+  - `eligibilityTransition(before, after) → "none" | "No longer qualifies"`.
 
 - [ ] **Step 1: Failing test**
 
@@ -2722,26 +2722,26 @@ import { applyCorrection, derivePrimaryLabel, eligibilityTransition, evaluateCan
 import { eligibleCandidate, src } from "../../fixtures/editorial";
 
 describe("status", () => {
-  it("eligible + complete coverage ≤2 → Coverage gap detected", () => {
-    expect(evaluateCandidate(eligibleCandidate()).label).toBe("Coverage gap detected");
+  it("eligible + complete coverage ≤2 → Coverage gap", () => {
+    expect(evaluateCandidate(eligibleCandidate()).label).toBe("Coverage gap");
   });
   it("failed coverage never yields the gap label even when everything else passes", () => {
     const e = evaluateCandidate(eligibleCandidate({ coverage: { partitions: { general: "failed", community: "succeeded" }, reports: [] } }));
     expect(e.status).toBe("excluded");
-    expect(e.label).toBe("Possible development");
+    expect(e.label).toBe("Worth a look");
   });
-  it("material conflict shows Conflicting evidence and keeps the candidate", () => {
+  it("material conflict shows Conflicting reports and keeps the candidate", () => {
     const e = evaluateCandidate(eligibleCandidate({ hasMaterialConflict: true }));
-    expect(e.label).toBe("Conflicting evidence");
+    expect(e.label).toBe("Conflicting reports");
     expect(e.status).toBe("eligible");
   });
-  it("inaccessible needed source → Reverification needed", () => {
+  it("inaccessible needed source → Needs a recheck", () => {
     const e = evaluateCandidate(eligibleCandidate({ sources: [src("o", "official_record"), src("n", "original_news", { isAccessible: false })] }));
-    expect(e.label).toBe("Reverification needed");
+    expect(e.label).toBe("Needs a recheck");
     expect(e.status).toBe("excluded");
   });
   it("derivePrimaryLabel never returns the gap label without complete coverage", () => {
-    expect(derivePrimaryLabel({ eligible: true, coveragePassStatus: "pending", originalReportCount: 0, hasMaterialConflict: false, needsReverification: false })).toBe("Possible development");
+    expect(derivePrimaryLabel({ eligible: true, coveragePassStatus: "pending", originalReportCount: 0, hasMaterialConflict: false, needsReverification: false })).toBe("Worth a look");
   });
   it("a correction recalculates without touching disposition and does not mutate input", () => {
     const input = eligibleCandidate();
@@ -2755,7 +2755,7 @@ describe("status", () => {
     expect(evaluateCandidate(dup).status).toBe("excluded");
     const fixed = applyCorrection(dup, { sourceGroups: { b: "b" } });
     expect(evaluateCandidate(fixed).status).toBe("eligible");
-    expect(eligibilityTransition(evaluateCandidate(dup), evaluateCandidate(fixed))).toBe("Eligibility changed");
+    expect(eligibilityTransition(evaluateCandidate(dup), evaluateCandidate(fixed))).toBe("No longer qualifies");
     expect(eligibilityTransition(evaluateCandidate(fixed), evaluateCandidate(fixed))).toBe("none");
   });
 });
@@ -2770,7 +2770,7 @@ import type { IndependenceSummary } from "./independence";
 import { calculateScore, type Score } from "./scoring";
 import type { CandidateInput, ExclusionReason, SignalCategory } from "./types";
 
-export type PrimaryLabel = "Possible development" | "Coverage gap detected" | "Conflicting evidence" | "Reverification needed";
+export type PrimaryLabel = "Worth a look" | "Coverage gap" | "Conflicting reports" | "Needs a recheck";
 
 export function derivePrimaryLabel(a: {
   eligible: boolean;
@@ -2779,10 +2779,10 @@ export function derivePrimaryLabel(a: {
   hasMaterialConflict: boolean;
   needsReverification: boolean;
 }): PrimaryLabel {
-  if (a.needsReverification) return "Reverification needed";
-  if (a.hasMaterialConflict) return "Conflicting evidence";
-  if (a.eligible && coverageGapAllowed({ passStatus: a.coveragePassStatus, originalReportCount: a.originalReportCount, countedReportIds: [], groupsChecked: [] })) return "Coverage gap detected";
-  return "Possible development";
+  if (a.needsReverification) return "Needs a recheck";
+  if (a.hasMaterialConflict) return "Conflicting reports";
+  if (a.eligible && coverageGapAllowed({ passStatus: a.coveragePassStatus, originalReportCount: a.originalReportCount, countedReportIds: [], groupsChecked: [] })) return "Coverage gap";
+  return "Worth a look";
 }
 
 export type CandidateEvaluation = {
@@ -2832,8 +2832,8 @@ export function applyCorrection(input: CandidateInput, c: Correction): Candidate
   };
 }
 
-export const eligibilityTransition = (before: CandidateEvaluation, after: CandidateEvaluation): "none" | "Eligibility changed" =>
-  before.status === after.status ? "none" : "Eligibility changed";
+export const eligibilityTransition = (before: CandidateEvaluation, after: CandidateEvaluation): "none" | "No longer qualifies" =>
+  before.status === after.status ? "none" : "No longer qualifies";
 ```
 
 - [ ] **Step 3: Run the whole engine suite and commit**

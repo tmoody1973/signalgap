@@ -61,12 +61,12 @@ At scaffold time, install mutually compatible current stable releases, commit th
 ### Architectural principles
 
 1. **Sources before synthesis.** Search results are stored before AI analysis. Every AI reference must resolve to a stored source ID.
-2. **Deterministic authority.** Models may suggest classifications and search intents but cannot reserve budget, execute arbitrary queries, promote a claim to confirmed, set eligibility, apply `Coverage gap detected`, or assign a final score.
+2. **Deterministic authority.** Models may suggest classifications and search intents but cannot reserve budget, execute arbitrary queries, promote a claim to confirmed, set eligibility, apply `Coverage gap`, or assign a final score.
 3. **Inspectable incompleteness.** A partial scan remains useful, but its failed purpose and blocked labels are visible.
 4. **Idempotent boundaries.** Scan initiation, search reservation, result ingestion, model-run persistence, and finalization use stable idempotency keys.
 5. **Snapshot reproducibility.** A lead view records the source, ruleset, prompt, schema, and model versions that produced it; later corrections create new versions rather than rewriting history.
 6. **Editorial equity.** Required coverage checks include general, community, Black, Latino, neighborhood, and culturally specific outlets, and count qualifying original coverage equally.
-7. **Live-first demo, honest fallback.** The primary demo runs live. A real captured Milwaukee scan is available only through an explicit `Open saved demo scan` action and is labeled `Saved—not live`.
+7. **Live-first demo, honest fallback.** The primary demo runs live. A real captured Milwaukee scan is available only through an explicit `Open saved demo scan` action and is labeled `Saved copy`.
 
 ### System topology
 
@@ -537,7 +537,7 @@ The fixed catalog is concrete enough to implement without asking a model to inve
 
 `queryCatalog.ts` renders dates and approved domain disjunctions, then the validator derives the engine parameters. Initial Google-family calls use `gl=us`, `hl=en` or `hl=es`, the configured Milwaukee location where the engine supports it, and up to 10 results without pagination. A second results page is a separately reserved supplemental search. The Trends adapter uses the supported Wisconsin geography rather than forwarding the conceptual `location` field as an unsupported API parameter.
 
-Google-indexed Reddit discovery uses the URL-prefix constraint `site:reddit.com/r/milwaukee/comments/` plus bounded, idea-shaped terms and a rolling date. Results must match `/r/milwaukee/comments/<id>/`, are deduplicated by post ID, display `Unverified signal`, and never count as corroboration or community opinion. The three templates cover the fixed beats; additional opening, civic, human-interest, or neighborhood-question variants may run only as validator-approved supplemental templates under the reserve.
+Google-indexed Reddit discovery uses the URL-prefix constraint `site:reddit.com/r/milwaukee/comments/` plus bounded, idea-shaped terms and a rolling date. Results must match `/r/milwaukee/comments/<id>/`, are deduplicated by post ID, display `Unverified tip`, and never count as corroboration or community opinion. The three templates cover the fixed beats; additional opening, civic, human-interest, or neighborhood-question variants may run only as validator-approved supplemental templates under the reserve.
 
 ### Search budget
 
@@ -603,7 +603,7 @@ The hackathon catalog is versioned and frozen before the first evaluation scan.
 
 A coverage search is complete only when all required catalog groups were included in the validated pass. Syndication, republishing, and stories based only on the same press release share an independence group and count as one original report unless a story adds demonstrable independent reporting. Outlet size never changes the count.
 
-For each candidate, the catalog renders two 30-day domain-disjunction queries: `coverage-general-01` for every general local-news domain and `coverage-community-01` for every community/culturally specific domain. Each partition consumes one of the 20 coverage-search reservations, so a scan can fully check at most 10 candidates before retries; fewer are completed if a partition must retry. The workflow prefilters and orders candidates before reserving these calls. Both partitions must succeed for `coveragePassStatus=complete`; partial results remain visible but cannot support `Coverage gap detected`.
+For each candidate, the catalog renders two 30-day domain-disjunction queries: `coverage-general-01` for every general local-news domain and `coverage-community-01` for every community/culturally specific domain. Each partition consumes one of the 20 coverage-search reservations, so a scan can fully check at most 10 candidates before retries; fewer are completed if a partition must retry. The workflow prefilters and orders candidates before reserving these calls. Both partitions must succeed for `coveragePassStatus=complete`; partial results remain visible but cannot support `Coverage gap`.
 
 ## AI Usage
 
@@ -707,17 +707,17 @@ Google-indexed Reddit posts, social posts, Trends entries, and Maps listings may
 
 | Label | Deterministic condition |
 | --- | --- |
-| `Possible development` | Candidate is still processing or has useful signals but has not passed every eligibility and coverage gate |
-| `Unverified signal` | Item is a discovery hint, community discussion, social/indexed post, unsupported claim, or otherwise nonconfirming evidence |
-| `Conflicting evidence` | Material source-backed claims cannot currently be reconciled |
-| `Reverification needed` | A source used by the current snapshot became inaccessible or materially changed |
-| `Coverage gap detected` | Candidate is eligible, coverage pass succeeded across required groups, and qualifying original coverage count is 0–2 |
-| `Eligibility changed` | A later evidence version changes a prior eligible/excluded outcome |
-| `Partial` | Scan reached a completed terminal state with one or more named nonfatal failures |
-| `Canceled—incomplete` | User cancellation ended the scan before completion |
+| `Worth a look` | Candidate is still processing or has useful signals but has not passed every eligibility and coverage gate |
+| `Unverified tip` | Item is a discovery hint, community discussion, social/indexed post, unsupported claim, or otherwise nonconfirming evidence |
+| `Conflicting reports` | Material source-backed claims cannot currently be reconciled |
+| `Needs a recheck` | A source used by the current snapshot became inaccessible or materially changed |
+| `Coverage gap` | Candidate is eligible, coverage pass succeeded across required groups, and qualifying original coverage count is 0–2 |
+| `No longer qualifies` | A later evidence version changes a prior eligible/excluded outcome |
+| `Incomplete scan` | Scan reached a completed terminal state with one or more named nonfatal failures |
+| `Stopped early` | User cancellation ended the scan before completion |
 | `Outdated` | The evidence snapshot is older than the current candidate appearance or ruleset |
 
-If coverage fails, `Coverage gap detected` is impossible. Model confidence, score, or user enthusiasm cannot override that constraint.
+If coverage fails, `Coverage gap` is impossible. Model confidence, score, or user enthusiasm cannot override that constraint.
 
 ### Score calculation
 
@@ -800,7 +800,7 @@ Implements: `prd.md > Epic 3`, `Epic 4`, `Epic 5`, and eligibility resilience in
 
 - Own locality, recency, independence, accessibility, duplication, beat relevance, coverage completion, eligibility, score, and public-label rules.
 - Return structured reasons for every exclusion and score band.
-- Recompute later evidence versions and emit `Eligibility changed` when a material outcome changes.
+- Recompute later evidence versions and emit `No longer qualifies` when a material outcome changes.
 - Count qualifying original community coverage exactly as larger-outlet coverage.
 
 ### Audit And Snapshot Layer
@@ -850,7 +850,7 @@ Internal mutations/actions cover budget reservation, workflow state transitions,
 - Returning users land on the latest completed scan summary, with active scan progress if present.
 - Show all four stages, search/API usage, eligible/excluded/processing counts, and cancellation.
 - Stream candidate cards only when each card's required work is complete; mark the overall feed incomplete until terminal.
-- On complete-with-failures, show `Partial` plus affected purposes and consequences.
+- On complete-with-failures, show `Incomplete scan` plus affected purposes and consequences.
 
 ### Compact feed
 
@@ -863,7 +863,7 @@ Internal mutations/actions cover budget reservation, workflow state transitions,
 
 - Ordered sections: question/disposition; score breakdown; `Why this surfaced`; confirmed facts; unverified signals; conflicts; reverification; coverage; potential human sources; query log; brief versions; lead history.
 - Each evidence row shows original title/claim, publisher, date, source type, classification, original language and translation when relevant, and original link.
-- Broken or inaccessible citations remain visible with `Reverification needed` rather than disappearing.
+- Broken or inaccessible citations remain visible with `Needs a recheck` rather than disappearing.
 - Confirmed facts and AI-drafted prose are visually distinct.
 
 ### Scan comparison
@@ -920,7 +920,7 @@ Do not retry invalid input, authentication/authorization failure, canceled work,
 
 - Every eligibility rule and exclusion reason.
 - Score boundaries at 0/1/2/3 coverage reports, locality bands, recency bands, independence combinations, and relevance bands.
-- `Coverage gap detected` blocked on pending/failed coverage.
+- `Coverage gap` blocked on pending/failed coverage.
 - Reddit/social/trend/map evidence unable to confirm alone.
 - Press-release/syndication grouping.
 - Search budget atomic reservation at 119/120/121.
@@ -945,7 +945,7 @@ Integration tests make no paid SerpApi or model calls. An opt-in `live-smoke` co
 - Sign in, run scan, observe stages, open top lead, inspect evidence/citations/query log/score, edit question, and assign lead.
 - Filter and paginate the feed; dispositions persist on return.
 - Compare two completed scans.
-- Open an explicit saved snapshot after simulated live failure and verify `Saved—not live`.
+- Open an explicit saved snapshot after simulated live failure and verify `Saved copy`.
 - Keyboard-only navigation, visible focus, semantic section order, dark mode, non-color labels, and progress announcements.
 - Untitled UI compositions retain expected accessible names, roles, keyboard behavior and focus restoration after modals, dropdowns and evidence navigation.
 
@@ -970,7 +970,7 @@ Integration tests make no paid SerpApi or model calls. An opt-in `live-smoke` co
 | Spanish translation changes meaning | Always retain original; evaluate meaning preservation; never infer evidence from translation alone | Bilingual fixtures reviewed by human where possible |
 | External outage breaks demo | Persist completed live scans and provide one explicit real captured fallback | Playwright fallback journey and pre-demo check |
 | Long workflow exceeds platform/action limits | Small external actions, persisted steps, bounded batches, workflow scheduling | Fixture scan and deployed smoke run |
-| Source changes after generation | Content hash, accessible flag, immutable evidence versions, `Reverification needed` | Changed/broken-source fixture |
+| Source changes after generation | Content hash, accessible flag, immutable evidence versions, `Needs a recheck` | Changed/broken-source fixture |
 | Scope exceeds hackathon time | Vertical slice first; Maps/YouTube/compare polish after core evidence loop works | Phase gates below |
 | Imported components create a generic SaaS appearance | Use the restricted component allowlist underneath custom editorial components, serif/sans hierarchy, compact spacing and restrained surfaces | Visual review of feed and evidence routes in both themes |
 | Commercial component source enters the public repository | Require MIT status and origin record for every copied component; prohibit PRO source and page examples | Repository search plus `THIRD_PARTY_NOTICES.md` review before submission |
@@ -980,7 +980,7 @@ Integration tests make no paid SerpApi or model calls. An opt-in `live-smoke` co
 
 1. One real Milwaukee scan completes and archives raw search responses.
 2. At least one candidate shows two independent categories, full coverage pass, deterministic score, source-linked brief, and editor disposition.
-3. A forced coverage failure cannot produce `Coverage gap detected`.
+3. A forced coverage failure cannot produce `Coverage gap`.
 4. Every displayed confirmed fact and existing-coverage item resolves to a stored source URL.
 5. Search count cannot exceed 120 under concurrency.
 6. Live failure offers—but does not automatically substitute—the timestamped saved scan.
@@ -1011,7 +1011,7 @@ The demo repository must not contain API keys, Clerk secrets, raw authorization 
 5. Open the query log to prove SerpApi powered discovery and follow-up, including bilingual or indexed-Reddit discovery when present.
 6. Show the deterministic 100-point score and explain that AI cannot assign eligibility or the coverage-gap label.
 7. Open the AI reporting brief, click citations, and assign or monitor the lead.
-8. If live services fail, explicitly choose `Open saved demo scan`, show `Saved—not live` and its capture timestamp, then continue the same evidence journey.
+8. If live services fail, explicitly choose `Open saved demo scan`, show `Saved copy` and its capture timestamp, then continue the same evidence journey.
 
 ### Hackathon judging emphasis
 

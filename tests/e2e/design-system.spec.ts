@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-const LABELS = ["Possible development", "Unverified signal", "Coverage gap detected", "Conflicting evidence", "Reverification needed"];
+const LABELS = ["Worth a look", "Unverified tip", "Coverage gap", "Conflicting reports", "Needs a recheck"];
 
 test("labels are text, not color alone", async ({ page }) => {
   await page.goto("/");

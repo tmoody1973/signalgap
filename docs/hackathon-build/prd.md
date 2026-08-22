@@ -32,7 +32,7 @@ SignalGap must show the evidence behind a lead before asking an editor to trust 
 
 ### Discovery is not verification
 
-Community discussions, trends, events, videos, maps, and search results may help a development surface. Their presence does not establish that a claim is true. Google-indexed Reddit posts are always labeled **Unverified signal** and never count as independent corroboration.
+Community discussions, trends, events, videos, maps, and search results may help a development surface. Their presence does not establish that a claim is true. Google-indexed Reddit posts are always labeled **Unverified tip** and never count as independent corroboration.
 
 ### Coverage must be checked equitably
 
@@ -40,7 +40,7 @@ A development is not a coverage gap merely because a large or familiar outlet ha
 
 ### Uncertainty remains visible
 
-Conflicting, incomplete, or inaccessible evidence must not be silently removed or summarized into false certainty. The interface distinguishes **Possible development**, **Unverified signal**, **Conflicting evidence**, **Reverification needed**, and **Coverage gap detected**.
+Conflicting, incomplete, or inaccessible evidence must not be silently removed or summarized into false certainty. The interface distinguishes **Worth a look**, **Unverified tip**, **Conflicting reports**, **Needs a recheck**, and **Coverage gap**.
 
 ### Empty is better than misleading
 
@@ -89,8 +89,8 @@ An independent local reporter uses the same experience as a personal assignment 
 | Candidate | A group of related signals being evaluated; it may or may not qualify for the ranked feed |
 | Eligible lead | A candidate that passes Milwaukee locality, independence, coverage, accessibility, duplication, and editorial-relevance rules |
 | Confirmed fact | A narrowly stated claim supported by a working, qualifying source-level citation |
-| Unverified signal | A discovery item that may be useful but does not independently establish a fact |
-| Conflicting evidence | Two or more sources that cannot presently be reconciled on a material claim |
+| Unverified tip | A discovery item that may be useful but does not independently establish a fact |
+| Conflicting reports | Two or more sources that cannot presently be reconciled on a material claim |
 | Coverage gap | An eligible lead with no more than two distinct qualifying original local reports in the prior 30 days after the approved outlet pass completes |
 | Reporting brief | An AI-drafted, source-linked starting point for human reporting, not a publishable article |
 | Completed scan | A scan that reached an end state, including a completed scan with named partial failures; a canceled scan is incomplete |
@@ -134,7 +134,7 @@ SignalGap must make the breadth and purpose of live search visible without askin
 | Google News | Support beat discovery and the distinct 30-day existing-coverage review |
 | General Google Search | Find relevant public-web signals with Milwaukee location context and support focused follow-up queries |
 | Official-domain searches | Seek city, county, school, meeting, agenda, notice, and other primary public records |
-| Google-indexed `r/milwaukee` posts | Originate possible leads through idea-shaped query families; always display **Unverified signal** and never count as corroboration |
+| Google-indexed `r/milwaukee` posts | Originate possible leads through idea-shaped query families; always display **Unverified tip** and never count as corroboration |
 | Spanish-language searches | Discover relevant sources in Spanish and preserve original text, AI translation, and source metadata |
 | Google Events | Surface public activity that may indicate a change, conflict, resource, service impact, or information need; purely promotional events are excluded |
 | YouTube | Enrich leads with relevant public meetings, organizational channels, and community video while retaining channel and video provenance |
@@ -168,9 +168,9 @@ The evidence view gives the editor the material needed to challenge the system. 
 2. Overall score and component breakdown
 3. **Why this surfaced** convergence sequence
 4. **Confirmed facts**
-5. **Unverified signals**
-6. **Conflicting evidence**
-7. **Reverification needed**, when applicable
+5. **Unverified tips**
+6. **Conflicting reports**
+7. **Needs a recheck**, when applicable
 8. **Existing coverage**
 9. Potential human sources
 10. Search-query log
@@ -241,7 +241,7 @@ Acceptance criteria:
 
 - The editor can cancel an active scan after a confirmation prompt.
 - Completed results remain inspectable.
-- The scan receives the label **Canceled—incomplete**.
+- The scan receives the label **Stopped early**.
 - A canceled scan is not eligible for the standard two-scan comparison.
 - Any visible leads from the canceled scan retain an incomplete-scan warning.
 
@@ -328,8 +328,8 @@ As an editor, I want evidence divided by verification state so that uncertainty 
 
 Acceptance criteria:
 
-- **Confirmed facts**, **Unverified signals**, **Conflicting evidence**, and **Existing coverage** are separate sections.
-- **Reverification needed** appears as a separate section when a previously available source cannot be opened.
+- **Confirmed facts**, **Unverified tips**, **Conflicting reports**, and **Existing coverage** are separate sections.
+- **Needs a recheck** appears as a separate section when a previously available source cannot be opened.
 - A claim cannot appear under **Confirmed facts** without at least one working qualifying citation.
 - A material conflict blocks the disputed claim from **Confirmed facts**.
 - Empty evidence sections are either omitted with an explanatory note or shown explicitly as having no items; they are never populated with invented filler.
@@ -348,7 +348,7 @@ Acceptance criteria:
 
 #### Story 4.4 — Evaluate existing local coverage fairly
 
-As an editor, I want to see which local outlets were checked and which reports counted so that **Coverage gap detected** is not based on an incomplete or inequitable media view.
+As an editor, I want to see which local outlets were checked and which reports counted so that **Coverage gap** is not based on an incomplete or inequitable media view.
 
 Acceptance criteria:
 
@@ -357,7 +357,7 @@ Acceptance criteria:
 - Syndicated copies, rewritten releases, and duplicate pages are grouped rather than counted as independent original reports.
 - The coverage log identifies the approved general, community, Black, Latino, neighborhood, and culturally specific outlet groups checked.
 - Qualifying original reporting from a smaller or culturally specific outlet counts the same as reporting from a larger outlet.
-- **Coverage gap detected** appears only after the required coverage pass succeeds and finds no more than two qualifying original reports.
+- **Coverage gap** appears only after the required coverage pass succeeds and finds no more than two qualifying original reports.
 
 #### Story 4.5 — Preserve original Spanish-language evidence
 
@@ -378,7 +378,7 @@ As an editor, I want the system to identify when source support has disappeared 
 Acceptance criteria:
 
 - Original source metadata remains visible after the source becomes unavailable.
-- Affected claims move to **Reverification needed** and stop counting as confirmed.
+- Affected claims move to **Needs a recheck** and stop counting as confirmed.
 - The lead explains which eligibility or score components changed because of the unavailable source.
 - A claim can return to **Confirmed facts** only when the source becomes accessible again or another qualifying source supports it.
 - Prior brief versions remain visible with their original timestamp and evidence set, plus the current reverification warning.
@@ -429,7 +429,7 @@ Acceptance criteria:
 
 - A lead that falls below eligibility leaves the current ranked feed.
 - Its saved history, notes, assignment, and brief versions remain accessible.
-- If the lead was assigned, it receives **Eligibility changed**.
+- If the lead was assigned, it receives **No longer qualifies**.
 - The label explains which correction, missing source, conflict, coverage result, or threshold caused the change.
 - Restoring eligibility returns the lead to the ranked feed without erasing its editorial history.
 
@@ -559,8 +559,8 @@ Acceptance criteria:
 
 - Successfully completed source-family results remain available.
 - Failed source families and searches are named in the progress view and query log.
-- The scan receives a visible **Partial** status.
-- If the coverage pass fails, candidates may display **Possible development** but cannot display **Coverage gap detected**.
+- The scan receives a visible **Incomplete scan** status.
+- If the coverage pass fails, candidates may display **Worth a look** but cannot display **Coverage gap**.
 - The interface does not imply that missing source families returned no evidence.
 
 #### Story 9.2 — Keep discussion sources in their proper role
@@ -569,7 +569,7 @@ As an editor, I want Reddit and similar discussions clearly constrained so that 
 
 Acceptance criteria:
 
-- Every indexed Reddit result is labeled **Unverified signal** wherever it appears.
+- Every indexed Reddit result is labeled **Unverified tip** wherever it appears.
 - Reddit may originate a candidate but never satisfies an independent corroboration requirement.
 - The interface states that results reflect what Google indexed and returned, not a complete subreddit archive.
 - SignalGap does not display sentiment, popularity, or community-opinion claims from Reddit comments in the MVP.
@@ -598,10 +598,10 @@ Acceptance criteria:
 
 ### Scan completion and labels
 
-- **Coverage gap detected** requires a successful coverage pass.
-- **Possible development** may be shown while corroboration or coverage work remains incomplete.
-- **Conflicting evidence** blocks disputed material from confirmed status but does not automatically delete the candidate.
-- **Canceled—incomplete** and **Partial** remain visible on all results derived from those scans.
+- **Coverage gap** requires a successful coverage pass.
+- **Worth a look** may be shown while corroboration or coverage work remains incomplete.
+- **Conflicting reports** blocks disputed material from confirmed status but does not automatically delete the candidate.
+- **Stopped early** and **Incomplete scan** remain visible on all results derived from those scans.
 
 ### Filters and navigation
 
@@ -623,17 +623,17 @@ Acceptance criteria:
 | --- | --- |
 | No search results from any source | Show a completed empty state only if searches succeeded; otherwise show failure or partial status with named causes |
 | Results exist but no candidate is eligible | Show the honest empty feed, reviewed counts, exclusion reasons, query log, and **Review exclusions** |
-| One source family fails | Preserve successful results, label the scan **Partial**, and name the failure |
-| Coverage search fails | Block **Coverage gap detected**; allow **Possible development** with an explanation |
-| Reddit is the only source | Keep the item excluded as insufficiently corroborated and label it **Unverified signal** |
+| One source family fails | Preserve successful results, label the scan **Incomplete scan**, and name the failure |
+| Coverage search fails | Block **Coverage gap**; allow **Worth a look** with an explanation |
+| Reddit is the only source | Keep the item excluded as insufficiently corroborated and label it **Unverified tip** |
 | Two pages repeat one press release | Group them as one underlying source rather than two independent signals |
-| Two sources materially conflict | Preserve both, label **Conflicting evidence**, and keep the disputed claim out of confirmed facts |
-| A working citation later breaks | Move the affected claim to **Reverification needed** and recalculate eligibility and score |
-| Editor correction removes required corroboration | Remove the lead from the ranked feed, preserve history, and mark an assigned lead **Eligibility changed** |
+| Two sources materially conflict | Preserve both, label **Conflicting reports**, and keep the disputed claim out of confirmed facts |
+| A working citation later breaks | Move the affected claim to **Needs a recheck** and recalculate eligibility and score |
+| Editor correction removes required corroboration | Remove the lead from the ranked feed, preserve history, and mark an assigned lead **No longer qualifies** |
 | Editor filters produce no cards | Explain that no leads match the filters and offer **Clear filters** |
 | More than 25 leads qualify | Show the top 25 and load additional leads in groups of 25 without changing rank rules |
 | User starts another scan during an active scan | Disable the action and direct the user to the running scan |
-| User cancels a scan | Preserve completed work, label all results **Canceled—incomplete**, and exclude it from standard comparison |
+| User cancels a scan | Preserve completed work, label all results **Stopped early**, and exclude it from standard comparison |
 | User regenerates a brief after adding notes | Preserve editor notes and the prior read-only brief version |
 | Spanish result is translated | Show original and translated text together; retain the original source and label the translation |
 | A national story mentions Milwaukee superficially | Exclude it for weak locality unless documented direct city impact exists |
@@ -645,15 +645,15 @@ Acceptance criteria:
 
 ### Required status language
 
-- **Possible development** — a candidate that may merit review but has not completed all eligibility or coverage work
-- **Unverified signal** — a source useful for discovery that does not establish the underlying claim
-- **Coverage gap detected** — an eligible lead whose required 30-day coverage pass completed within the approved threshold
-- **Conflicting evidence** — material sources disagree and the issue remains unresolved
-- **Reverification needed** — previously cited support is currently inaccessible or no longer qualifies
-- **Eligibility changed** — a saved or assigned lead no longer satisfies the current rules
-- **Partial** — a scan completed with one or more named source-family or search failures
-- **Canceled—incomplete** — the user stopped a scan before all required work completed
-- **Outdated** — a reporting brief no longer reflects the current evidence set
+- **Worth a look** — might be a story. Checks are not finished yet.
+- **Unverified tip** — points to something, but does not prove it.
+- **Coverage gap** — two or fewer local outlets reported this in the last 30 days.
+- **Conflicting reports** — sources disagree. Not sorted out yet.
+- **Needs a recheck** — a source link broke or changed. Check it again.
+- **No longer qualifies** — this lead stopped meeting the rules.
+- **Incomplete scan** — some searches failed. Results may be missing.
+- **Stopped early** — you stopped this scan before it finished.
+- **Outdated** — new evidence came in. Regenerate the brief.
 
 ### Voice
 
@@ -753,7 +753,7 @@ A separately approved future feature could ingest Reddit comments through a perm
 - At least one real Milwaukee lead is demonstrated from live discovery through evidence review, reporting brief, and disposition.
 - Every confirmed factual assertion shown in the demo has a working source citation.
 - No demonstrated Reddit result is presented as corroboration or representative public opinion.
-- No lead receives **Coverage gap detected** when the required coverage pass failed or found more than two qualifying original reports.
+- No lead receives **Coverage gap** when the required coverage pass failed or found more than two qualifying original reports.
 - The demo exposes at least one AI contribution, one deterministic rule, and one human editorial correction.
 - External failure produces an explicit partial or timestamped saved-result state rather than fabricated live data.
 

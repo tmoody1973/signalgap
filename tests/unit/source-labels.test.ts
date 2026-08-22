@@ -4,16 +4,16 @@ import { BEAT_TEXT, PRODUCT_LABELS, STAGE_TEXT, labelTone } from "@/lib/source-l
 describe("source labels", () => {
   it("uses the exact PRD label text", () => {
     expect(Object.values(PRODUCT_LABELS)).toEqual([
-      "Possible development",
-      "Unverified signal",
-      "Coverage gap detected",
-      "Conflicting evidence",
-      "Reverification needed",
-      "Eligibility changed",
-      "Partial",
-      "Canceled—incomplete",
+      "Worth a look",
+      "Unverified tip",
+      "Coverage gap",
+      "Conflicting reports",
+      "Needs a recheck",
+      "No longer qualifies",
+      "Incomplete scan",
+      "Stopped early",
       "Outdated",
-      "Saved—not live",
+      "Saved copy",
     ]);
   });
 

@@ -22,8 +22,8 @@ export const vSignalCategory = v.union(
 );
 export const vCandidateStatus = v.union(v.literal("processing"), v.literal("eligible"), v.literal("excluded"), v.literal("needs_reverification"));
 export const vProductLabel = v.union(
-  v.literal("Possible development"), v.literal("Unverified signal"), v.literal("Coverage gap detected"),
-  v.literal("Conflicting evidence"), v.literal("Reverification needed"), v.literal("Eligibility changed"),
+  v.literal("Worth a look"), v.literal("Unverified tip"), v.literal("Coverage gap"),
+  v.literal("Conflicting reports"), v.literal("Needs a recheck"), v.literal("No longer qualifies"),
 );
 export const vDisposition = v.union(v.literal("new"), v.literal("rejected"), v.literal("monitoring"), v.literal("assigned"));
 export const vCoveragePassStatus = v.union(v.literal("pending"), v.literal("complete"), v.literal("failed"));
