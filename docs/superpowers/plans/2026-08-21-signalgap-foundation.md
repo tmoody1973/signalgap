@@ -2755,8 +2755,9 @@ describe("status", () => {
     expect(evaluateCandidate(dup).status).toBe("excluded");
     const fixed = applyCorrection(dup, { sourceGroups: { b: "b" } });
     expect(evaluateCandidate(fixed).status).toBe("eligible");
-    expect(eligibilityTransition(evaluateCandidate(dup), evaluateCandidate(fixed))).toBe("No longer qualifies");
+    expect(eligibilityTransition(evaluateCandidate(dup), evaluateCandidate(fixed))).toBe("none");
     expect(eligibilityTransition(evaluateCandidate(fixed), evaluateCandidate(fixed))).toBe("none");
+    expect(eligibilityTransition(evaluateCandidate(fixed), evaluateCandidate(dup))).toBe("No longer qualifies");
   });
 });
 ```
@@ -2833,7 +2834,7 @@ export function applyCorrection(input: CandidateInput, c: Correction): Candidate
 }
 
 export const eligibilityTransition = (before: CandidateEvaluation, after: CandidateEvaluation): "none" | "No longer qualifies" =>
-  before.status === after.status ? "none" : "No longer qualifies";
+  before.status === "eligible" && after.status === "excluded" ? "No longer qualifies" : "none";
 ```
 
 - [ ] **Step 3: Run the whole engine suite and commit**

@@ -36,7 +36,8 @@ describe("status", () => {
     expect(evaluateCandidate(dup).status).toBe("excluded");
     const fixed = applyCorrection(dup, { sourceGroups: { b: "b" } });
     expect(evaluateCandidate(fixed).status).toBe("eligible");
-    expect(eligibilityTransition(evaluateCandidate(dup), evaluateCandidate(fixed))).toBe("No longer qualifies");
+    expect(eligibilityTransition(evaluateCandidate(dup), evaluateCandidate(fixed))).toBe("none");
     expect(eligibilityTransition(evaluateCandidate(fixed), evaluateCandidate(fixed))).toBe("none");
+    expect(eligibilityTransition(evaluateCandidate(fixed), evaluateCandidate(dup))).toBe("No longer qualifies");
   });
 });

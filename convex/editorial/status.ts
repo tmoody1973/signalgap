@@ -67,4 +67,4 @@ export function applyCorrection(input: CandidateInput, c: Correction): Candidate
 }
 
 export const eligibilityTransition = (before: CandidateEvaluation, after: CandidateEvaluation): "none" | "No longer qualifies" =>
-  before.status === after.status ? "none" : "No longer qualifies";
+  before.status === "eligible" && after.status === "excluded" ? "No longer qualifies" : "none";
