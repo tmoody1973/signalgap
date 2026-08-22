@@ -61,6 +61,35 @@ export const create = internalMutation({
   },
 });
 
+/**
+ * Re-open a run that ended badly so it can be tried again. A run that SUCCEEDED is
+ * never re-opened: we already paid for that answer and persisted what it produced.
+ * Mirrors searchRuns.markRunning, and for the same reason — without it, a retry
+ * would spend money against a row stuck in a terminal state.
+ */
+export const reopen = internalMutation({
+  args: { runId: v.id("modelRuns") },
+  returns: v.union(v.literal("reopened"), v.literal("already_succeeded"), v.literal("in_flight"), v.literal("missing")),
+  handler: async (ctx, { runId }) => {
+    const run = await ctx.db.get(runId);
+    if (!run) return "missing" as const;
+    if (run.status === "succeeded") return "already_succeeded" as const;
+    if (run.status === "running") {
+      // 120s timeout plus two retries is ~6 minutes worst case for one attempt to
+      // reach a terminal state; 10 minutes is comfortably past a live attempt but
+      // still frees a run abandoned by a crash.
+      const STALE_MS = 10 * 60_000;
+      if (Date.now() - run.startedAt < STALE_MS) return "in_flight" as const;
+    }
+    await ctx.db.patch(runId, {
+      status: "running", attempt: run.attempt + 1,
+      validationErrors: undefined, completedAt: undefined,
+      startedAt: Date.now(),
+    });
+    return "reopened" as const;
+  },
+});
+
 export const complete = internalMutation({
   args: {
     runId: v.id("modelRuns"),

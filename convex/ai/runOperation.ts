@@ -31,7 +31,12 @@ export type RunAiOperationArgs<T> = {
 
 export type RunAiOperationResult<T> =
   | { ok: true; value: T; modelRunId: Id<"modelRuns"> }
-  | { ok: false; reason: "invalid_output" | "provider_error" | "scan_not_found"; errors: string[]; modelRunId?: Id<"modelRuns"> };
+  | {
+      ok: false;
+      reason: "invalid_output" | "provider_error" | "scan_not_found" | "already_generated" | "in_flight";
+      errors: string[];
+      modelRunId?: Id<"modelRuns">;
+    };
 
 export async function runAiOperation<T>(
   ctx: ActionCtx,
@@ -52,6 +57,20 @@ export async function runAiOperation<T>(
   });
   if ("rejected" in created) return { ok: false, reason: "scan_not_found", errors: ["scan not found"] };
   const primaryRunId = created.runId;
+
+  // The spec's idempotency key is scanId:candidateId:operation:inputSnapshotHash:
+  // schemaVersion:promptVersion:modelId. If that key already has a run, the same
+  // question has already been asked — asking again costs real money for an answer
+  // we already have. A finished run is refused; a failed one is re-opened.
+  if (created.reused) {
+    const state = await ctx.runMutation(internal.modelRuns.reopen, { runId: primaryRunId });
+    if (state === "already_succeeded") {
+      return { ok: false, reason: "already_generated", errors: [], modelRunId: primaryRunId };
+    }
+    if (state === "in_flight") {
+      return { ok: false, reason: "in_flight", errors: ["an identical run is already in progress"], modelRunId: primaryRunId };
+    }
+  }
 
   const outcome = await generateStructured<T>({
     operation, schema: outputSchema, schemaVersion, promptVersion,

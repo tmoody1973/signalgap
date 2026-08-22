@@ -12,6 +12,7 @@ import type * as ai_analyzeResults from "../ai/analyzeResults.js";
 import type * as ai_classifyEvidence from "../ai/classifyEvidence.js";
 import type * as ai_clusterSignals from "../ai/clusterSignals.js";
 import type * as ai_contracts from "../ai/contracts.js";
+import type * as ai_generateBrief from "../ai/generateBrief.js";
 import type * as ai_planFollowUp from "../ai/planFollowUp.js";
 import type * as ai_pricing from "../ai/pricing.js";
 import type * as ai_prompts from "../ai/prompts.js";
@@ -59,6 +60,7 @@ declare const fullApi: ApiFromModules<{
   "ai/classifyEvidence": typeof ai_classifyEvidence;
   "ai/clusterSignals": typeof ai_clusterSignals;
   "ai/contracts": typeof ai_contracts;
+  "ai/generateBrief": typeof ai_generateBrief;
   "ai/planFollowUp": typeof ai_planFollowUp;
   "ai/pricing": typeof ai_pricing;
   "ai/prompts": typeof ai_prompts;
