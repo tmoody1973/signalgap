@@ -8,8 +8,11 @@
  * @module
  */
 
+import type * as config_ruleset from "../config/ruleset.js";
+import type * as config_searchBudget from "../config/searchBudget.js";
 import type * as lib_auth from "../lib/auth.js";
 import type * as lib_validators from "../lib/validators.js";
+import type * as scans from "../scans.js";
 import type * as users from "../users.js";
 
 import type {
@@ -19,8 +22,11 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  "config/ruleset": typeof config_ruleset;
+  "config/searchBudget": typeof config_searchBudget;
   "lib/auth": typeof lib_auth;
   "lib/validators": typeof lib_validators;
+  scans: typeof scans;
   users: typeof users;
 }>;
 

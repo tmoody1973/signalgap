@@ -24,7 +24,9 @@ export function FirstRunState({ onRunFirstScan, disabled }: { onRunFirstScan: ()
       <p className="text-sm text-muted">
         Community discussion is not public opinion. AI output is not source evidence. Nothing is configured; the Milwaukee scan is fixed.
       </p>
-      <Button color="primary" size="md" onPress={onRunFirstScan} isDisabled={disabled}>Run first scan</Button>
+      <div>
+        <Button color="primary" size="md" onPress={onRunFirstScan} isDisabled={disabled}>Run first scan</Button>
+      </div>
       <LabelLegend />
     </section>
   );
