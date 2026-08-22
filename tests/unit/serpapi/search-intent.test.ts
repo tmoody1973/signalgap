@@ -24,6 +24,16 @@ describe("validateSearchIntent", () => {
     expect(r).toEqual({ ok: false, reason: "purpose_mismatch" });
   });
 
+  it("rejects an events template requested as discovery now that Events moved to enrichment (decision 005)", () => {
+    const r = validateSearchIntent({ templateId: "events-housing-01", purpose: "discovery", reason: "x" }, ctx);
+    expect(r).toEqual({ ok: false, reason: "purpose_mismatch" });
+  });
+
+  it("accepts an events template requested as enrichment", () => {
+    const r = validateSearchIntent({ templateId: "events-housing-01", purpose: "enrichment", reason: "x" }, ctx);
+    expect(r.ok).toBe(true);
+  });
+
   it("rejects when the purpose has no budget left", () => {
     const r = validateSearchIntent({ templateId: "news-housing-en-01", purpose: "discovery", reason: "x" }, { ...ctx, remainingForPurpose: 0 });
     expect(r).toEqual({ ok: false, reason: "budget_exhausted" });

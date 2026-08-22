@@ -44,6 +44,10 @@ const EVENT_TERMS: Record<Beat, string[]> = {
 
 const beats = Object.keys(BEATS) as Beat[];
 const discovery: SearchPurpose[] = ["discovery"];
+// Decision 005: SerpApi's google_events engine returns zero results for every
+// query we tried, including its own documented example. The connector stays
+// built and tested but runs only as enrichment, not one of the fixed searches.
+const enrichment: SearchPurpose[] = ["enrichment"];
 
 const templates: QueryTemplate[] = [
   {
@@ -97,7 +101,7 @@ const templates: QueryTemplate[] = [
     engine: "google_events",
     language: "en",
     timeWindow: "7d",
-    purposes: discovery,
+    purposes: enrichment,
     requiresTerms: false,
     maxWindowForPurpose: {},
     build: () => `Milwaukee ${orTerms(EVENT_TERMS[beat])}`,
@@ -159,7 +163,6 @@ export const DISCOVERY_TEMPLATE_IDS = [
   "news-housing-en-01", "news-transport-en-01", "news-culture-en-01",
   "reddit-housing-01", "reddit-transport-01", "reddit-culture-01",
   "search-housing-es-01", "search-transport-es-01", "search-culture-es-01",
-  "events-housing-01", "events-transport-01", "events-culture-01",
   "official-housing-01", "official-transport-01", "official-culture-01",
 ] as const;
 
@@ -167,13 +170,20 @@ export const COVERAGE_TEMPLATE_IDS = ["coverage-general-01", "coverage-community
 
 export const SUPPLEMENTAL_TEMPLATE_IDS = ["corroborate-entity-01", "official-record-entity-01"] as const;
 
+// Decision 005: Google Events moved out of the fixed discovery set (see
+// docs/decisions/005-google-events-moves-to-enrichment.md). Kept a separate
+// export so promoting it back to discovery, if SerpApi fixes the engine, is
+// a one-line move rather than a rewrite.
+export const ENRICHMENT_TEMPLATE_IDS = ["events-housing-01", "events-transport-01", "events-culture-01"] as const;
+
 // Frozen union of every id a model may ask for — `getTemplate` still takes a plain
 // `string` at the boundary since a model-supplied id is untrusted input; the byId
 // lookup itself is the narrowing (a hit can only be one of these ids).
 export type TemplateId =
   | (typeof DISCOVERY_TEMPLATE_IDS)[number]
   | (typeof COVERAGE_TEMPLATE_IDS)[number]
-  | (typeof SUPPLEMENTAL_TEMPLATE_IDS)[number];
+  | (typeof SUPPLEMENTAL_TEMPLATE_IDS)[number]
+  | (typeof ENRICHMENT_TEMPLATE_IDS)[number];
 
 const byId = new Map(templates.map((t) => [t.id, t]));
 export const getTemplate = (id: string): QueryTemplate | undefined => byId.get(id);

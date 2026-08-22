@@ -21,7 +21,7 @@ Every task's requirements implicitly include this section. Values are copied ver
 - Purposes, exactly: `discovery`, `corroboration`, `coverage`, `enrichment`.
 - Location string: `"Milwaukee, Wisconsin, United States"`. Languages: `en`, `es`. Time windows: `7d`, `30d`, `current`.
 - Budget per scan: discovery 16, coverage 20, corroboration 20, enrichment 30, reserve 34, **hard cap 120**. Already in `convex/config/searchBudget.ts`. No code path may call SerpApi without a successful reservation. Required coverage capacity is reserved before optional Maps/YouTube enrichment.
-- Every live scan starts with the same **16 fixed discovery searches**: 1 Trends Trending Now, 3 English Google News (one per beat), 3 Google-indexed `r/milwaukee` (one per beat), 3 Spanish Google Search (one per beat), 3 Google Events (one per beat), 3 official-domain Google Search (one per beat).
+- Every live scan starts with the same **13 fixed discovery searches**: 1 Trends Trending Now, 3 English Google News (one per beat), 3 Google-indexed `r/milwaukee` (one per beat), 3 Spanish Google Search (one per beat), 3 official-domain Google Search (one per beat). (Google Events moved to conditional enrichment — decision 005, `docs/decisions/005-google-events-moves-to-enrichment.md`.)
 - Search idempotency key: `scanId:purpose:templateId:normalizedQueryHash`.
 - SerpApi HTTP: 60-second timeout; at most two retries for network errors, 429, and 5xx, with jittered delays near 2s and 8s. Never retry 4xx other than 429, invalid input, auth failure, cancelled work, policy rejection, or exhausted budget.
 - The API key is appended inside the action and never written to `searchRuns.parameters`, never logged, never returned.
@@ -318,7 +318,7 @@ git commit -m "feat(serpapi): search contracts, frozen query catalog, intent val
   - `type QueryTemplate = { id: TemplateId; engine: SerpEngine; language: SearchLanguage; timeWindow: TimeWindow; purposes: SearchPurpose[]; requiresTerms: boolean; maxWindowForPurpose: Partial<Record<SearchPurpose, TimeWindow>>; build: (args: { now: number; terms: string[] }) => string }`
   - `getTemplate(id) → QueryTemplate | undefined`
   - `renderQuery(template, { now, terms }) → string`
-  - `DISCOVERY_TEMPLATE_IDS: readonly TemplateId[]` — exactly 16, in a stable order.
+  - `DISCOVERY_TEMPLATE_IDS: readonly TemplateId[]` — exactly 13, in a stable order (decision 005: Google Events moved to enrichment; see `ENRICHMENT_TEMPLATE_IDS`).
   - `COVERAGE_TEMPLATE_IDS: readonly ["coverage-general-01", "coverage-community-01"]`
 
 - [ ] **Step 1: Write the failing test** — `tests/unit/serpapi/query-catalog.test.ts`
@@ -1686,7 +1686,7 @@ Tests: an official domain yields `direct_city` with basis `deterministic` and th
 ### Task 15: Close out items 5–6
 
 - [ ] **Step 1:** `npm run check && npm run test:e2e && npm run build`, all green.
-- [ ] **Step 2:** Write `docs/decisions/005-search-intents-not-urls.md` — why a model proposes a template ID plus plain terms instead of a query string, what that costs (the model cannot express a search we did not anticipate), and how we will know it was right. Same format as 003. Leave "What actually happened" blank.
+- [ ] **Step 2:** Write `docs/decisions/006-search-intents-not-urls.md` — why a model proposes a template ID plus plain terms instead of a query string, what that costs (the model cannot express a search we did not anticipate), and how we will know it was right. Same format as 003. Leave "What actually happened" blank.
 - [ ] **Step 3:** Append a dated entry to `docs/LEARNING-LOG.md`.
 - [ ] **Step 4:** Commit, push, confirm CI green, and report the live-call totals (SerpApi calls made, model calls made, estimated spend).
 

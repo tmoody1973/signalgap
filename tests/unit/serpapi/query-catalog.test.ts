@@ -2,22 +2,29 @@ import { describe, expect, it } from "vitest";
 import { COVERAGE_OUTLETS } from "../../../convex/config/coverageOutlets";
 import { OFFICIAL_DOMAINS } from "../../../convex/config/officialDomains";
 import {
-  COVERAGE_TEMPLATE_IDS, DISCOVERY_TEMPLATE_IDS, getTemplate, renderQuery,
+  COVERAGE_TEMPLATE_IDS, DISCOVERY_TEMPLATE_IDS, ENRICHMENT_TEMPLATE_IDS, getTemplate, renderQuery,
 } from "../../../convex/integrations/serpapi/queryCatalog";
 
 const NOW = Date.parse("2026-08-22T12:00:00Z");
 const render = (id: string) => renderQuery(getTemplate(id as never)!, { now: NOW, terms: ["Bronzeville apartments"] });
 
 describe("query catalog", () => {
-  it("freezes exactly the 16 discovery template ids from the spec", () => {
+  it("freezes exactly the 13 discovery template ids (decision 005: Events moved to enrichment)", () => {
     expect([...DISCOVERY_TEMPLATE_IDS]).toEqual([
       "trend-milwaukee-01",
       "news-housing-en-01", "news-transport-en-01", "news-culture-en-01",
       "reddit-housing-01", "reddit-transport-01", "reddit-culture-01",
       "search-housing-es-01", "search-transport-es-01", "search-culture-es-01",
-      "events-housing-01", "events-transport-01", "events-culture-01",
       "official-housing-01", "official-transport-01", "official-culture-01",
     ]);
+  });
+
+  it("keeps the Google Events templates as enrichment only, absent from discovery (decision 005)", () => {
+    expect([...ENRICHMENT_TEMPLATE_IDS]).toEqual(["events-housing-01", "events-transport-01", "events-culture-01"]);
+    for (const id of ENRICHMENT_TEMPLATE_IDS) {
+      expect(getTemplate(id)!.purposes).toEqual(["enrichment"]);
+      expect(DISCOVERY_TEMPLATE_IDS).not.toContain(id);
+    }
   });
 
   it("uses one engine per family", () => {

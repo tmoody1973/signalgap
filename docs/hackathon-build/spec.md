@@ -503,7 +503,7 @@ Indexes: `by_scan_operation`, `by_candidate_operation`, `by_idempotency_key`.
 
 ### Fixed discovery catalog
 
-Every live scan starts with 16 fixed searches:
+Every live scan starts with 13 fixed searches (Google Events dropped from the fixed set — decision 005: SerpApi's `google_events` engine returned zero results for every query tried, including its own documented example):
 
 | Count | Family | Purpose |
 | ---: | --- | --- |
@@ -511,8 +511,9 @@ Every live scan starts with 16 fixed searches:
 | 3 | English Google News | One query per beat across the seven-day window |
 | 3 | Google-indexed `r/milwaukee` discovery through Google Search | One idea-shaped query per beat; always an unverified initiating signal |
 | 3 | Spanish-language Google Search | One query per beat; preserve original text and URL |
-| 3 | Google Events | One query per beat; exclude routine promotion during prefilter |
 | 3 | Combined official-domain Google Search | City/county/MPS/notices query family per beat |
+
+Google Events (3 templates, one per beat) stays wired and tested but now runs only as conditional enrichment, the same place YouTube and Google Maps run — see `docs/decisions/005-google-events-moves-to-enrichment.md`.
 
 The fixed catalog is concrete enough to implement without asking a model to invent discovery queries:
 
