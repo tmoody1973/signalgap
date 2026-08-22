@@ -91,7 +91,7 @@ These are decisions taken on Tarik's behalf during execution. Each is in the led
 - **Eligibility follows the spec's wording, not a stricter reading.** Only an inaccessible `initiating` or `corroborating` source excludes a candidate; a dead enrichment link still shows `Needs a recheck` but does not kill the lead. An earlier stricter version would have thinned the live feed.
 - **The logged query must equal the executed query.** Google News carries its time filter inside the query text (`when:7d`), so the template renders it — `buildParams` must never mutate `spec.query`.
 - **Entity terms from a model go through an allowlist, not a denylist.** Plain words only; anything else is rejected, not sanitised. A denylist was demonstrably bypassable six ways.
-- **`searchesReserved` means authorized paid attempts** and never exceeds 120. Re-opening a failed run counts as a new authorized attempt: it increments `searchesReserved`, decrements `searchesFailed`, and is refused at the cap.
+- **`searchesReserved` means authorized paid attempts** and never exceeds 120. Re-opening a failed run counts as a new authorized attempt: it increments `searchesReserved` and is refused at the cap. It does **not** decrement `searchesFailed` — that field is a cumulative count of failed attempts, not a live gauge of rows currently failed. Decrementing it makes the invariant `succeeded + failed + in-flight == reserved` impossible to hold, because the retry reuses the same row rather than creating a new one.
 
 **Evidence honesty**
 - **The 120 cap under concurrency is now proven** (2026-08-22, Task 8). `convex-test` takes a mutex per top-level transaction, so its 20-way test never interleaves and proves nothing about production. `tests/live/reserve-concurrency.test.ts` spawns 20 separate `npx convex run` processes against the real deployment: **granted=5, rejected=15, reserved=120, runs=5** from a scan seeded at 115. Zero SerpApi calls. Item 5's "including under concurrency" and demo gate 5 **are** satisfied. Note the plan's `ConvexHttpClient` sketch was impossible — internal functions need admin auth we do not have.
@@ -114,11 +114,11 @@ Each is written into the relevant Linear issue as well.
 
 ## 8. Immediate next steps
 
-1. **Close item 5.** Code is done and pushed (commit `2cf8d3d`, CI run 32604066171 green). Remaining: post the evidence on MOO-731 and move it to Done. Evidence to paste:
+1. ~~**Close item 5.**~~ **Done.** Code pushed (`b946b34`, `2cf8d3d`), CI green (run 32604066171), evidence posted on MOO-731. What it showed:
    - cascade: `tests/integration/testing-reset-cascade.test.ts`, red-checked (removing the `ctx.storage.delete` line makes it fail).
    - real concurrency: `granted=5 rejected=15 reserved=120 runs=5`, 20 independent `npx convex run` processes, scan seeded at 115. Zero SerpApi calls.
    - live smoke: `query="Milwaukee (housing OR zoning OR development OR displacement OR neighborhood) when:7d" -> 50 normalized, 0 skipped, 126ms`.
-   - **Open question for Tarik:** that smoke returned **50** results from one `google_news` call, but the spec's Global Constraints say initial Google-family calls return "up to 10 results with no pagination". Not dangerous — same one paid call, no pagination requested — but the spec sentence and the code disagree. Recommend amending the spec line to "no pagination; engine default page size" rather than truncating and throwing away paid results.
+   - spec amended per Tarik's call (Option A, 2026-08-22): Google-family calls use the engine's default page size, no `num`, no `start`. `google_news` returns ~50 per call, and we keep them rather than discard paid results to match a number. `spec.md:539` and the plan's Global Constraints both updated.
 
 2. **Item 6** — Tasks 9–15 of the same plan. Task 14 makes real paid model calls across 15–20 evaluation packets; **price it and get Tarik's approval before running.**
 3. **Item 7** gets its own plan, written after items 5–6 land so its interfaces are real rather than predicted. It ends at **Review Pause 2**: one fixture lead traced from `Why this surfaced` through citations, coverage, score and generated brief. That plan was deliberately not written in advance — see the scope note at the top of the current plan.

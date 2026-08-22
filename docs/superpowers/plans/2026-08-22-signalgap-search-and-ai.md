@@ -26,7 +26,7 @@ Every task's requirements implicitly include this section. Values are copied ver
 - SerpApi HTTP: 60-second timeout; at most two retries for network errors, 429, and 5xx, with jittered delays near 2s and 8s. Never retry 4xx other than 429, invalid input, auth failure, cancelled work, policy rejection, or exhausted budget.
 - The API key is appended inside the action and never written to `searchRuns.parameters`, never logged, never returned.
 - Google-indexed Reddit: constrain with `site:reddit.com/r/milwaukee/comments/`; a result counts only if its URL matches `/r/milwaukee/comments/<id>/`; dedupe by post ID; always labelled `Unverified tip`; may initiate a candidate; **never** counts as corroboration.
-- Initial Google-family calls use `gl=us`, `hl=en` or `hl=es`, the Milwaukee location where the engine supports it, and up to 10 results with no pagination. A second results page is a separately reserved supplemental search.
+- Initial Google-family calls use `gl=us`, `hl=en` or `hl=es`, the Milwaukee location where the engine supports it, and the engine's default page size with no pagination (no `num`, no `start`). Spec amended 2026-08-22: `google_news` returns ~50 per call. A second results page is a separately reserved supplemental search.
 - Coverage renders **two** 30-day domain-disjunction queries per candidate: `coverage-general-01` over every general outlet domain and `coverage-community-01` over every community/culturally specific domain. Both must succeed for `coveragePassStatus = "complete"`.
 
 **AI**
