@@ -1,68 +1,68 @@
+import type { Infer } from "convex/values";
 import { v } from "convex/values";
 import { internal } from "../../_generated/api";
 import type { Id } from "../../_generated/dataModel";
-import { internalAction, internalQuery } from "../../_generated/server";
-import * as V from "../../lib/validators";
-import { buildParams, callSerpApi } from "./client";
+import type { ActionCtx } from "../../_generated/server";
+import { internalAction } from "../../_generated/server";
+import { vSearchSpec } from "../../searchRuns";
+import { callSerpApi, buildParams } from "./client";
 import { normalizeResponse } from "./normalize";
 
-const vSearchSpec = v.object({
-  templateId: v.string(),
-  engine: V.vEngine,
-  purpose: V.vPurpose,
-  query: v.string(),
-  location: v.literal("Milwaukee, Wisconsin, United States"),
-  language: v.union(v.literal("en"), v.literal("es")),
-  timeWindow: v.union(v.literal("7d"), v.literal("30d"), v.literal("current")),
-  candidateId: v.optional(v.id("candidates")),
-});
+// 60s SerpApi timeout + two backoffs (~2s, ~8s) is ~80s worst case for one
+// attempt to go from "running" to terminal; 5 minutes gives ample margin
+// before we treat a "running" row as abandoned (e.g. by a crashed action)
+// rather than in flight.
+const STALE_RUNNING_MS = 5 * 60_000;
 
 const vExecuteSearchResult = v.object({
   runId: v.optional(v.id("searchRuns")),
   status: v.union(v.literal("succeeded"), v.literal("failed"), v.literal("skipped")),
   resultCount: v.number(),
 });
+type ExecuteSearchResult = Infer<typeof vExecuteSearchResult>;
+type ExecuteSearchArgs = { scanId: Id<"scans">; spec: Infer<typeof vSearchSpec> };
+type ExecuteSearchOptions = { fetchImpl?: typeof fetch; sleep?: (ms: number) => Promise<void> };
 
-// Internal-only lookup so executeSearch can check whether a reused run already
-// finished, without going through searchRuns.listForScan (which requires a
-// browser identity this internal action does not have).
-export const getRun = internalQuery({
-  args: { runId: v.id("searchRuns") },
-  returns: v.union(v.null(), v.object({ status: V.vSearchRunStatus, resultCount: v.number() })),
-  handler: async (ctx, { runId }) => {
-    const run = await ctx.db.get(runId);
-    return run ? { status: run.status, resultCount: run.resultCount } : null;
-  },
-});
+// Extracted from the internalAction wrapper so tests can call it directly with
+// fetchImpl/sleep injected — Convex validates action args before the handler
+// runs, so a function value (a sleep override) can never travel through the
+// action's own `args`. `t.action` from convex-test accepts a raw
+// `(ctx) => Promise<...>` closure, which is how tests reach this.
+export async function runExecuteSearch(
+  ctx: ActionCtx,
+  { scanId, spec }: ExecuteSearchArgs,
+  options: ExecuteSearchOptions = {},
+): Promise<ExecuteSearchResult> {
+  const reserved = await ctx.runMutation(internal.searchRuns.reserve, { scanId, spec });
+  if ("rejected" in reserved) return { status: "skipped", resultCount: 0 };
 
-type ExecuteSearchResult = { runId?: Id<"searchRuns">; status: "succeeded" | "failed" | "skipped"; resultCount: number };
-
-export const executeSearch = internalAction({
-  args: { scanId: v.id("scans"), spec: vSearchSpec },
-  returns: vExecuteSearchResult,
-  handler: async (ctx, { scanId, spec }): Promise<ExecuteSearchResult> => {
-    const reserved = await ctx.runMutation(internal.searchRuns.reserve, { scanId, spec });
-    if ("rejected" in reserved) return { status: "skipped" as const, resultCount: 0 };
-
-    const { runId, reused } = reserved;
-    if (reused) {
-      const existing = await ctx.runQuery(internal.integrations.serpapi.executeSearch.getRun, { runId });
-      if (existing?.status === "succeeded") return { runId, status: "succeeded" as const, resultCount: existing.resultCount };
+  const { runId, reused } = reserved;
+  if (reused) {
+    const existing = await ctx.runQuery(internal.searchRuns.getRun, { runId });
+    if (existing?.status === "succeeded") return { runId, status: "skipped", resultCount: existing.resultCount };
+    if (existing?.status === "running" && Date.now() - existing.reservedAt < STALE_RUNNING_MS) {
+      return { runId, status: "skipped", resultCount: 0 };
     }
+    // Otherwise: failed, or running-but-stale (likely abandoned by a crash) — fall through and retry.
+  }
 
-    const apiKey = process.env.SERPAPI_API_KEY;
-    if (!apiKey) throw new Error("SERPAPI_API_KEY is not configured");
+  const apiKey = process.env.SERPAPI_API_KEY;
+  if (!apiKey) throw new Error("SERPAPI_API_KEY is not configured");
 
-    await ctx.runMutation(internal.searchRuns.markRunning, { runId, parameters: buildParams(spec) });
+  await ctx.runMutation(internal.searchRuns.markRunning, { runId, parameters: buildParams(spec) });
 
-    const result = await callSerpApi(spec, { apiKey });
-    if (!result.ok) {
-      await ctx.runMutation(internal.searchRuns.fail, {
-        runId, errorCode: result.errorCode, errorMessage: result.errorMessage, durationMs: result.durationMs,
-      });
-      return { runId, status: "failed" as const, resultCount: 0 };
-    }
+  const result = await callSerpApi(spec, { apiKey, ...options });
+  if (!result.ok) {
+    await ctx.runMutation(internal.searchRuns.fail, {
+      runId, errorCode: result.errorCode, errorMessage: result.errorMessage, durationMs: result.durationMs,
+    });
+    return { runId, status: "failed", resultCount: 0 };
+  }
 
+  // A paid call already succeeded at this point — any throw below (write conflict,
+  // validator mismatch, storage RPC failure) must still land the run in a terminal
+  // state, or it's stuck "running" forever with the scan never able to finish truthfully.
+  try {
     const rawStorageId: Id<"_storage"> = await ctx.storage.store(
       new Blob([JSON.stringify(result.json)], { type: "application/json" }),
     );
@@ -72,6 +72,19 @@ export const executeSearch = internalAction({
     await ctx.runMutation(internal.searchRuns.complete, {
       runId, resultCount: inserted, durationMs: result.durationMs, rawStorageId,
     });
-    return { runId, status: "succeeded" as const, resultCount: inserted };
-  },
+    return { runId, status: "succeeded", resultCount: inserted };
+  } catch (error) {
+    await ctx.runMutation(internal.searchRuns.fail, {
+      runId, errorCode: "ingest_failed",
+      errorMessage: (error instanceof Error ? error.message : String(error)).slice(0, 400),
+      durationMs: result.durationMs,
+    });
+    return { runId, status: "failed", resultCount: 0 };
+  }
+}
+
+export const executeSearch = internalAction({
+  args: { scanId: v.id("scans"), spec: vSearchSpec },
+  returns: vExecuteSearchResult,
+  handler: (ctx, args) => runExecuteSearch(ctx, args),
 });

@@ -1,6 +1,6 @@
 import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
-import { internalMutation, query } from "./_generated/server";
+import { internalMutation, internalQuery, query } from "./_generated/server";
 import { QUERY_CATALOG_VERSION } from "./config/ruleset";
 import { SEARCH_BUDGET } from "./config/searchBudget";
 import { idempotencyKeyFor } from "./integrations/serpapi/contracts";
@@ -46,7 +46,7 @@ export const listForScan = query({
   },
 });
 
-const vSearchSpec = v.object({
+export const vSearchSpec = v.object({
   templateId: v.string(),
   engine: V.vEngine,
   purpose: V.vPurpose,
@@ -121,6 +121,18 @@ export const complete = internalMutation({
     const scan = await ctx.db.get(run.scanId);
     if (scan) await ctx.db.patch(run.scanId, { searchesSucceeded: scan.searchesSucceeded + 1 });
     return null;
+  },
+});
+
+// Internal-only lookup so executeSearch can check whether a reused run already
+// finished (or is still fresh), without going through the owner-gated listForScan
+// query — this internal action has no browser identity to satisfy requireUser.
+export const getRun = internalQuery({
+  args: { runId: v.id("searchRuns") },
+  returns: v.union(v.null(), v.object({ status: V.vSearchRunStatus, resultCount: v.number(), reservedAt: v.number() })),
+  handler: async (ctx, { runId }) => {
+    const run = await ctx.db.get(runId);
+    return run ? { status: run.status, resultCount: run.resultCount, reservedAt: run.reservedAt } : null;
   },
 });
 
