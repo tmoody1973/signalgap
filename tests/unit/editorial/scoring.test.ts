@@ -35,7 +35,9 @@ describe("calculateScore", () => {
     expect(score({ initiatingSignalAt: NOW - 10 * HOUR, hasTrendMomentum: true })!.components.freshness.points).toBe(15);
     expect(score({ initiatingSignalAt: NOW - 60 * HOUR })!.components.freshness.points).toBe(10);
     const old = [src("o", "official_record", { publishedAt: NOW - 5 * 24 * HOUR }), src("n", "original_news", { publishedAt: NOW - 6 * 24 * HOUR })];
-    expect(score({ initiatingSignalAt: NOW - 5 * 24 * HOUR, sources: old })!.components.freshness.points).toBe(5);
+    const s = score({ initiatingSignalAt: NOW - 5 * 24 * HOUR, sources: old })!;
+    expect(s.components.freshness.points).toBe(5);
+    expect(s.components.freshness.evidenceIds).toEqual(expect.arrayContaining(["o", "n"]));
   });
   it("coverage scarcity bands at 0/1/2 and ineligible at 3", () => {
     expect(score({ coverage: cov(0) })!.components.coverageScarcity.points).toBe(25);
@@ -49,9 +51,10 @@ describe("calculateScore", () => {
     expect(score({ relevanceBand: "emerging_question" })!.components.relevance.points).toBe(5);
   });
   it("every component names its evidence and reason", () => {
-    for (const c of Object.values(score()!.components)) {
+    for (const c of Object.values(score({ coverage: cov(1) })!.components)) {
       expect(c.reason.length).toBeGreaterThan(10);
       expect(c.bandId).toBeTruthy();
+      if (c.points > 0) expect(c.evidenceIds.length).toBeGreaterThan(0);
     }
   });
 });

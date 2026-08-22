@@ -1,3 +1,4 @@
+import { DISCOVERY_WINDOW_MS } from "../config/ruleset";
 import type { EligibilityResult } from "./eligibility";
 import type { IndependenceSummary } from "./independence";
 import { CONFIRMING_CATEGORIES, type CandidateInput } from "./types";
@@ -40,7 +41,8 @@ function freshness(input: CandidateInput): ScoreComponent {
   const ids = recent.map((s) => s.id);
   if (age <= 48 * HOUR && (input.hasTrendMomentum || recent.length >= 2)) return { points: 15, max: 15, bandId: "fresh.48h_momentum", reason: "Initiating signal within 48 hours with trend growth or repeated signals.", evidenceIds: ids };
   if (age <= 72 * HOUR || recent.length >= 2) return { points: 10, max: 15, bandId: "fresh.72h", reason: "Initiating signal within 72 hours, or two recent signals.", evidenceIds: ids };
-  return { points: 5, max: 15, bandId: "fresh.7d", reason: "One qualifying signal within the seven-day window.", evidenceIds: ids };
+  const withinWindow = input.sources.filter((s) => s.isAccessible && CONFIRMING_CATEGORIES.has(s.signalCategory) && s.publishedAt !== undefined && input.now - s.publishedAt <= DISCOVERY_WINDOW_MS);
+  return { points: 5, max: 15, bandId: "fresh.7d", reason: "One qualifying signal within the seven-day window.", evidenceIds: withinWindow.map((s) => s.id) };
 }
 
 function coverageScarcity(e: EligibilityResult): ScoreComponent {

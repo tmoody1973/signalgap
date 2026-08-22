@@ -34,4 +34,14 @@ describe("coverage", () => {
     const s = coverageSummary({ partitions: { general: "failed", community: "succeeded" }, reports: [] });
     expect(coverageGapAllowed(s)).toBe(false);
   });
+
+  it("counts whatever reports it is given — the caller must pre-filter to the 30-day window and the frozen catalog", () => {
+    // A report outside the 30-day window or from an outlet not in the frozen
+    // catalog is indistinguishable to this function from a legitimate one; it
+    // only dedupes by independenceGroup. Filtering is the caller's job.
+    const stale = report("old", "general", "not-in-window");
+    const s = coverageSummary({ partitions: done, reports: [stale] });
+    expect(s.originalReportCount).toBe(1);
+    expect(s.countedReportIds).toEqual(["old"]);
+  });
 });

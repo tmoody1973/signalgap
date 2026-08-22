@@ -3,7 +3,7 @@ import { independenceSummary } from "../../../convex/editorial/independence";
 import type { EngineSource } from "../../../convex/editorial/types";
 
 const src = (id: string, signalCategory: EngineSource["signalCategory"], independenceGroup = id): EngineSource =>
-  ({ id, signalCategory, independenceGroup, isAccessible: true, isPromotional: false });
+  ({ id, signalCategory, role: "corroborating", independenceGroup, isAccessible: true, isPromotional: false });
 
 describe("independenceSummary", () => {
   it("counts distinct confirming categories", () => {

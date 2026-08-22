@@ -1,7 +1,8 @@
+import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
-import { QUERY_CATALOG_VERSION, RULESET_VERSION } from "./config/ruleset";
+import { MARKET_KEY, QUERY_CATALOG_VERSION, RULESET_VERSION } from "./config/ruleset";
 import { SEARCH_BUDGET } from "./config/searchBudget";
 import { requireUser } from "./lib/auth";
 import * as V from "./lib/validators";
@@ -44,7 +45,7 @@ export const startScan = mutation({
     }
     return ctx.db.insert("scans", {
       ownerId: user._id,
-      marketKey: "milwaukee-wi",
+      marketKey: MARKET_KEY,
       rulesetVersion: RULESET_VERSION,
       queryCatalogVersion: QUERY_CATALOG_VERSION,
       status: "queued",
@@ -71,13 +72,15 @@ export const get = query({
   },
 });
 
+const vScanSummaryPage = v.object({ page: v.array(vScanSummary), isDone: v.boolean(), continueCursor: v.string() });
+
 export const list = query({
-  args: {},
-  returns: v.array(vScanSummary),
-  handler: async (ctx) => {
+  args: { paginationOpts: paginationOptsValidator },
+  returns: vScanSummaryPage,
+  handler: async (ctx, { paginationOpts }) => {
     const user = await requireUser(ctx);
-    const scans = await ctx.db.query("scans").withIndex("by_owner_started", (q) => q.eq("ownerId", user._id)).order("desc").take(50);
-    return scans.map(toSummary);
+    const result = await ctx.db.query("scans").withIndex("by_owner_started", (q) => q.eq("ownerId", user._id)).order("desc").paginate(paginationOpts);
+    return { page: result.page.map(toSummary), isDone: result.isDone, continueCursor: result.continueCursor };
   },
 });
 

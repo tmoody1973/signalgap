@@ -9,6 +9,11 @@ export type CoverageSummary = {
   groupsChecked: string[];
 };
 
+// Caller obligation: `input.reports` MUST already be filtered to the 30-day
+// COVERAGE_WINDOW_MS and to the frozen catalog (only reports whose domain
+// resolves via outletGroupForDomain). This function does not re-check either
+// constraint — it only dedupes by independenceGroup and checks partition
+// completeness, so it will happily count whatever it is given.
 export function coverageSummary(input: CoverageInput): CoverageSummary {
   const statuses = REQUIRED_COVERAGE_GROUPS.map((g) => input.partitions[g]);
   const passStatus = statuses.some((s) => s === "failed") ? "failed" : statuses.every((s) => s === "succeeded") ? "complete" : "pending";

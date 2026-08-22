@@ -4,9 +4,12 @@ export type SignalCategory = "official_record" | "original_news" | "event" | "vi
 export const CONFIRMING_CATEGORIES: ReadonlySet<SignalCategory> = new Set(["official_record", "original_news", "event", "video", "public_web"]);
 export const PRIMARY_CATEGORIES: ReadonlySet<SignalCategory> = new Set(["official_record"]);
 
+export type SourceRole = "initiating" | "corroborating" | "coverage" | "enrichment" | "potential_source";
+
 export type EngineSource = {
   id: string;
   signalCategory: SignalCategory;
+  role: SourceRole;
   independenceGroup: string;   // press-release / syndication lineage; same group = one source
   isAccessible: boolean;
   publishedAt?: number;

@@ -37,7 +37,7 @@ describe("scans ownership", () => {
     const bob = asUser(t, "bob");
     await bob.mutation(api.users.ensureCurrent, {});
     expect(await bob.query(api.scans.get, { scanId })).toBeNull();
-    expect(await bob.query(api.scans.list, {})).toEqual([]);
+    expect((await bob.query(api.scans.list, { paginationOpts: { numItems: 50, cursor: null } })).page).toEqual([]);
     await expect(bob.mutation(api.scans.cancel, { scanId })).rejects.toThrow(/not found/i);
   });
 

@@ -3,8 +3,7 @@ import type { Page } from "@playwright/test";
 
 export async function signIn(page: Page) {
   const email = process.env.E2E_CLERK_EMAIL;
-  const password = process.env.E2E_CLERK_PASSWORD;
-  if (!email || !password) throw new Error("Set E2E_CLERK_EMAIL and E2E_CLERK_PASSWORD");
+  if (!email) throw new Error("Set E2E_CLERK_EMAIL");
   await page.goto("/");
   // ponytail: password strategy hits Clerk's "needs_client_trust" device gate on this dev
   // instance and @clerk/testing's password path doesn't handle it. The email/ticket

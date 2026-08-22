@@ -4,7 +4,7 @@ export const HOUR = 60 * 60 * 1000;
 export const NOW = 1_800_000_000_000;
 
 export const src = (id: string, signalCategory: EngineSource["signalCategory"], overrides: Partial<EngineSource> = {}): EngineSource =>
-  ({ id, signalCategory, independenceGroup: id, isAccessible: true, isPromotional: false, publishedAt: NOW - 12 * HOUR, ...overrides });
+  ({ id, signalCategory, role: "corroborating", independenceGroup: id, isAccessible: true, isPromotional: false, publishedAt: NOW - 12 * HOUR, ...overrides });
 
 export const eligibleCandidate = (overrides: Partial<CandidateInput> = {}): CandidateInput => ({
   localityBand: "direct_city",

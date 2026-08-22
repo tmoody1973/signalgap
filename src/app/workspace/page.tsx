@@ -1,7 +1,7 @@
 "use client";
 
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import { AppHeader } from "@/components/shell/app-header";
 import { FirstRunState } from "./workspace-shell";
@@ -16,21 +16,34 @@ export default function WorkspacePage() {
   useEffect(() => {
     if (isAuthenticated) void ensure({});
   }, [isAuthenticated, ensure]);
-  const scans = useQuery(api.scans.list, me ? {} : "skip");
+  const scans = useQuery(api.scans.list, me ? { paginationOpts: { numItems: 25, cursor: null } } : "skip");
   const start = useMutation(api.scans.startScan);
+  const [startError, setStartError] = useState<string | null>(null);
+  const [starting, setStarting] = useState(false);
+
+  const handleStart = () => {
+    setStarting(true);
+    setStartError(null);
+    start({})
+      .catch((err: unknown) => setStartError(err instanceof Error ? err.message : "Could not start scan"))
+      .finally(() => setStarting(false));
+  };
 
   return (
     <>
       <AppHeader />
       <main className="mx-auto max-w-6xl px-4 py-8">
+        {startError && (
+          <p role="alert" className="mb-4 text-sm text-[var(--status-conflict)]">{startError}</p>
+        )}
         {scans === undefined ? (
           <p className="text-muted">Loading workspace…</p>
-        ) : scans.length === 0 ? (
-          <FirstRunState onRunFirstScan={() => void start({})} />
+        ) : scans.page.length === 0 ? (
+          <FirstRunState onRunFirstScan={handleStart} disabled={starting} />
         ) : (
           <section aria-labelledby="latest-scan">
             <h1 id="latest-scan" className="font-editorial text-3xl">Latest scan</h1>
-            <p className="mt-2 text-muted">Status: {scans[0].status}. Searches reserved: {scans[0].searchesReserved} / {scans[0].searchBudgetLimit}.</p>
+            <p className="mt-2 text-muted">Status: {scans.page[0].status}. Searches reserved: {scans.page[0].searchesReserved} / {scans.page[0].searchBudgetLimit}.</p>
             {/* ponytail: full summary + Run new scan arrive with the feed plan (items 8–9) */}
           </section>
         )}

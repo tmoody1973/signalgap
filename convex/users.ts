@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { currentUser } from "./lib/auth";
+import { currentUser, findByClerkId } from "./lib/auth";
 
 export const ensureCurrent = mutation({
   args: {},
@@ -9,7 +9,7 @@ export const ensureCurrent = mutation({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Unauthenticated");
     const now = Date.now();
-    const existing = await ctx.db.query("users").withIndex("by_clerk_user_id", (q) => q.eq("clerkUserId", identity.subject)).unique();
+    const existing = await findByClerkId(ctx, identity.subject);
     if (existing) {
       await ctx.db.patch(existing._id, { email: identity.email, displayName: identity.name, updatedAt: now });
       return existing._id;

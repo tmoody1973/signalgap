@@ -4,7 +4,7 @@ import type { IndependenceSummary } from "./independence";
 import { calculateScore, type Score } from "./scoring";
 import type { CandidateInput, ExclusionReason, SignalCategory } from "./types";
 
-export type PrimaryLabel = "Worth a look" | "Coverage gap" | "Conflicting reports" | "Needs a recheck";
+export type PrimaryLabel = "Worth a look" | "Unverified tip" | "Coverage gap" | "Conflicting reports" | "Needs a recheck";
 
 export function derivePrimaryLabel(a: {
   eligible: boolean;
@@ -12,9 +12,12 @@ export function derivePrimaryLabel(a: {
   originalReportCount: number;
   hasMaterialConflict: boolean;
   needsReverification: boolean;
+  hasNoConfirmingCategories: boolean;
+  hasNonConfirmingSource: boolean;
 }): PrimaryLabel {
   if (a.needsReverification) return "Needs a recheck";
   if (a.hasMaterialConflict) return "Conflicting reports";
+  if (a.hasNoConfirmingCategories && a.hasNonConfirmingSource) return "Unverified tip";
   if (a.eligible && coverageGapAllowed({ passStatus: a.coveragePassStatus, originalReportCount: a.originalReportCount, countedReportIds: [], groupsChecked: [] })) return "Coverage gap";
   return "Worth a look";
 }
@@ -36,7 +39,9 @@ export function evaluateCandidate(input: CandidateInput): CandidateEvaluation {
     coveragePassStatus: eligibility.coverage.passStatus,
     originalReportCount: eligibility.coverage.originalReportCount,
     hasMaterialConflict: input.hasMaterialConflict,
-    needsReverification: reasons.includes("inaccessible_evidence"),
+    needsReverification: input.sources.some((s) => !s.isAccessible),
+    hasNoConfirmingCategories: eligibility.independence.independentCategoryCount === 0,
+    hasNonConfirmingSource: eligibility.independence.nonConfirmingSourceIds.length > 0,
   });
   return {
     status: eligibility.eligible ? "eligible" : "excluded",

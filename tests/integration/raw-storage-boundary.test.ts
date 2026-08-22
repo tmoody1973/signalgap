@@ -15,13 +15,13 @@ describe("searchRuns.listForScan", () => {
       return { scanId };
     });
 
-    const runs = await alice.query(api.searchRuns.listForScan, { scanId });
-    expect(runs).toHaveLength(1);
-    expect(JSON.stringify(runs)).not.toMatch(/rawStorageId|api_key/);
-    expect(runs[0]).toMatchObject({ query: "Milwaukee (housing OR zoning)", purpose: "discovery", status: "succeeded", resultCount: 7 });
+    const result = await alice.query(api.searchRuns.listForScan, { scanId, paginationOpts: { numItems: 200, cursor: null } });
+    expect(result.page).toHaveLength(1);
+    expect(JSON.stringify(result.page)).not.toMatch(/rawStorageId|api_key/);
+    expect(result.page[0]).toMatchObject({ query: "Milwaukee (housing OR zoning)", purpose: "discovery", status: "succeeded", resultCount: 7 });
 
     const bob = asUser(t, "bob");
     await bob.mutation(api.users.ensureCurrent, {});
-    expect(await bob.query(api.searchRuns.listForScan, { scanId })).toEqual([]);
+    expect((await bob.query(api.searchRuns.listForScan, { scanId, paginationOpts: { numItems: 200, cursor: null } })).page).toEqual([]);
   });
 });

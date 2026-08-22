@@ -18,7 +18,7 @@ export function evaluateEligibility(input: CandidateInput): EligibilityResult {
   if (input.beat === null) reasons.push("no_beat_relevance");
   if (input.relevanceBand === "promotion_only") reasons.push("promotional");
   if (coverage.originalReportCount > MAX_COVERAGE_REPORTS) reasons.push("already_covered");
-  if (input.sources.some((s) => !s.isAccessible)) reasons.push("inaccessible_evidence");
+  if (input.sources.some((s) => !s.isAccessible && (s.role === "initiating" || s.role === "corroborating"))) reasons.push("inaccessible_evidence");
   if (coverage.passStatus !== "complete") reasons.push("coverage_pass_incomplete");
   if (input.isDuplicateOfCandidate) reasons.push("duplicate");
   if (input.isSpeculative) reasons.push("speculative");

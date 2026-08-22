@@ -654,6 +654,7 @@ Acceptance criteria:
 - **Incomplete scan** — some searches failed. Results may be missing.
 - **Stopped early** — you stopped this scan before it finished.
 - **Outdated** — new evidence came in. Regenerate the brief.
+- **Saved copy** — from an earlier scan; may not be current.
 
 ### Voice
 

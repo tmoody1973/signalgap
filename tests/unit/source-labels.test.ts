@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { vProductLabel } from "../../convex/lib/validators";
 import { BEAT_TEXT, PRODUCT_LABELS, STAGE_TEXT, labelTone } from "@/lib/source-labels";
 
 describe("source labels", () => {
@@ -35,6 +36,13 @@ describe("source labels", () => {
   it("gives every label a tone", () => {
     for (const label of Object.values(PRODUCT_LABELS)) {
       expect(["neutral", "caution", "conflict", "positive"]).toContain(labelTone(label));
+    }
+  });
+
+  it("keeps every convex vProductLabel literal a member of PRODUCT_LABELS — a rename must fail here, not at runtime", () => {
+    const productLabels = Object.values(PRODUCT_LABELS);
+    for (const member of vProductLabel.members) {
+      expect(productLabels).toContain(member.value);
     }
   });
 });
