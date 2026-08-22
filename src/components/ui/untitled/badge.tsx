@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { cx } from "@/lib/utils/cx";
 
 const colors = {
-  neutral: "text-[var(--status-neutral)]",
+  neutral: "text-ink",
   caution: "text-[var(--status-caution)]",
   conflict: "text-[var(--status-conflict)]",
   positive: "text-[var(--status-positive)]",
