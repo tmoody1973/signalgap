@@ -7,10 +7,6 @@ const BACKOFF_MS = [2_000, 8_000];
 const MAX_RETRY_AFTER_MS = 30_000; // cap so a long Retry-After header cannot stall a scan
 
 const googleTbs = (w: SearchSpec["timeWindow"]) => (w === "7d" ? "qdr:w" : w === "30d" ? "qdr:m" : undefined);
-// SerpApi's google_news engine has no tbs/location param (verified: serpapi.com/google-news-api
-// only documents q, gl, hl). Time filtering goes through the same when: query operator a user
-// would type into Google News search directly.
-const newsWhen = (w: SearchSpec["timeWindow"]) => (w === "7d" ? "when:7d" : w === "30d" ? "when:1m" : undefined);
 
 export function buildParams(spec: SearchSpec): Record<string, string> {
   const base: Record<string, string> = { engine: spec.engine, hl: spec.language };
@@ -23,10 +19,11 @@ export function buildParams(spec: SearchSpec): Record<string, string> {
       return { ...base, q: spec.query, location: spec.location, type: "search" };
     case "google_events":
       return { ...base, q: spec.query, location: spec.location, gl: "us" };
-    case "google_news": {
-      const when = newsWhen(spec.timeWindow);
-      return { ...base, q: when ? `${spec.query} ${when}` : spec.query, gl: "us" };
-    }
+    case "google_news":
+      // No tbs/location param for this engine (serpapi.com/google-news-api). Any `when:`
+      // time-window operator is already inside spec.query — rendered by the query
+      // template — so searchRuns.query stays the source of truth for what ran.
+      return { ...base, q: spec.query, gl: "us" };
     case "google":
     default: {
       // ponytail: no `num` here — serpapi.com/search-api documents only `start` for

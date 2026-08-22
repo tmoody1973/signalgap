@@ -8,6 +8,10 @@ const isoDate = (ms: number) => new Date(ms).toISOString().slice(0, 10);
 const siteDisjunction = (domains: readonly string[]) => `(${domains.map((d) => `site:${d}`).join(" OR ")})`;
 const orTerms = (terms: readonly string[]) => `(${terms.join(" OR ")})`;
 const quoted = (terms: readonly string[]) => terms.map((t) => `"${t.replace(/"/g, "")}"`).join(" OR ");
+// google_news has no tbs/location param (serpapi.com/google-news-api). The time window is
+// Google News's own `when:` query operator, so it must be rendered into the query text here
+// — never appended later in the SerpApi client — so searchRuns.query matches what ran.
+const newsWhenSuffix = (w: TimeWindow) => (w === "7d" ? " when:7d" : w === "30d" ? " when:1m" : "");
 
 export type QueryTemplate = {
   id: string;
@@ -54,16 +58,19 @@ const templates: QueryTemplate[] = [
     // location string. The adapter maps this to the Wisconsin geo parameter.
     build: () => "US-WI",
   },
-  ...beats.map<QueryTemplate>((beat) => ({
-    id: `news-${beat === "transportation" ? "transport" : beat}-en-01`,
-    engine: "google_news",
-    language: "en",
-    timeWindow: "7d",
-    purposes: discovery,
-    requiresTerms: false,
-    maxWindowForPurpose: {},
-    build: () => `Milwaukee ${orTerms(BEATS[beat].terms)}`,
-  })),
+  ...beats.map<QueryTemplate>((beat) => {
+    const timeWindow: TimeWindow = "7d";
+    return {
+      id: `news-${beat === "transportation" ? "transport" : beat}-en-01`,
+      engine: "google_news",
+      language: "en",
+      timeWindow,
+      purposes: discovery,
+      requiresTerms: false,
+      maxWindowForPurpose: {},
+      build: () => `Milwaukee ${orTerms(BEATS[beat].terms)}${newsWhenSuffix(timeWindow)}`,
+    };
+  }),
   ...beats.map<QueryTemplate>((beat) => ({
     id: `reddit-${beat === "transportation" ? "transport" : beat}-01`,
     engine: "google",

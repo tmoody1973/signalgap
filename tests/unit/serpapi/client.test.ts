@@ -31,13 +31,15 @@ describe("buildParams", () => {
   it("does not send an undocumented num param for the google engine", () => {
     expect(buildParams(spec({ engine: "google", timeWindow: "current" })).num).toBeUndefined();
   });
-  it("expresses the google_news time window via a when: query operator, not tbs", () => {
-    const p = buildParams(spec({ engine: "google_news", timeWindow: "7d" }));
+  it("passes spec.query through unchanged for google_news (no tbs, no location)", () => {
+    // Regression guard: the `when:` time-window operator is rendered into spec.query by
+    // the query template, not appended here — otherwise searchRuns.query (the visible
+    // log) would say one thing while SerpApi ran another.
+    const q = "Milwaukee housing when:7d";
+    const p = buildParams(spec({ engine: "google_news", query: q }));
+    expect(p.q).toBe(q);
     expect(p.tbs).toBeUndefined();
-    expect(p.q).toContain("when:7d");
-  });
-  it("uses when:1m for a 30-day google_news window", () => {
-    expect(buildParams(spec({ engine: "google_news", timeWindow: "30d" })).q).toContain("when:1m");
+    expect(p.location).toBeUndefined();
   });
   it("applies qdr tbs values for the google engine", () => {
     expect(buildParams(spec({ engine: "google", timeWindow: "7d" })).tbs).toBe("qdr:w");

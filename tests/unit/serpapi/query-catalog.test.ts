@@ -67,6 +67,10 @@ describe("query catalog", () => {
     expect(getTemplate("corroborate-entity-01")!.requiresTerms).toBe(true);
   });
 
+  it("renders the news when: operator from the template's own timeWindow", () => {
+    expect(render("news-housing-en-01")).toMatch(/ when:7d$/);
+  });
+
   it("every discovery template runs in the 7-day window except the live trend feed", () => {
     for (const id of DISCOVERY_TEMPLATE_IDS) {
       const t = getTemplate(id)!;
