@@ -314,7 +314,7 @@ git commit -m "feat(serpapi): search contracts, frozen query catalog, intent val
 **Interfaces:**
 - Consumes: `BEATS` (`convex/config/beats.ts`), `COVERAGE_OUTLETS` / `REQUIRED_COVERAGE_GROUPS` (`convex/config/coverageOutlets.ts`), `OFFICIAL_DOMAINS` (`convex/config/officialDomains.ts`), `QUERY_CATALOG_VERSION` (`convex/config/ruleset.ts`).
 - Produces:
-  - `type TemplateId` — a union of the 18 frozen IDs.
+  - `type TemplateId` — a union of every frozen ID (13 discovery + 2 coverage + 3 enrichment + 2 supplemental). NOTE: this task originally froze 16 discovery IDs; Google Events moved to enrichment per `docs/decisions/005-google-events-moves-to-enrichment.md`, so the discovery list is 13. The code sample below is the pre-005 historical version — read `convex/integrations/serpapi/queryCatalog.ts` for current truth.
   - `type QueryTemplate = { id: TemplateId; engine: SerpEngine; language: SearchLanguage; timeWindow: TimeWindow; purposes: SearchPurpose[]; requiresTerms: boolean; maxWindowForPurpose: Partial<Record<SearchPurpose, TimeWindow>>; build: (args: { now: number; terms: string[] }) => string }`
   - `getTemplate(id) → QueryTemplate | undefined`
   - `renderQuery(template, { now, terms }) → string`
