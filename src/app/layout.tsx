@@ -16,9 +16,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${inter.variable} ${newsreader.variable} h-full`}
+      className={`${inter.variable} ${newsreader.variable}`}
     >
-      <body className="min-h-full flex flex-col bg-surface text-ink font-ui antialiased">
+      <body className="min-h-screen bg-surface text-ink font-ui antialiased">
         <Providers>{children}</Providers>
       </body>
     </html>
