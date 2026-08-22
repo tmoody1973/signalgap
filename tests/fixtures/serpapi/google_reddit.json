@@ -1,0 +1,308 @@
+{
+  "search_parameters": {
+    "engine": "google",
+    "q": "site:reddit.com/r/milwaukee/comments/ (development OR zoning OR apartment OR demolished OR opening OR closing OR \"what happened\") after:2026-08-15",
+    "location_requested": "Milwaukee, Wisconsin, United States",
+    "location_used": "Milwaukee,Wisconsin,United States",
+    "google_domain": "google.com",
+    "hl": "en",
+    "gl": "us",
+    "device": "desktop",
+    "tbs": "qdr:w"
+  },
+  "search_information": {
+    "query_displayed": "site:reddit.com/r/milwaukee/comments/ (development OR zoning OR apartment OR demolished OR opening OR closing OR \"what happened\") after:2026-08-15",
+    "total_results": 106,
+    "time_taken_displayed": 0.31,
+    "organic_results_state": "Results for exact spelling"
+  },
+  "organic_results": [
+    {
+      "position": 1,
+      "title": "Getting an apartment in Bayview : r/milwaukee",
+      "link": "https://www.reddit.com/r/milwaukee/comments/1vsaa36/getting_an_apartment_in_bayview/",
+      "redirect_link": "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=CAESjAEB6zswFdmu_QZiZwrCw_b4V4z0UJo44_uTR-nhf01YzWv58Yavhrd17Gk0wh_9M88O_SV1UNUTYH1l3XaYuN2TIrZzWn0ggjA2dN8qvV99q8arS-hOaFydgwcDelPduhC1vcf0KmNv8kl5vkm6Y7LXf2KhORvwz_GxsL2cRKsyzRptKAKpyfeHG9CsYg&ved=2ahUKEwippPmBoLWWAxWIkyYFHfIlB4UQFnoECCQQAQ&uoh=1",
+      "displayed_link": "4 comments",
+      "favicon": "https://serpapi.com/images/i/iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y-mAAAAhFBMVEVHcEz_RQD_RQD_RQD_RQD_RQD_RQD_RQD_RQD_PQD_NgD-XS32dlf5vK3____64dusLADUz9H-jXLOPAoSHiFrLBm3uLn3_f7jVS_b6e77pJDJo6H718__RQDw9ffs5-jm8fPIXlHqKwD5-PjolIP_VgP_SQLQ2uAyODvQ4ekABAhqcHK4ptuCAAAAHnRSTlMAPobB7P9mHdb__________________________8J6YdtgAAABWUlEQVR4AWySYZNDMBCGWyw2SI9TGnWqILT____dm6Enc-MZH8Qz2V3Je_rj7Lgekec659N_fIgPnn-yCULaYaYwsCqShYhiQXQ-dJxIedltQDZfqZQyY6K1st3vO78WsiyNDI3zySK_caJUygTMzN7eTnxdBXMcb3-0TsMC30RUJfciqSIs8JCZycHwWV1n2UVuXDKzxsDOySWu5AGVoB_TUh5imhJFpQTNfav7uDcSlBERJLUN9LOLewn6LnpCNS0EyvKg-vLRjVRLUIuxe8hSDYyyLqatyr68jdO6cxpvWGIeDOQQujagNs7YuumbJmYiZz0E3aJvMc95Ps8F-rV6PQQ0JY4XpVqVv0Cu2lYps9HbDp6HRS9Kv1-vt1Z4HeDI_1yZiFMNFIzWqYkChftl8zSkegE6HSYmENgxYYQHRGzUHiLHyh3ModvZo7nHxA71ofwdSnYAAPpVIo4RUPiIAAAAAElFTkSuQmCC.png",
+      "snippet": "How hard is it to get a two-bedroom apartment in Bayview right now? If I were to start looking now, is there a realistic possibility that I could…",
+      "snippet_highlighted_words": [
+        "apartment"
+      ],
+      "about_this_result": {
+        "source": {
+          "description": "How hard is it to get a two-bedroom apartment in Bayview right now? If I were to start looking now, is there a realistic possibility that I could…",
+          "source_info_link": "https://www.reddit.com/r/milwaukee/comments/1vsaa36/getting_an_apartment_in_bayview/",
+          "icon": "https://serpapi.com/images/i/iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y-mAAAAhFBMVEVHcEz_RQD_RQD_RQD_RQD_RQD_RQD_RQD_RQD_PQD_NgD-XS32dlf5vK3____64dusLADUz9H-jXLOPAoSHiFrLBm3uLn3_f7jVS_b6e77pJDJo6H718__RQDw9ffs5-jm8fPIXlHqKwD5-PjolIP_VgP_SQLQ2uAyODvQ4ekABAhqcHK4ptuCAAAAHnRSTlMAPobB7P9mHdb__________________________8J6YdtgAAABWUlEQVR4AWySYZNDMBCGWyw2SI9TGnWqILT____dm6Enc-MZH8Qz2V3Je_rj7Lgekec659N_fIgPnn-yCULaYaYwsCqShYhiQXQ-dJxIedltQDZfqZQyY6K1st3vO78WsiyNDI3zySK_caJUygTMzN7eTnxdBXMcb3-0TsMC30RUJfciqSIs8JCZycHwWV1n2UVuXDKzxsDOySWu5AGVoB_TUh5imhJFpQTNfav7uDcSlBERJLUN9LOLewn6LnpCNS0EyvKg-vLRjVRLUIuxe8hSDYyyLqatyr68jdO6cxpvWGIeDOQQujagNs7YuumbJmYiZz0E3aJvMc95Ps8F-rV6PQQ0JY4XpVqVv0Cu2lYps9HbDp6HRS9Kv1-vt1Z4HeDI_1yZiFMNFIzWqYkChftl8zSkegE6HSYmENgxYYQHRGzUHiLHyh3ModvZo7nHxA71ofwdSnYAAPpVIo4RUPiIAAAAAElFTkSuQmCC.png"
+        },
+        "languages": [
+          "en"
+        ],
+        "regions": [
+          "US"
+        ]
+      },
+      "about_page_link": "https://www.google.com/search?q=About+https://www.reddit.com/r/milwaukee/comments/1vsaa36/getting_an_apartment_in_bayview/&tbm=ilp",
+      "about_page_serpapi_link": "https://serpapi.com/search.json?engine=google_about_this_result&google_domain=google.com&q=About+https%3A%2F%2Fwww.reddit.com%2Fr%2Fmilwaukee%2Fcomments%2F1vsaa36%2Fgetting_an_apartment_in_bayview%2F",
+      "source": "Reddit · r/milwaukee"
+    },
+    {
+      "position": 2,
+      "title": "What is the State Fair Fight? What happened? : r/milwaukee",
+      "link": "https://www.reddit.com/r/milwaukee/comments/1vrfx2c/what_is_the_state_fair_fight_what_happened/",
+      "redirect_link": "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=CAESlwEB6zswFfMxy18YgEQjSzSLeIr3OBIrP3l5yI1NoUqt5Y5otUKGrsG2lAbTF1iviacGp98zFrDuIZVfP_KL6bxzxYDmE-m-LkjV9Q-_WRy9GgVLoESuLZNfeb62FwYkglom-a1dTU2JCpDorr0ZoGQruK45NFjMdu6sAUT1t731fDJXAqIVRqzIKiO_T_GOu8NFvz4Qyofw&ved=2ahUKEwippPmBoLWWAxWIkyYFHfIlB4UQFnoECB4QAQ&uoh=1",
+      "displayed_link": "1 comment",
+      "favicon": "https://serpapi.com/images/i/iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y-mAAAAhFBMVEVHcEz_RQD_RQD_RQD_RQD_RQD_RQD_RQD_RQD_PQD_NgD-XS32dlf5vK3____64dusLADUz9H-jXLOPAoSHiFrLBm3uLn3_f7jVS_b6e77pJDJo6H718__RQDw9ffs5-jm8fPIXlHqKwD5-PjolIP_VgP_SQLQ2uAyODvQ4ekABAhqcHK4ptuCAAAAHnRSTlMAPobB7P9mHdb__________________________8J6YdtgAAABWUlEQVR4AWySYZNDMBCGWyw2SI9TGnWqILT____dm6Enc-MZH8Qz2V3Je_rj7Lgekec659N_fIgPnn-yCULaYaYwsCqShYhiQXQ-dJxIedltQDZfqZQyY6K1st3vO78WsiyNDI3zySK_caJUygTMzN7eTnxdBXMcb3-0TsMC30RUJfciqSIs8JCZycHwWV1n2UVuXDKzxsDOySWu5AGVoB_TUh5imhJFpQTNfav7uDcSlBERJLUN9LOLewn6LnpCNS0EyvKg-vLRjVRLUIuxe8hSDYyyLqatyr68jdO6cxpvWGIeDOQQujagNs7YuumbJmYiZz0E3aJvMc95Ps8F-rV6PQQ0JY4XpVqVv0Cu2lYps9HbDp6HRS9Kv1-vt1Z4HeDI_1yZiFMNFIzWqYkChftl8zSkegE6HSYmENgxYYQHRGzUHiLHyh3ModvZo7nHxA71ofwdSnYAAPpVIo4RUPiIAAAAAElFTkSuQmCC.png",
+      "snippet": "I skip the State Fair ONCE. what happened Sunday?",
+      "snippet_highlighted_words": [
+        "what happened"
+      ],
+      "about_this_result": {
+        "source": {
+          "description": "I skip the State Fair ONCE. what happened Sunday?",
+          "source_info_link": "https://www.reddit.com/r/milwaukee/comments/1vrfx2c/what_is_the_state_fair_fight_what_happened/",
+          "icon": "https://serpapi.com/images/i/iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y-mAAAAhFBMVEVHcEz_RQD_RQD_RQD_RQD_RQD_RQD_RQD_RQD_PQD_NgD-XS32dlf5vK3____64dusLADUz9H-jXLOPAoSHiFrLBm3uLn3_f7jVS_b6e77pJDJo6H718__RQDw9ffs5-jm8fPIXlHqKwD5-PjolIP_VgP_SQLQ2uAyODvQ4ekABAhqcHK4ptuCAAAAHnRSTlMAPobB7P9mHdb__________________________8J6YdtgAAABWUlEQVR4AWySYZNDMBCGWyw2SI9TGnWqILT____dm6Enc-MZH8Qz2V3Je_rj7Lgekec659N_fIgPnn-yCULaYaYwsCqShYhiQXQ-dJxIedltQDZfqZQyY6K1st3vO78WsiyNDI3zySK_caJUygTMzN7eTnxdBXMcb3-0TsMC30RUJfciqSIs8JCZycHwWV1n2UVuXDKzxsDOySWu5AGVoB_TUh5imhJFpQTNfav7uDcSlBERJLUN9LOLewn6LnpCNS0EyvKg-vLRjVRLUIuxe8hSDYyyLqatyr68jdO6cxpvWGIeDOQQujagNs7YuumbJmYiZz0E3aJvMc95Ps8F-rV6PQQ0JY4XpVqVv0Cu2lYps9HbDp6HRS9Kv1-vt1Z4HeDI_1yZiFMNFIzWqYkChftl8zSkegE6HSYmENgxYYQHRGzUHiLHyh3ModvZo7nHxA71ofwdSnYAAPpVIo4RUPiIAAAAAElFTkSuQmCC.png"
+        },
+        "languages": [
+          "en"
+        ],
+        "regions": [
+          "US"
+        ]
+      },
+      "about_page_link": "https://www.google.com/search?q=About+https://www.reddit.com/r/milwaukee/comments/1vrfx2c/what_is_the_state_fair_fight_what_happened/&tbm=ilp",
+      "about_page_serpapi_link": "https://serpapi.com/search.json?engine=google_about_this_result&google_domain=google.com&q=About+https%3A%2F%2Fwww.reddit.com%2Fr%2Fmilwaukee%2Fcomments%2F1vrfx2c%2Fwhat_is_the_state_fair_fight_what_happened%2F",
+      "source": "Reddit · r/milwaukee"
+    },
+    {
+      "position": 3,
+      "title": "River Woods Condos on Randolph Ct (Riverwest)",
+      "link": "https://www.reddit.com/r/milwaukee/comments/1vrpng6/river_woods_condos_on_randolph_ct_riverwest/",
+      "redirect_link": "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=CAESmAEB6zswFZhMJ59NnGOHNSXPBY7Dg24AlBoqAi50QV-Vp5ktp181bEJTCBljaitftdTaTYI9fKerTiAP062YxPiB_y7duZSGEpO3zeWAGZIkyJhxTt075N_1Sji1FebgfaO5UWBRjz1rmuMVa4vkc0UQTS5nrp2t0GMWaCVm9XrF5B5e_GJAgbxsvvACazpjcjzQe2fRJXG4iQ&ved=2ahUKEwippPmBoLWWAxWIkyYFHfIlB4UQFnoECB8QAQ&uoh=1",
+      "displayed_link": "3 comments",
+      "favicon": "https://serpapi.com/images/i/iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y-mAAAAhFBMVEVHcEz_RQD_RQD_RQD_RQD_RQD_RQD_RQD_RQD_PQD_NgD-XS32dlf5vK3____64dusLADUz9H-jXLOPAoSHiFrLBm3uLn3_f7jVS_b6e77pJDJo6H718__RQDw9ffs5-jm8fPIXlHqKwD5-PjolIP_VgP_SQLQ2uAyODvQ4ekABAhqcHK4ptuCAAAAHnRSTlMAPobB7P9mHdb__________________________8J6YdtgAAABWUlEQVR4AWySYZNDMBCGWyw2SI9TGnWqILT____dm6Enc-MZH8Qz2V3Je_rj7Lgekec659N_fIgPnn-yCULaYaYwsCqShYhiQXQ-dJxIedltQDZfqZQyY6K1st3vO78WsiyNDI3zySK_caJUygTMzN7eTnxdBXMcb3-0TsMC30RUJfciqSIs8JCZycHwWV1n2UVuXDKzxsDOySWu5AGVoB_TUh5imhJFpQTNfav7uDcSlBERJLUN9LOLewn6LnpCNS0EyvKg-vLRjVRLUIuxe8hSDYyyLqatyr68jdO6cxpvWGIeDOQQujagNs7YuumbJmYiZz0E3aJvMc95Ps8F-rV6PQQ0JY4XpVqVv0Cu2lYps9HbDp6HRS9Kv1-vt1Z4HeDI_1yZiFMNFIzWqYkChftl8zSkegE6HSYmENgxYYQHRGzUHiLHyh3ModvZo7nHxA71ofwdSnYAAPpVIo4RUPiIAAAAAElFTkSuQmCC.png",
+      "snippet": "Considering buying a unit at River Woods Condos on Randolph Ct. Anyone live there or have experience with the building management?",
+      "about_this_result": {
+        "source": {
+          "description": "Considering buying a unit at River Woods Condos on Randolph Ct. Anyone live there or have experience with the building management?",
+          "source_info_link": "https://www.reddit.com/r/milwaukee/comments/1vrpng6/river_woods_condos_on_randolph_ct_riverwest/",
+          "icon": "https://serpapi.com/images/i/iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y-mAAAAhFBMVEVHcEz_RQD_RQD_RQD_RQD_RQD_RQD_RQD_RQD_PQD_NgD-XS32dlf5vK3____64dusLADUz9H-jXLOPAoSHiFrLBm3uLn3_f7jVS_b6e77pJDJo6H718__RQDw9ffs5-jm8fPIXlHqKwD5-PjolIP_VgP_SQLQ2uAyODvQ4ekABAhqcHK4ptuCAAAAHnRSTlMAPobB7P9mHdb__________________________8J6YdtgAAABWUlEQVR4AWySYZNDMBCGWyw2SI9TGnWqILT____dm6Enc-MZH8Qz2V3Je_rj7Lgekec659N_fIgPnn-yCULaYaYwsCqShYhiQXQ-dJxIedltQDZfqZQyY6K1st3vO78WsiyNDI3zySK_caJUygTMzN7eTnxdBXMcb3-0TsMC30RUJfciqSIs8JCZycHwWV1n2UVuXDKzxsDOySWu5AGVoB_TUh5imhJFpQTNfav7uDcSlBERJLUN9LOLewn6LnpCNS0EyvKg-vLRjVRLUIuxe8hSDYyyLqatyr68jdO6cxpvWGIeDOQQujagNs7YuumbJmYiZz0E3aJvMc95Ps8F-rV6PQQ0JY4XpVqVv0Cu2lYps9HbDp6HRS9Kv1-vt1Z4HeDI_1yZiFMNFIzWqYkChftl8zSkegE6HSYmENgxYYQHRGzUHiLHyh3ModvZo7nHxA71ofwdSnYAAPpVIo4RUPiIAAAAAElFTkSuQmCC.png"
+        },
+        "languages": [
+          "en"
+        ],
+        "regions": [
+          "US"
+        ]
+      },
+      "about_page_link": "https://www.google.com/search?q=About+https://www.reddit.com/r/milwaukee/comments/1vrpng6/river_woods_condos_on_randolph_ct_riverwest/&tbm=ilp",
+      "about_page_serpapi_link": "https://serpapi.com/search.json?engine=google_about_this_result&google_domain=google.com&q=About+https%3A%2F%2Fwww.reddit.com%2Fr%2Fmilwaukee%2Fcomments%2F1vrpng6%2Friver_woods_condos_on_randolph_ct_riverwest%2F",
+      "source": "Reddit · r/milwaukee"
+    },
+    {
+      "position": 4,
+      "title": "City Commission Approves Metcalfe Park Development ...",
+      "link": "https://www.reddit.com/r/milwaukee/comments/1vtame2/city_commission_approves_metcalfe_park/",
+      "redirect_link": "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=CAESkwEB6zswFZIc_B4kNce08mqPqAoCaSFP5qP1vt2CXaC0LjmQ1oS3dZ_3weBxsCKkrlDchL5b4OGKZXyye99wB4pboVKG1U1eWkm2-NGfYBVy7EWcbRcdixGH6rMUCmsuU40DATIkSDu4jGB2w2YHgLblM0JgwCnM6w5Fae9Y8TkOB_XUuIT5-1CMXZcHgwQN0Pyt-aY&ved=2ahUKEwippPmBoLWWAxWIkyYFHfIlB4UQFnoECCgQAQ&uoh=1",
+      "displayed_link": "2 comments",
+      "favicon": "https://serpapi.com/images/i/iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y-mAAAAhFBMVEVHcEz_RQD_RQD_RQD_RQD_RQD_RQD_RQD_RQD_PQD_NgD-XS32dlf5vK3____64dusLADUz9H-jXLOPAoSHiFrLBm3uLn3_f7jVS_b6e77pJDJo6H718__RQDw9ffs5-jm8fPIXlHqKwD5-PjolIP_VgP_SQLQ2uAyODvQ4ekABAhqcHK4ptuCAAAAHnRSTlMAPobB7P9mHdb__________________________8J6YdtgAAABWUlEQVR4AWySYZNDMBCGWyw2SI9TGnWqILT____dm6Enc-MZH8Qz2V3Je_rj7Lgekec659N_fIgPnn-yCULaYaYwsCqShYhiQXQ-dJxIedltQDZfqZQyY6K1st3vO78WsiyNDI3zySK_caJUygTMzN7eTnxdBXMcb3-0TsMC30RUJfciqSIs8JCZycHwWV1n2UVuXDKzxsDOySWu5AGVoB_TUh5imhJFpQTNfav7uDcSlBERJLUN9LOLewn6LnpCNS0EyvKg-vLRjVRLUIuxe8hSDYyyLqatyr68jdO6cxpvWGIeDOQQujagNs7YuumbJmYiZz0E3aJvMc95Ps8F-rV6PQQ0JY4XpVqVv0Cu2lYps9HbDp6HRS9Kv1-vt1Z4HeDI_1yZiFMNFIzWqYkChftl8zSkegE6HSYmENgxYYQHRGzUHiLHyh3ModvZo7nHxA71ofwdSnYAAPpVIo4RUPiIAAAAAElFTkSuQmCC.png",
+      "snippet": "Known as the Metcalfe Park Liberation Hub, the two-phase development would become a community hub with a wide range of functions.",
+      "snippet_highlighted_words": [
+        "development"
+      ],
+      "about_this_result": {
+        "source": {
+          "description": "Known as the Metcalfe Park Liberation Hub, the two-phase development would become a community hub with a wide range of functions.",
+          "source_info_link": "https://www.reddit.com/r/milwaukee/comments/1vtame2/city_commission_approves_metcalfe_park/",
+          "icon": "https://serpapi.com/images/i/iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y-mAAAAhFBMVEVHcEz_RQD_RQD_RQD_RQD_RQD_RQD_RQD_RQD_PQD_NgD-XS32dlf5vK3____64dusLADUz9H-jXLOPAoSHiFrLBm3uLn3_f7jVS_b6e77pJDJo6H718__RQDw9ffs5-jm8fPIXlHqKwD5-PjolIP_VgP_SQLQ2uAyODvQ4ekABAhqcHK4ptuCAAAAHnRSTlMAPobB7P9mHdb__________________________8J6YdtgAAABWUlEQVR4AWySYZNDMBCGWyw2SI9TGnWqILT____dm6Enc-MZH8Qz2V3Je_rj7Lgekec659N_fIgPnn-yCULaYaYwsCqShYhiQXQ-dJxIedltQDZfqZQyY6K1st3vO78WsiyNDI3zySK_caJUygTMzN7eTnxdBXMcb3-0TsMC30RUJfciqSIs8JCZycHwWV1n2UVuXDKzxsDOySWu5AGVoB_TUh5imhJFpQTNfav7uDcSlBERJLUN9LOLewn6LnpCNS0EyvKg-vLRjVRLUIuxe8hSDYyyLqatyr68jdO6cxpvWGIeDOQQujagNs7YuumbJmYiZz0E3aJvMc95Ps8F-rV6PQQ0JY4XpVqVv0Cu2lYps9HbDp6HRS9Kv1-vt1Z4HeDI_1yZiFMNFIzWqYkChftl8zSkegE6HSYmENgxYYQHRGzUHiLHyh3ModvZo7nHxA71ofwdSnYAAPpVIo4RUPiIAAAAAElFTkSuQmCC.png"
+        },
+        "languages": [
+          "en"
+        ],
+        "regions": [
+          "US"
+        ]
+      },
+      "about_page_link": "https://www.google.com/search?q=About+https://www.reddit.com/r/milwaukee/comments/1vtame2/city_commission_approves_metcalfe_park/&tbm=ilp",
+      "about_page_serpapi_link": "https://serpapi.com/search.json?engine=google_about_this_result&google_domain=google.com&q=About+https%3A%2F%2Fwww.reddit.com%2Fr%2Fmilwaukee%2Fcomments%2F1vtame2%2Fcity_commission_approves_metcalfe_park%2F",
+      "source": "Reddit · r/milwaukee",
+      "read_more_link": "https://www.google.com/goto?url=CAES4gEB6zswFQy6db5husDc33bCKgBYf04vcJvwiWm1AAFo6q0q7wR6cgVU0upzS7zNAbgMDLLNjY-4_B2jzFd_OebjI4KnjSQUygJ-OjXe5LjEdWJdFwF3apXN8E9MnWmbUt59UuGwoTvAbGvwOm34u8BjyZzg2CLa-l0ybq2cnGQVmM4UdPjoOuZewWoo1pIIgelc7gHS7D7LAFpIL7MXcdBYNHDZJeQHOavWUV6BZi58RRNwu92jOIwfPUiJsK-BLCiWQesfWGtHSPr7DinbCMiyvW3Kk6kaESH9v0WPYZwFuA4f"
+    },
+    {
+      "position": 5,
+      "title": "WI Real Estate Course Recs : r/milwaukee",
+      "link": "https://www.reddit.com/r/milwaukee/comments/1vu15t7/wi_real_estate_course_recs/",
+      "redirect_link": "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=CAEShwEB6zswFVs5ufxYxm40S3P3pvkbbKZ6yYSFHndTba41L3wi3HK0Z_WFfD_6sZ2YbFQj-t5EP5L5a0E6PlSlUC51XNoJsI4puy8eQLdEVCaM_E5SObFLtoPiEybOf6N-FqGwaftqFKP6LtBTLjIPMtXB57-5P6bgQm4Mn3TcI4yj68j5hYBImmU&ved=2ahUKEwippPmBoLWWAxWIkyYFHfIlB4UQFnoECBsQAQ&uoh=1",
+      "displayed_link": "3 comments",
+      "favicon": "https://serpapi.com/images/i/iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y-mAAAAhFBMVEVHcEz_RQD_RQD_RQD_RQD_RQD_RQD_RQD_RQD_PQD_NgD-XS32dlf5vK3____64dusLADUz9H-jXLOPAoSHiFrLBm3uLn3_f7jVS_b6e77pJDJo6H718__RQDw9ffs5-jm8fPIXlHqKwD5-PjolIP_VgP_SQLQ2uAyODvQ4ekABAhqcHK4ptuCAAAAHnRSTlMAPobB7P9mHdb__________________________8J6YdtgAAABWUlEQVR4AWySYZNDMBCGWyw2SI9TGnWqILT____dm6Enc-MZH8Qz2V3Je_rj7Lgekec659N_fIgPnn-yCULaYaYwsCqShYhiQXQ-dJxIedltQDZfqZQyY6K1st3vO78WsiyNDI3zySK_caJUygTMzN7eTnxdBXMcb3-0TsMC30RUJfciqSIs8JCZycHwWV1n2UVuXDKzxsDOySWu5AGVoB_TUh5imhJFpQTNfav7uDcSlBERJLUN9LOLewn6LnpCNS0EyvKg-vLRjVRLUIuxe8hSDYyyLqatyr68jdO6cxpvWGIeDOQQujagNs7YuumbJmYiZz0E3aJvMc95Ps8F-rV6PQQ0JY4XpVqVv0Cu2lYps9HbDp6HRS9Kv1-vt1Z4HeDI_1yZiFMNFIzWqYkChftl8zSkegE6HSYmENgxYYQHRGzUHiLHyh3ModvZo7nHxA71ofwdSnYAAPpVIo4RUPiIAAAAAElFTkSuQmCC.png",
+      "snippet": "I'm considering getting my real estate license and have been looking into online exam prep/pre-licensing courses. There are quite a few options out there ( ...",
+      "about_this_result": {
+        "source": {
+          "description": "I'm considering getting my real estate license and have been looking into online exam prep/pre-licensing courses. There are quite a few options out there ( ...",
+          "source_info_link": "https://www.reddit.com/r/milwaukee/comments/1vu15t7/wi_real_estate_course_recs/",
+          "icon": "https://serpapi.com/images/i/iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y-mAAAAhFBMVEVHcEz_RQD_RQD_RQD_RQD_RQD_RQD_RQD_RQD_PQD_NgD-XS32dlf5vK3____64dusLADUz9H-jXLOPAoSHiFrLBm3uLn3_f7jVS_b6e77pJDJo6H718__RQDw9ffs5-jm8fPIXlHqKwD5-PjolIP_VgP_SQLQ2uAyODvQ4ekABAhqcHK4ptuCAAAAHnRSTlMAPobB7P9mHdb__________________________8J6YdtgAAABWUlEQVR4AWySYZNDMBCGWyw2SI9TGnWqILT____dm6Enc-MZH8Qz2V3Je_rj7Lgekec659N_fIgPnn-yCULaYaYwsCqShYhiQXQ-dJxIedltQDZfqZQyY6K1st3vO78WsiyNDI3zySK_caJUygTMzN7eTnxdBXMcb3-0TsMC30RUJfciqSIs8JCZycHwWV1n2UVuXDKzxsDOySWu5AGVoB_TUh5imhJFpQTNfav7uDcSlBERJLUN9LOLewn6LnpCNS0EyvKg-vLRjVRLUIuxe8hSDYyyLqatyr68jdO6cxpvWGIeDOQQujagNs7YuumbJmYiZz0E3aJvMc95Ps8F-rV6PQQ0JY4XpVqVv0Cu2lYps9HbDp6HRS9Kv1-vt1Z4HeDI_1yZiFMNFIzWqYkChftl8zSkegE6HSYmENgxYYQHRGzUHiLHyh3ModvZo7nHxA71ofwdSnYAAPpVIo4RUPiIAAAAAElFTkSuQmCC.png"
+        },
+        "languages": [
+          "en"
+        ],
+        "regions": [
+          "US"
+        ]
+      },
+      "about_page_link": "https://www.google.com/search?q=About+https://www.reddit.com/r/milwaukee/comments/1vu15t7/wi_real_estate_course_recs/&tbm=ilp",
+      "about_page_serpapi_link": "https://serpapi.com/search.json?engine=google_about_this_result&google_domain=google.com&q=About+https%3A%2F%2Fwww.reddit.com%2Fr%2Fmilwaukee%2Fcomments%2F1vu15t7%2Fwi_real_estate_course_recs%2F",
+      "source": "Reddit · r/milwaukee",
+      "read_more_link": "https://www.google.com/goto?url=CAES4wEB6zswFbaggwa4tyFQoZ22H4T7y_-Hnz58OVEW84_f_oN7M3OBhSe6mx5vSNTIQe25Cifbcw42RuITyfJ7XitFv1RbfJVezty0WdzRIvw8-ogP3xe-HN0sqTQaT8Ys6a8XkkvIGX5LFIxVslbhLZS_BEAAasyFua6dAOWMWF8RRfhRF5bPZP64PGO9GvU4Fv31lEmJBbyfpUBOo1AOX1jrfPFpjecNv9SR5M3bJ74SgyHGHjk_MhM-yKR5kzHsXK_QE9iEyrkpiX5ixODhoTi393jKkuRaC4L_3IIqlzaLsnaxBw"
+    },
+    {
+      "position": 6,
+      "title": "Dumpster Rental : r/milwaukee",
+      "link": "https://www.reddit.com/r/milwaukee/comments/1vtqmd0/dumpster_rental/",
+      "redirect_link": "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=CAESfAHrOzAVxPCusvIFbEtSm3Kp8JjiN4blJips4RDzz1EYxS7cJsMo9ALYVW0EJX7s57Q01MjfxkSI72ekQ8NZLkXr5fjc7MLlC_s-QNIdBRKCuognXK4NoYrineQB9Ytx6JYlB6B5BQSfJ8KIyhbEYIfyauPogr2rIE4bd4c&ved=2ahUKEwippPmBoLWWAxWIkyYFHfIlB4UQFnoECDEQAQ&uoh=1",
+      "displayed_link": "6 comments",
+      "favicon": "https://serpapi.com/images/i/iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y-mAAAAhFBMVEVHcEz_RQD_RQD_RQD_RQD_RQD_RQD_RQD_RQD_PQD_NgD-XS32dlf5vK3____64dusLADUz9H-jXLOPAoSHiFrLBm3uLn3_f7jVS_b6e77pJDJo6H718__RQDw9ffs5-jm8fPIXlHqKwD5-PjolIP_VgP_SQLQ2uAyODvQ4ekABAhqcHK4ptuCAAAAHnRSTlMAPobB7P9mHdb__________________________8J6YdtgAAABWUlEQVR4AWySYZNDMBCGWyw2SI9TGnWqILT____dm6Enc-MZH8Qz2V3Je_rj7Lgekec659N_fIgPnn-yCULaYaYwsCqShYhiQXQ-dJxIedltQDZfqZQyY6K1st3vO78WsiyNDI3zySK_caJUygTMzN7eTnxdBXMcb3-0TsMC30RUJfciqSIs8JCZycHwWV1n2UVuXDKzxsDOySWu5AGVoB_TUh5imhJFpQTNfav7uDcSlBERJLUN9LOLewn6LnpCNS0EyvKg-vLRjVRLUIuxe8hSDYyyLqatyr68jdO6cxpvWGIeDOQQujagNs7YuumbJmYiZz0E3aJvMc95Ps8F-rV6PQQ0JY4XpVqVv0Cu2lYps9HbDp6HRS9Kv1-vt1Z4HeDI_1yZiFMNFIzWqYkChftl8zSkegE6HSYmENgxYYQHRGzUHiLHyh3ModvZo7nHxA71ofwdSnYAAPpVIo4RUPiIAAAAAElFTkSuQmCC.png",
+      "snippet": "Hello all, I have recently demoed my kitchen and am in need of a dumpster rental to dispose of said demolition debris. Looking for a recommendations…",
+      "about_this_result": {
+        "source": {
+          "description": "Hello all, I have recently demoed my kitchen and am in need of a dumpster rental to dispose of said demolition debris. Looking for a recommendations…",
+          "source_info_link": "https://www.reddit.com/r/milwaukee/comments/1vtqmd0/dumpster_rental/",
+          "icon": "https://serpapi.com/images/i/iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y-mAAAAhFBMVEVHcEz_RQD_RQD_RQD_RQD_RQD_RQD_RQD_RQD_PQD_NgD-XS32dlf5vK3____64dusLADUz9H-jXLOPAoSHiFrLBm3uLn3_f7jVS_b6e77pJDJo6H718__RQDw9ffs5-jm8fPIXlHqKwD5-PjolIP_VgP_SQLQ2uAyODvQ4ekABAhqcHK4ptuCAAAAHnRSTlMAPobB7P9mHdb__________________________8J6YdtgAAABWUlEQVR4AWySYZNDMBCGWyw2SI9TGnWqILT____dm6Enc-MZH8Qz2V3Je_rj7Lgekec659N_fIgPnn-yCULaYaYwsCqShYhiQXQ-dJxIedltQDZfqZQyY6K1st3vO78WsiyNDI3zySK_caJUygTMzN7eTnxdBXMcb3-0TsMC30RUJfciqSIs8JCZycHwWV1n2UVuXDKzxsDOySWu5AGVoB_TUh5imhJFpQTNfav7uDcSlBERJLUN9LOLewn6LnpCNS0EyvKg-vLRjVRLUIuxe8hSDYyyLqatyr68jdO6cxpvWGIeDOQQujagNs7YuumbJmYiZz0E3aJvMc95Ps8F-rV6PQQ0JY4XpVqVv0Cu2lYps9HbDp6HRS9Kv1-vt1Z4HeDI_1yZiFMNFIzWqYkChftl8zSkegE6HSYmENgxYYQHRGzUHiLHyh3ModvZo7nHxA71ofwdSnYAAPpVIo4RUPiIAAAAAElFTkSuQmCC.png"
+        },
+        "languages": [
+          "en"
+        ],
+        "regions": [
+          "US"
+        ]
+      },
+      "about_page_link": "https://www.google.com/search?q=About+https://www.reddit.com/r/milwaukee/comments/1vtqmd0/dumpster_rental/&tbm=ilp",
+      "about_page_serpapi_link": "https://serpapi.com/search.json?engine=google_about_this_result&google_domain=google.com&q=About+https%3A%2F%2Fwww.reddit.com%2Fr%2Fmilwaukee%2Fcomments%2F1vtqmd0%2Fdumpster_rental%2F",
+      "source": "Reddit · r/milwaukee"
+    },
+    {
+      "position": 7,
+      "title": "Best way to look for a house to buy? : r/milwaukee",
+      "link": "https://www.reddit.com/r/milwaukee/comments/1vtu22k/best_way_to_look_for_a_house_to_buy/",
+      "redirect_link": "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=CAESkAEB6zswFR4NIgmxWecrTvg8zheArHj0ntSO6EvnyEiT_NXAP3rYuvAYVVHgn0ak1McEU4ek5O9azvOGHwLtyoBXnXKzrbtW35jqJkEVUeZMmx5g1HS2jjU32yLBuHlTQKuFxV0FopZB-lk9sxdFvNtgBylabEhgCUJbGLJupF90lj9hTFBYVD59tOtraDh_RJc&ved=2ahUKEwippPmBoLWWAxWIkyYFHfIlB4UQFnoECDIQAQ&uoh=1",
+      "displayed_link": "9 comments",
+      "favicon": "https://serpapi.com/images/i/iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y-mAAAAhFBMVEVHcEz_RQD_RQD_RQD_RQD_RQD_RQD_RQD_RQD_PQD_NgD-XS32dlf5vK3____64dusLADUz9H-jXLOPAoSHiFrLBm3uLn3_f7jVS_b6e77pJDJo6H718__RQDw9ffs5-jm8fPIXlHqKwD5-PjolIP_VgP_SQLQ2uAyODvQ4ekABAhqcHK4ptuCAAAAHnRSTlMAPobB7P9mHdb__________________________8J6YdtgAAABWUlEQVR4AWySYZNDMBCGWyw2SI9TGnWqILT____dm6Enc-MZH8Qz2V3Je_rj7Lgekec659N_fIgPnn-yCULaYaYwsCqShYhiQXQ-dJxIedltQDZfqZQyY6K1st3vO78WsiyNDI3zySK_caJUygTMzN7eTnxdBXMcb3-0TsMC30RUJfciqSIs8JCZycHwWV1n2UVuXDKzxsDOySWu5AGVoB_TUh5imhJFpQTNfav7uDcSlBERJLUN9LOLewn6LnpCNS0EyvKg-vLRjVRLUIuxe8hSDYyyLqatyr68jdO6cxpvWGIeDOQQujagNs7YuumbJmYiZz0E3aJvMc95Ps8F-rV6PQQ0JY4XpVqVv0Cu2lYps9HbDp6HRS9Kv1-vt1Z4HeDI_1yZiFMNFIzWqYkChftl8zSkegE6HSYmENgxYYQHRGzUHiLHyh3ModvZo7nHxA71ofwdSnYAAPpVIo4RUPiIAAAAAElFTkSuQmCC.png",
+      "snippet": "Signed buyer agreements are required before touring homes. Best sites are realtor and or compass homes.",
+      "about_this_result": {
+        "source": {
+          "description": "Signed buyer agreements are required before touring homes. Best sites are realtor and or compass homes.",
+          "source_info_link": "https://www.reddit.com/r/milwaukee/comments/1vtu22k/best_way_to_look_for_a_house_to_buy/",
+          "icon": "https://serpapi.com/images/i/iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y-mAAAAhFBMVEVHcEz_RQD_RQD_RQD_RQD_RQD_RQD_RQD_RQD_PQD_NgD-XS32dlf5vK3____64dusLADUz9H-jXLOPAoSHiFrLBm3uLn3_f7jVS_b6e77pJDJo6H718__RQDw9ffs5-jm8fPIXlHqKwD5-PjolIP_VgP_SQLQ2uAyODvQ4ekABAhqcHK4ptuCAAAAHnRSTlMAPobB7P9mHdb__________________________8J6YdtgAAABWUlEQVR4AWySYZNDMBCGWyw2SI9TGnWqILT____dm6Enc-MZH8Qz2V3Je_rj7Lgekec659N_fIgPnn-yCULaYaYwsCqShYhiQXQ-dJxIedltQDZfqZQyY6K1st3vO78WsiyNDI3zySK_caJUygTMzN7eTnxdBXMcb3-0TsMC30RUJfciqSIs8JCZycHwWV1n2UVuXDKzxsDOySWu5AGVoB_TUh5imhJFpQTNfav7uDcSlBERJLUN9LOLewn6LnpCNS0EyvKg-vLRjVRLUIuxe8hSDYyyLqatyr68jdO6cxpvWGIeDOQQujagNs7YuumbJmYiZz0E3aJvMc95Ps8F-rV6PQQ0JY4XpVqVv0Cu2lYps9HbDp6HRS9Kv1-vt1Z4HeDI_1yZiFMNFIzWqYkChftl8zSkegE6HSYmENgxYYQHRGzUHiLHyh3ModvZo7nHxA71ofwdSnYAAPpVIo4RUPiIAAAAAElFTkSuQmCC.png"
+        },
+        "languages": [
+          "en"
+        ],
+        "regions": [
+          "US"
+        ]
+      },
+      "about_page_link": "https://www.google.com/search?q=About+https://www.reddit.com/r/milwaukee/comments/1vtu22k/best_way_to_look_for_a_house_to_buy/&tbm=ilp",
+      "about_page_serpapi_link": "https://serpapi.com/search.json?engine=google_about_this_result&google_domain=google.com&q=About+https%3A%2F%2Fwww.reddit.com%2Fr%2Fmilwaukee%2Fcomments%2F1vtu22k%2Fbest_way_to_look_for_a_house_to_buy%2F",
+      "source": "Reddit · r/milwaukee"
+    },
+    {
+      "position": 8,
+      "title": "Where to dispose of humidifier? : r/milwaukee",
+      "link": "https://www.reddit.com/r/milwaukee/comments/1vu1icm/where_to_dispose_of_humidifier/",
+      "redirect_link": "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=CAESiwEB6zswFS223qA_gLuLD-WchkvNfLzrNhBOxJKOXFQHojpSf4xQUy9c9MGwZX-fXRO4KpxL48AKo0JdIx5U2nyPEOtS4dfBsjJzqZeQs0tq7J4Rf98qPTp1xLcDkuh4f2U-Tov3uJO4SmrEsCE-yIEXJ6aWkcEubRVoPfHlpHic7I3yhfU0SpfaAyFw&ved=2ahUKEwippPmBoLWWAxWIkyYFHfIlB4UQFnoECDoQAQ&uoh=1",
+      "displayed_link": "20+ comments",
+      "favicon": "https://serpapi.com/images/i/iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y-mAAAAhFBMVEVHcEz_RQD_RQD_RQD_RQD_RQD_RQD_RQD_RQD_PQD_NgD-XS32dlf5vK3____64dusLADUz9H-jXLOPAoSHiFrLBm3uLn3_f7jVS_b6e77pJDJo6H718__RQDw9ffs5-jm8fPIXlHqKwD5-PjolIP_VgP_SQLQ2uAyODvQ4ekABAhqcHK4ptuCAAAAHnRSTlMAPobB7P9mHdb__________________________8J6YdtgAAABWUlEQVR4AWySYZNDMBCGWyw2SI9TGnWqILT____dm6Enc-MZH8Qz2V3Je_rj7Lgekec659N_fIgPnn-yCULaYaYwsCqShYhiQXQ-dJxIedltQDZfqZQyY6K1st3vO78WsiyNDI3zySK_caJUygTMzN7eTnxdBXMcb3-0TsMC30RUJfciqSIs8JCZycHwWV1n2UVuXDKzxsDOySWu5AGVoB_TUh5imhJFpQTNfav7uDcSlBERJLUN9LOLewn6LnpCNS0EyvKg-vLRjVRLUIuxe8hSDYyyLqatyr68jdO6cxpvWGIeDOQQujagNs7YuumbJmYiZz0E3aJvMc95Ps8F-rV6PQQ0JY4XpVqVv0Cu2lYps9HbDp6HRS9Kv1-vt1Z4HeDI_1yZiFMNFIzWqYkChftl8zSkegE6HSYmENgxYYQHRGzUHiLHyh3ModvZo7nHxA71ofwdSnYAAPpVIo4RUPiIAAAAAElFTkSuQmCC.png",
+      "snippet": "I can’t find a clear answer on this! It’s a small Holmes humidifier that I need to get rid of",
+      "about_this_result": {
+        "source": {
+          "description": "Of all the years I've lived here I've learned, there's pretty much nothing they wont take. If it's usable, it'll be gone within 24 hours.",
+          "source_info_link": "https://www.reddit.com/r/milwaukee/comments/1vu1icm/where_to_dispose_of_humidifier/",
+          "icon": "https://serpapi.com/images/i/iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y-mAAAAhFBMVEVHcEz_RQD_RQD_RQD_RQD_RQD_RQD_RQD_RQD_PQD_NgD-XS32dlf5vK3____64dusLADUz9H-jXLOPAoSHiFrLBm3uLn3_f7jVS_b6e77pJDJo6H718__RQDw9ffs5-jm8fPIXlHqKwD5-PjolIP_VgP_SQLQ2uAyODvQ4ekABAhqcHK4ptuCAAAAHnRSTlMAPobB7P9mHdb__________________________8J6YdtgAAABWUlEQVR4AWySYZNDMBCGWyw2SI9TGnWqILT____dm6Enc-MZH8Qz2V3Je_rj7Lgekec659N_fIgPnn-yCULaYaYwsCqShYhiQXQ-dJxIedltQDZfqZQyY6K1st3vO78WsiyNDI3zySK_caJUygTMzN7eTnxdBXMcb3-0TsMC30RUJfciqSIs8JCZycHwWV1n2UVuXDKzxsDOySWu5AGVoB_TUh5imhJFpQTNfav7uDcSlBERJLUN9LOLewn6LnpCNS0EyvKg-vLRjVRLUIuxe8hSDYyyLqatyr68jdO6cxpvWGIeDOQQujagNs7YuumbJmYiZz0E3aJvMc95Ps8F-rV6PQQ0JY4XpVqVv0Cu2lYps9HbDp6HRS9Kv1-vt1Z4HeDI_1yZiFMNFIzWqYkChftl8zSkegE6HSYmENgxYYQHRGzUHiLHyh3ModvZo7nHxA71ofwdSnYAAPpVIo4RUPiIAAAAAElFTkSuQmCC.png"
+        },
+        "languages": [
+          "en"
+        ],
+        "regions": [
+          "US"
+        ]
+      },
+      "about_page_link": "https://www.google.com/search?q=About+https://www.reddit.com/r/milwaukee/comments/1vu1icm/where_to_dispose_of_humidifier/&tbm=ilp",
+      "about_page_serpapi_link": "https://serpapi.com/search.json?engine=google_about_this_result&google_domain=google.com&q=About+https%3A%2F%2Fwww.reddit.com%2Fr%2Fmilwaukee%2Fcomments%2F1vu1icm%2Fwhere_to_dispose_of_humidifier%2F",
+      "source": "Reddit · r/milwaukee"
+    },
+    {
+      "position": 9,
+      "title": "Local fabric store suggestions : r/milwaukee",
+      "link": "https://www.reddit.com/r/milwaukee/comments/1vtlaa3/local_fabric_store_suggestions/",
+      "redirect_link": "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=CAESiwEB6zswFT3QdIEqeU7EnmLycallMejkTS6fGt0jXaUgYtoxl3hj0g8G2FEssuexxl-lwvgc2QDSkAMLqQ2p7fg1RYNh-MoiSFuVT8HMSV9Wr3gd4aLEXARSOjZveM0cW782yexgu2TlUOKXH9kdaOQB4dxy88sogFpcCNSsQ-OalvEdPDCS3rSiYnjm&ved=2ahUKEwippPmBoLWWAxWIkyYFHfIlB4UQFnoECDsQAQ&uoh=1",
+      "displayed_link": "20+ comments",
+      "favicon": "https://serpapi.com/images/i/iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y-mAAAAhFBMVEVHcEz_RQD_RQD_RQD_RQD_RQD_RQD_RQD_RQD_PQD_NgD-XS32dlf5vK3____64dusLADUz9H-jXLOPAoSHiFrLBm3uLn3_f7jVS_b6e77pJDJo6H718__RQDw9ffs5-jm8fPIXlHqKwD5-PjolIP_VgP_SQLQ2uAyODvQ4ekABAhqcHK4ptuCAAAAHnRSTlMAPobB7P9mHdb__________________________8J6YdtgAAABWUlEQVR4AWySYZNDMBCGWyw2SI9TGnWqILT____dm6Enc-MZH8Qz2V3Je_rj7Lgekec659N_fIgPnn-yCULaYaYwsCqShYhiQXQ-dJxIedltQDZfqZQyY6K1st3vO78WsiyNDI3zySK_caJUygTMzN7eTnxdBXMcb3-0TsMC30RUJfciqSIs8JCZycHwWV1n2UVuXDKzxsDOySWu5AGVoB_TUh5imhJFpQTNfav7uDcSlBERJLUN9LOLewn6LnpCNS0EyvKg-vLRjVRLUIuxe8hSDYyyLqatyr68jdO6cxpvWGIeDOQQujagNs7YuumbJmYiZz0E3aJvMc95Ps8F-rV6PQQ0JY4XpVqVv0Cu2lYps9HbDp6HRS9Kv1-vt1Z4HeDI_1yZiFMNFIzWqYkChftl8zSkegE6HSYmENgxYYQHRGzUHiLHyh3ModvZo7nHxA71ofwdSnYAAPpVIo4RUPiIAAAAAElFTkSuQmCC.png",
+      "snippet": "I'm looking for a local store with a large fabric selection, please! My mom is still distraught over Joann's closing, and it's unimpressed with the Hobby ...",
+      "snippet_highlighted_words": [
+        "closing"
+      ],
+      "about_this_result": {
+        "source": {
+          "description": "I'm looking for a local store with a large fabric selection, please! My mom is still distraught over Joann's closing, and it's unimpressed with the Hobby ...",
+          "source_info_link": "https://www.reddit.com/r/milwaukee/comments/1vtlaa3/local_fabric_store_suggestions/",
+          "icon": "https://serpapi.com/images/i/iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y-mAAAAhFBMVEVHcEz_RQD_RQD_RQD_RQD_RQD_RQD_RQD_RQD_PQD_NgD-XS32dlf5vK3____64dusLADUz9H-jXLOPAoSHiFrLBm3uLn3_f7jVS_b6e77pJDJo6H718__RQDw9ffs5-jm8fPIXlHqKwD5-PjolIP_VgP_SQLQ2uAyODvQ4ekABAhqcHK4ptuCAAAAHnRSTlMAPobB7P9mHdb__________________________8J6YdtgAAABWUlEQVR4AWySYZNDMBCGWyw2SI9TGnWqILT____dm6Enc-MZH8Qz2V3Je_rj7Lgekec659N_fIgPnn-yCULaYaYwsCqShYhiQXQ-dJxIedltQDZfqZQyY6K1st3vO78WsiyNDI3zySK_caJUygTMzN7eTnxdBXMcb3-0TsMC30RUJfciqSIs8JCZycHwWV1n2UVuXDKzxsDOySWu5AGVoB_TUh5imhJFpQTNfav7uDcSlBERJLUN9LOLewn6LnpCNS0EyvKg-vLRjVRLUIuxe8hSDYyyLqatyr68jdO6cxpvWGIeDOQQujagNs7YuumbJmYiZz0E3aJvMc95Ps8F-rV6PQQ0JY4XpVqVv0Cu2lYps9HbDp6HRS9Kv1-vt1Z4HeDI_1yZiFMNFIzWqYkChftl8zSkegE6HSYmENgxYYQHRGzUHiLHyh3ModvZo7nHxA71ofwdSnYAAPpVIo4RUPiIAAAAAElFTkSuQmCC.png"
+        },
+        "languages": [
+          "en"
+        ],
+        "regions": [
+          "US"
+        ]
+      },
+      "about_page_link": "https://www.google.com/search?q=About+https://www.reddit.com/r/milwaukee/comments/1vtlaa3/local_fabric_store_suggestions/&tbm=ilp",
+      "about_page_serpapi_link": "https://serpapi.com/search.json?engine=google_about_this_result&google_domain=google.com&q=About+https%3A%2F%2Fwww.reddit.com%2Fr%2Fmilwaukee%2Fcomments%2F1vtlaa3%2Flocal_fabric_store_suggestions%2F",
+      "source": "Reddit · r/milwaukee",
+      "read_more_link": "https://www.google.com/goto?url=CAES3AEB6zswFRB6eEKCPN_lg6yTFTrpegbty5Hx_PdmbjF89SbcusWoJ8ELqhTR3O31bOnLhGE41GN0g1F1d-9y-VXrh7LGhcf372S9no91TExbBDla0eaE1qaNTFZl_oFwBweABwe3cdZIuisVVjcZrUxx6DyMJWH49qeXFjF7GqMuNQndG2S8XBsypzz4j9ksDlVIznCSLSJw4nYzKkrHdonZlKMyrsWEguPLcTqTsVd9qvTkcXmY4oBM7-INUpiqES5KWx-d86ZJNUyag7eJjRVpHVFpLkGDIyQmOgJV"
+    },
+    {
+      "position": 10,
+      "title": "Rental properties that allow tenants run a family childcare?",
+      "link": "https://www.reddit.com/r/milwaukee/comments/1vpqu1z/rental_properties_that_allow_tenants_run_a_family/",
+      "redirect_link": "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=CAESngEB6zswFWs__EONf6XGp092iqXyQwrSCav-LUh6ODOFWQRtc_Slsgi7TGg1cmz1QofHrnhAt1jiy0_8mAIdtpfU7PIleMY8hrNNPXnVB0wmQPyb-rsuhCveVrLl19mJTHNO_9GEovoIN1DRIKtpHODlViVgC4qSYiKz4jpodrkCpu8isQYOZ1iNbqNWAuNcFH-jQzGgMs9-JTVlH-_z4A&ved=2ahUKEwippPmBoLWWAxWIkyYFHfIlB4UQFnoECDQQAQ&uoh=1",
+      "displayed_link": "5 comments",
+      "favicon": "https://serpapi.com/images/i/iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y-mAAAAhFBMVEVHcEz_RQD_RQD_RQD_RQD_RQD_RQD_RQD_RQD_PQD_NgD-XS32dlf5vK3____64dusLADUz9H-jXLOPAoSHiFrLBm3uLn3_f7jVS_b6e77pJDJo6H718__RQDw9ffs5-jm8fPIXlHqKwD5-PjolIP_VgP_SQLQ2uAyODvQ4ekABAhqcHK4ptuCAAAAHnRSTlMAPobB7P9mHdb__________________________8J6YdtgAAABWUlEQVR4AWySYZNDMBCGWyw2SI9TGnWqILT____dm6Enc-MZH8Qz2V3Je_rj7Lgekec659N_fIgPnn-yCULaYaYwsCqShYhiQXQ-dJxIedltQDZfqZQyY6K1st3vO78WsiyNDI3zySK_caJUygTMzN7eTnxdBXMcb3-0TsMC30RUJfciqSIs8JCZycHwWV1n2UVuXDKzxsDOySWu5AGVoB_TUh5imhJFpQTNfav7uDcSlBERJLUN9LOLewn6LnpCNS0EyvKg-vLRjVRLUIuxe8hSDYyyLqatyr68jdO6cxpvWGIeDOQQujagNs7YuumbJmYiZz0E3aJvMc95Ps8F-rV6PQQ0JY4XpVqVv0Cu2lYps9HbDp6HRS9Kv1-vt1Z4HeDI_1yZiFMNFIzWqYkChftl8zSkegE6HSYmENgxYYQHRGzUHiLHyh3ModvZo7nHxA71ofwdSnYAAPpVIo4RUPiIAAAAAElFTkSuQmCC.png",
+      "snippet": "The rules governing rental properties in Ontario are unique and nuanced. This is a place to discuss anything that pertains to landlords, tenants or renting in ...",
+      "about_this_result": {
+        "source": {
+          "description": "The rules governing rental properties in Ontario are unique and nuanced. This is a place to discuss anything that pertains to landlords, tenants or renting in ...",
+          "source_info_link": "https://www.reddit.com/r/milwaukee/comments/1vpqu1z/rental_properties_that_allow_tenants_run_a_family/",
+          "icon": "https://serpapi.com/images/i/iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y-mAAAAhFBMVEVHcEz_RQD_RQD_RQD_RQD_RQD_RQD_RQD_RQD_PQD_NgD-XS32dlf5vK3____64dusLADUz9H-jXLOPAoSHiFrLBm3uLn3_f7jVS_b6e77pJDJo6H718__RQDw9ffs5-jm8fPIXlHqKwD5-PjolIP_VgP_SQLQ2uAyODvQ4ekABAhqcHK4ptuCAAAAHnRSTlMAPobB7P9mHdb__________________________8J6YdtgAAABWUlEQVR4AWySYZNDMBCGWyw2SI9TGnWqILT____dm6Enc-MZH8Qz2V3Je_rj7Lgekec659N_fIgPnn-yCULaYaYwsCqShYhiQXQ-dJxIedltQDZfqZQyY6K1st3vO78WsiyNDI3zySK_caJUygTMzN7eTnxdBXMcb3-0TsMC30RUJfciqSIs8JCZycHwWV1n2UVuXDKzxsDOySWu5AGVoB_TUh5imhJFpQTNfav7uDcSlBERJLUN9LOLewn6LnpCNS0EyvKg-vLRjVRLUIuxe8hSDYyyLqatyr68jdO6cxpvWGIeDOQQujagNs7YuumbJmYiZz0E3aJvMc95Ps8F-rV6PQQ0JY4XpVqVv0Cu2lYps9HbDp6HRS9Kv1-vt1Z4HeDI_1yZiFMNFIzWqYkChftl8zSkegE6HSYmENgxYYQHRGzUHiLHyh3ModvZo7nHxA71ofwdSnYAAPpVIo4RUPiIAAAAAElFTkSuQmCC.png"
+        },
+        "languages": [
+          "en"
+        ],
+        "regions": [
+          "US"
+        ]
+      },
+      "about_page_link": "https://www.google.com/search?q=About+https://www.reddit.com/r/milwaukee/comments/1vpqu1z/rental_properties_that_allow_tenants_run_a_family/&tbm=ilp",
+      "about_page_serpapi_link": "https://serpapi.com/search.json?engine=google_about_this_result&google_domain=google.com&q=About+https%3A%2F%2Fwww.reddit.com%2Fr%2Fmilwaukee%2Fcomments%2F1vpqu1z%2Frental_properties_that_allow_tenants_run_a_family%2F",
+      "source": "Reddit · r/milwaukee",
+      "read_more_link": "https://www.google.com/goto?url=CAESzgEB6zswFWRry79Jl2xberw8NQn3HGwP6Ri6TKFzkhIM54SQdnc25ofEwFpNHLN-OLpXUbKO6YCxikF1z6bV5PfD0pDCBZx4TThUOhkGZWZjazbjfIZGmQ07cgZx06DrHzkmyzwQlCTr-knDdEAorUsFUUMwlTGKkBgU7x74RJPilbWvs-VxC6h6SyFRB9lcT9f2IPbZlW3khX8RWD5g6hUx2_GpnSp-_qz7q4hFEynI9BOWG2E7UbxtkwfZ1HxZ8i8FqYOofFnPVpsM-s-5wQ"
+    }
+  ],
+  "pagination": {
+    "current": 1,
+    "next": "https://www.google.com/search?q=site%3Areddit.com%2Fr%2Fmilwaukee%2Fcomments%2F+%28development+OR+zoning+OR+apartment+OR+demolished+OR+opening+OR+closing+OR+%22what+happened%22%29+after%3A2026-08-15&oq=site%3Areddit.com%2Fr%2Fmilwaukee%2Fcomments%2F+%28development+OR+zoning+OR+apartment+OR+demolished+OR+opening+OR+closing+OR+%22what+happened%22%29+after%3A2026-08-15&uule=w+CAIQICIhTWlsd2F1a2VlLFdpc2NvbnNpbixVbml0ZWQgU3RhdGVz&hl=en&gl=us&tbs=qdr:w&start=10&sourceid=chrome&ie=UTF-8",
+    "other_pages": {
+      "2": "https://www.google.com/search?q=site%3Areddit.com%2Fr%2Fmilwaukee%2Fcomments%2F+%28development+OR+zoning+OR+apartment+OR+demolished+OR+opening+OR+closing+OR+%22what+happened%22%29+after%3A2026-08-15&oq=site%3Areddit.com%2Fr%2Fmilwaukee%2Fcomments%2F+%28development+OR+zoning+OR+apartment+OR+demolished+OR+opening+OR+closing+OR+%22what+happened%22%29+after%3A2026-08-15&uule=w+CAIQICIhTWlsd2F1a2VlLFdpc2NvbnNpbixVbml0ZWQgU3RhdGVz&hl=en&gl=us&tbs=qdr:w&start=10&sourceid=chrome&ie=UTF-8",
+      "3": "https://www.google.com/search?q=site%3Areddit.com%2Fr%2Fmilwaukee%2Fcomments%2F+%28development+OR+zoning+OR+apartment+OR+demolished+OR+opening+OR+closing+OR+%22what+happened%22%29+after%3A2026-08-15&oq=site%3Areddit.com%2Fr%2Fmilwaukee%2Fcomments%2F+%28development+OR+zoning+OR+apartment+OR+demolished+OR+opening+OR+closing+OR+%22what+happened%22%29+after%3A2026-08-15&uule=w+CAIQICIhTWlsd2F1a2VlLFdpc2NvbnNpbixVbml0ZWQgU3RhdGVz&hl=en&gl=us&tbs=qdr:w&start=20&sourceid=chrome&ie=UTF-8",
+      "4": "https://www.google.com/search?q=site%3Areddit.com%2Fr%2Fmilwaukee%2Fcomments%2F+%28development+OR+zoning+OR+apartment+OR+demolished+OR+opening+OR+closing+OR+%22what+happened%22%29+after%3A2026-08-15&oq=site%3Areddit.com%2Fr%2Fmilwaukee%2Fcomments%2F+%28development+OR+zoning+OR+apartment+OR+demolished+OR+opening+OR+closing+OR+%22what+happened%22%29+after%3A2026-08-15&uule=w+CAIQICIhTWlsd2F1a2VlLFdpc2NvbnNpbixVbml0ZWQgU3RhdGVz&hl=en&gl=us&tbs=qdr:w&start=30&sourceid=chrome&ie=UTF-8",
+      "5": "https://www.google.com/search?q=site%3Areddit.com%2Fr%2Fmilwaukee%2Fcomments%2F+%28development+OR+zoning+OR+apartment+OR+demolished+OR+opening+OR+closing+OR+%22what+happened%22%29+after%3A2026-08-15&oq=site%3Areddit.com%2Fr%2Fmilwaukee%2Fcomments%2F+%28development+OR+zoning+OR+apartment+OR+demolished+OR+opening+OR+closing+OR+%22what+happened%22%29+after%3A2026-08-15&uule=w+CAIQICIhTWlsd2F1a2VlLFdpc2NvbnNpbixVbml0ZWQgU3RhdGVz&hl=en&gl=us&tbs=qdr:w&start=40&sourceid=chrome&ie=UTF-8"
+    }
+  },
+  "serpapi_pagination": {
+    "current": 1,
+    "next_link": "https://serpapi.com/search.json?device=desktop&engine=google&gl=us&google_domain=google.com&hl=en&location=Milwaukee%2C+Wisconsin%2C+United+States&q=site%3Areddit.com%2Fr%2Fmilwaukee%2Fcomments%2F+%28development+OR+zoning+OR+apartment+OR+demolished+OR+opening+OR+closing+OR+%22what+happened%22%29+after%3A2026-08-15&start=10&tbs=qdr%3Aw",
+    "next": "https://serpapi.com/search.json?device=desktop&engine=google&gl=us&google_domain=google.com&hl=en&location=Milwaukee%2C+Wisconsin%2C+United+States&q=site%3Areddit.com%2Fr%2Fmilwaukee%2Fcomments%2F+%28development+OR+zoning+OR+apartment+OR+demolished+OR+opening+OR+closing+OR+%22what+happened%22%29+after%3A2026-08-15&start=10&tbs=qdr%3Aw",
+    "other_pages": {
+      "2": "https://serpapi.com/search.json?device=desktop&engine=google&gl=us&google_domain=google.com&hl=en&location=Milwaukee%2C+Wisconsin%2C+United+States&q=site%3Areddit.com%2Fr%2Fmilwaukee%2Fcomments%2F+%28development+OR+zoning+OR+apartment+OR+demolished+OR+opening+OR+closing+OR+%22what+happened%22%29+after%3A2026-08-15&start=10&tbs=qdr%3Aw",
+      "3": "https://serpapi.com/search.json?device=desktop&engine=google&gl=us&google_domain=google.com&hl=en&location=Milwaukee%2C+Wisconsin%2C+United+States&q=site%3Areddit.com%2Fr%2Fmilwaukee%2Fcomments%2F+%28development+OR+zoning+OR+apartment+OR+demolished+OR+opening+OR+closing+OR+%22what+happened%22%29+after%3A2026-08-15&start=20&tbs=qdr%3Aw",
+      "4": "https://serpapi.com/search.json?device=desktop&engine=google&gl=us&google_domain=google.com&hl=en&location=Milwaukee%2C+Wisconsin%2C+United+States&q=site%3Areddit.com%2Fr%2Fmilwaukee%2Fcomments%2F+%28development+OR+zoning+OR+apartment+OR+demolished+OR+opening+OR+closing+OR+%22what+happened%22%29+after%3A2026-08-15&start=30&tbs=qdr%3Aw",
+      "5": "https://serpapi.com/search.json?device=desktop&engine=google&gl=us&google_domain=google.com&hl=en&location=Milwaukee%2C+Wisconsin%2C+United+States&q=site%3Areddit.com%2Fr%2Fmilwaukee%2Fcomments%2F+%28development+OR+zoning+OR+apartment+OR+demolished+OR+opening+OR+closing+OR+%22what+happened%22%29+after%3A2026-08-15&start=40&tbs=qdr%3Aw"
+    }
+  }
+}

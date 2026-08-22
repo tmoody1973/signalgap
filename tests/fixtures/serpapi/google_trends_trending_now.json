@@ -1,0 +1,1408 @@
+{
+  "search_parameters": {
+    "engine": "google_trends_trending_now",
+    "hl": "en",
+    "geo": "US-WI"
+  },
+  "trending_searches": [
+    {
+      "query": "espanyol vs real madrid",
+      "start_timestamp": 1787425200,
+      "active": true,
+      "search_volume": 2000,
+      "increase_percentage": 1000,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "trend_breakdown": [
+        "rcd espanyol - real madrid",
+        "real madrid"
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=espanyol+vs+real+madrid&tz=420",
+      "news_page_token": "fCVXIXica1xTlFpYmlpcEp-SWJI4c_J5BgYGRlnzs26LUosXhQZD-VuUZiDzZW7wm6Dwv7zzQ1G_LGQXqv5_3ch86ScVk1HkmTbyofCNLjhB-AC7vDsR",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=fCVXIXica1xTlFpYmlpcEp-SWJI4c_J5BgYGRlnzs26LUosXhQZD-VuUZiDzZW7wm6Dwv7zzQ1G_LGQXqv5_3ch86ScVk1HkmTbyofCNLjhB-AC7vDsR"
+    },
+    {
+      "query": "ed markey seth moulton primary",
+      "start_timestamp": 1787419200,
+      "active": true,
+      "search_volume": 1000,
+      "increase_percentage": 1000,
+      "categories": [
+        {
+          "id": 14,
+          "name": "Politics"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=ed+markey+seth+moulton+primary&tz=420",
+      "news_page_token": "ndsHcXica1xTlFpYmlpcEp-SWJI4efJ5BgYGRtm1MrMXpeYtCg2G8qvWJiHzZaJUNkH4ABCUF5w",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=ndsHcXica1xTlFpYmlpcEp-SWJI4efJ5BgYGRtm1MrMXpeYtCg2G8qvWJiHzZaJUNkH4ABCUF5w"
+    },
+    {
+      "query": "micah parsons",
+      "start_timestamp": 1787425800,
+      "active": true,
+      "search_volume": 1000,
+      "increase_percentage": 1000,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=micah+parsons&tz=420",
+      "news_page_token": "fuqQMnica1xTlFpYmlpcEp-SWJI4ZfJ5BgYGRplt2hyLUvMWhQZD-LINn8-i8CNkOFH4XuFrIHwApy4csg",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=fuqQMnica1xTlFpYmlpcEp-SWJI4ZfJ5BgYGRplt2hyLUvMWhQZD-LINn8-i8CNkOFH4XuFrIHwApy4csg"
+    },
+    {
+      "query": "wisconsin volleyball",
+      "start_timestamp": 1787355000,
+      "active": true,
+      "search_volume": 1000,
+      "increase_percentage": 600,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "trend_breakdown": [
+        "badger volleyball",
+        "wisconsin volleyball roster"
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=wisconsin+volleyball&tz=420",
+      "news_page_token": "Yaw9mnica1xTlFpYmlpcEp-SWJI4ZfJ5BgYGRtm2p1MXpeYtCg2G8uf2t6DwNxZbovAXFktD-ADiuh38",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=Yaw9mnica1xTlFpYmlpcEp-SWJI4ZfJ5BgYGRtm2p1MXpeYtCg2G8uf2t6DwNxZbovAXFktD-ADiuh38"
+    },
+    {
+      "query": "save america",
+      "start_timestamp": 1787424600,
+      "active": true,
+      "search_volume": 500,
+      "increase_percentage": 1000,
+      "categories": [
+        {
+          "id": 14,
+          "name": "Politics"
+        },
+        {
+          "id": 10,
+          "name": "Law and Government"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=save+america&tz=420",
+      "news_page_token": "gc7gmHica1xTlFpYmlpcEp-SWJI4dfJ5BgYGRtk5SwMXpeYtCg2G8MUVH1ki82WjmotQ-Fb7Q1DUxyuJQvgArnIh9A",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=gc7gmHica1xTlFpYmlpcEp-SWJI4dfJ5BgYGRtk5SwMXpeYtCg2G8MUVH1ki82WjmotQ-Fb7Q1DUxyuJQvgArnIh9A"
+    },
+    {
+      "query": "ed oliver",
+      "start_timestamp": 1787420400,
+      "active": true,
+      "search_volume": 500,
+      "increase_percentage": 1000,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=ed+oliver&tz=420",
+      "news_page_token": "83-IhHica1xTlFpYmlpcEp-SWJI4cfJ5BgYGRtkNu00XpeYtCg0GANIUDKA",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=83-IhHica1xTlFpYmlpcEp-SWJI4cfJ5BgYGRtkNu00XpeYtCg0GANIUDKA"
+    },
+    {
+      "query": "jake bauers",
+      "start_timestamp": 1787426400,
+      "active": true,
+      "search_volume": 1000,
+      "increase_percentage": 1000,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "trend_breakdown": [
+        "logan henderson"
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=jake+bauers&tz=420",
+      "news_page_token": "Aw9iPHica1xTlFpYmlpcEp-SWJI4ffJ5BgYGRtnNb4MXpeYtCg2G8vkspVH4naaVKHylWazIfJnpXfNQ5NdLqqPwvWrEIHwAemssVg",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=Aw9iPHica1xTlFpYmlpcEp-SWJI4ffJ5BgYGRtnNb4MXpeYtCg2G8vkspVH4naaVKHylWazIfJnpXfNQ5NdLqqPwvWrEIHwAemssVg"
+    },
+    {
+      "query": "michael wright",
+      "start_timestamp": 1787376000,
+      "active": true,
+      "search_volume": 1000,
+      "increase_percentage": 500,
+      "categories": [
+        {
+          "id": 4,
+          "name": "Entertainment"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=michael+wright&tz=420",
+      "news_page_token": "IWTdcHica1xTlFpYmlpcEp-SWJI4afJ5BgYGRtllU7cvSs1bFBoM5W_Is4DwAc9uEog",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=IWTdcHica1xTlFpYmlpcEp-SWJI4afJ5BgYGRtllU7cvSs1bFBoM5W_Is4DwAc9uEog"
+    },
+    {
+      "query": "jake lang",
+      "start_timestamp": 1787430600,
+      "active": true,
+      "search_volume": 200,
+      "increase_percentage": 1000,
+      "categories": [
+        {
+          "id": 11,
+          "name": "Other"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=jake+lang&tz=420",
+      "news_page_token": "0eefGHica1xTlFpYmlpcEp-SWJI4afJ5BgYGRtn2-8mLUvMWhQZD-DInxZkhfADIdxHr",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=0eefGHica1xTlFpYmlpcEp-SWJI4afJ5BgYGRtn2-8mLUvMWhQZD-DInxZkhfADIdxHr"
+    },
+    {
+      "query": "bankruptcy",
+      "start_timestamp": 1787429400,
+      "active": true,
+      "search_volume": 200,
+      "increase_percentage": 400,
+      "categories": [
+        {
+          "id": 3,
+          "name": "Business and Finance"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=bankruptcy&tz=420",
+      "news_page_token": "wJykc3ica1xTlFpYmlpcEp-SWJI4c_J5BgYGRtmOb1sWpeYtCg2G8tuPzUDhGziWIfNlVLKeoch7u7Ki8E0vFqPwi6P2ofBtdFej8K1EdkD4AIRYOSQ",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=wJykc3ica1xTlFpYmlpcEp-SWJI4c_J5BgYGRtmOb1sWpeYtCg2G8tuPzUDhGziWIfNlVLKeoch7u7Ki8E0vFqPwi6P2ofBtdFej8K1EdkD4AIRYOSQ"
+    },
+    {
+      "query": "la liga",
+      "start_timestamp": 1787415600,
+      "active": true,
+      "search_volume": 200,
+      "increase_percentage": 400,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=la+liga&tz=420",
+      "news_page_token": "XSB6OXica1xTlFpYmlpcEp-SWJI4d_J5BgYGRpkb_CaLUvMWhQZD-LJzXiqi8Dezv0Dhi_ueReFH6y1E4fNfZ0HhNxYkofBzjwmj8Ley3Ea17zQKX8bcMgSFr7OjDUW9_rtiCB8AONVP6Q",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=XSB6OXica1xTlFpYmlpcEp-SWJI4d_J5BgYGRpkb_CaLUvMWhQZD-LJzXiqi8Dezv0Dhi_ueReFH6y1E4fNfZ0HhNxYkofBzjwmj8Ley3Ea17zQKX8bcMgSFr7OjDUW9_rtiCB8AONVP6Q"
+    },
+    {
+      "query": "blue jays vs yankees",
+      "start_timestamp": 1787355600,
+      "active": true,
+      "search_volume": 1000,
+      "increase_percentage": 1000,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=blue+jays+vs+yankees&tz=420",
+      "news_page_token": "rq613Xica1xTlFpYmlpcEp-SWJI4dfJ5BgYGRtnNqXMXpeYtCg2G8oWm66HwZ0pro_CXTQ1C4bdM2A7hAwCiMCLD",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=rq613Xica1xTlFpYmlpcEp-SWJI4dfJ5BgYGRtnNqXMXpeYtCg2G8oWm66HwZ0pro_CXTQ1C4bdM2A7hAwCiMCLD"
+    },
+    {
+      "query": "packers",
+      "start_timestamp": 1787360400,
+      "end_timestamp": 1787403000,
+      "active": false,
+      "search_volume": 20000,
+      "increase_percentage": 800,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "trend_breakdown": [
+        "green bay packers",
+        "packers score",
+        "packer game",
+        "packers game",
+        "packers schedule",
+        "packers game today",
+        "packers news",
+        "packers broncos",
+        "packer game today",
+        "broncos",
+        "what time is the packer game today",
+        "what channel is the packer game on tonight",
+        "bo nix",
+        "packers roster",
+        "what channel is the packer game on",
+        "packers game tonight",
+        "what time do the packers play today",
+        "denver broncos"
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=packers&tz=420",
+      "news_page_token": "Ks75x3ica1xTlFpYmlpcEp-SWJJ4h0F78nkGBgZGWe7Vsxal5i0KDYbyl1peQuFbnv2Awl8vmY7KP_kfhb-VRxSZL6NgkIEiz3X4LTJf4tNXQRR5vtj7KPyO_H4U_op_5qjuvf0Qxb6DZ0-j8A-7SKOoX7NOHoXfYhKFwl9bjSpfHT8XhR9zzRaFnxBUjMJvrF-Jwk_k_oPCzzMqReGvE_qCwjf6Lozi_o1_FJD50sdOBqHwPxQdQdHvf2wXCr_TtBKFHxrNi2L-7UVuqPbPZ0DhZx1bjMKfvWs-iv5n1jLIfKkb221Q1KecQ0kPsklpC1D4Bqs8UPiLBK-jmP902U0IHwDSvv_K",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=Ks75x3ica1xTlFpYmlpcEp-SWJJ4h0F78nkGBgZGWe7Vsxal5i0KDYbyl1peQuFbnv2Awl8vmY7KP_kfhb-VRxSZL6NgkIEiz3X4LTJf4tNXQRR5vtj7KPyO_H4U_op_5qjuvf0Qxb6DZ0-j8A-7SKOoX7NOHoXfYhKFwl9bjSpfHT8XhR9zzRaFnxBUjMJvrF-Jwk_k_oPCzzMqReGvE_qCwjf6Lozi_o1_FJD50sdOBqHwPxQdQdHvf2wXCr_TtBKFHxrNi2L-7UVuqPbPZ0DhZx1bjMKfvWs-iv5n1jLIfKkb221Q1KecQ0kPsklpC1D4Bqs8UPiLBK-jmP902U0IHwDSvv_K"
+    },
+    {
+      "query": "mindy jennings",
+      "start_timestamp": 1787430000,
+      "active": true,
+      "search_volume": 200,
+      "increase_percentage": 1000,
+      "categories": [
+        {
+          "id": 4,
+          "name": "Entertainment"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=mindy+jennings&tz=420",
+      "news_page_token": "qSF66Xica1xTlFpYmlpcEp-SWJI4cfJ5BgYGRtkGgbxFqXmLQoMBzJsL_g",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=qSF66Xica1xTlFpYmlpcEp-SWJI4cfJ5BgYGRtkGgbxFqXmLQoMBzJsL_g"
+    },
+    {
+      "query": "vikings",
+      "start_timestamp": 1787418000,
+      "end_timestamp": 1787436000,
+      "active": false,
+      "search_volume": 2000,
+      "increase_percentage": 1000,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "trend_breakdown": [
+        "minnesota vikings",
+        "vikings game",
+        "mn vikings"
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=vikings&tz=420",
+      "news_page_token": "FBXHi3ica1xTlFpYmlpcEp-SWJI4d_J5BgYGRllvycmLUvMWhQZD-Xq9PCj8mCfOKPxO00oU_srjj5H5Mk9WV6HIb7TdgMLnc_2Ooj799F0Uea7Db1H4W07sReEveL4Fhc-jqwrhAwDyilJV",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=FBXHi3ica1xTlFpYmlpcEp-SWJI4d_J5BgYGRllvycmLUvMWhQZD-Xq9PCj8mCfOKPxO00oU_srjj5H5Mk9WV6HIb7TdgMLnc_2Ooj799F0Uea7Db1H4W07sReEveL4Fhc-jqwrhAwDyilJV"
+    },
+    {
+      "query": "cardinals vs phillies",
+      "start_timestamp": 1787435400,
+      "active": true,
+      "search_volume": 1000,
+      "increase_percentage": 1000,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=cardinals+vs+phillies&tz=420",
+      "news_page_token": "RwNBenica1xTlFpYmlpcEp-SWJI4Z_J5BgYGRtnETpNFqXmLQoOh_Fk7dFD4W-02o_C3ON1F4S_94Y_Ml7lRlYQiv2xqEIq8ie0kFP4jx3wU9RtenEThr8qIRuFvYlgL4QMAagVMwQ",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=RwNBenica1xTlFpYmlpcEp-SWJI4Z_J5BgYGRtnETpNFqXmLQoOh_Fk7dFD4W-02o_C3ON1F4S_94Y_Ml7lRlYQiv2xqEIq8ie0kFP4jx3wU9RtenEThr8qIRuFvYlgL4QMAagVMwQ"
+    },
+    {
+      "query": "bmw championship",
+      "start_timestamp": 1787432400,
+      "active": true,
+      "search_volume": 200,
+      "increase_percentage": 100,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=bmw+championship&tz=420",
+      "news_page_token": "WuWAEHica1xTlFpYmlpcEp-SWJI4ffJ5BgYGRtnFp28vSs1bFBoM4ctwfr6PzJcN-JaPwl9_1QiFvziuGYXv2VyAwm--rg7hAwB5cjBP",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=WuWAEHica1xTlFpYmlpcEp-SWJI4ffJ5BgYGRtnFp28vSs1bFBoM4ctwfr6PzJcN-JaPwl9_1QiFvziuGYXv2VyAwm--rg7hAwB5cjBP"
+    },
+    {
+      "query": "bmw leaderboard",
+      "start_timestamp": 1787431800,
+      "active": true,
+      "search_volume": 100,
+      "increase_percentage": 300,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=bmw+leaderboard&tz=420",
+      "news_page_token": "RFd8uXica1xTlFpYmlpcEp-SWJI4ffJ5BgYGRhnOz_cXpeYtCg2G8GUDvuWj8DsO5aDwO00rUfiLT99G5svcqEpCkTe5eQ_CBwBQhjDj",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=RFd8uXica1xTlFpYmlpcEp-SWJI4ffJ5BgYGRhnOz_cXpeYtCg2G8GUDvuWj8DsO5aDwO00rUfiLT99G5svcqEpCkTe5eQ_CBwBQhjDj"
+    },
+    {
+      "query": "cubs vs mariners",
+      "start_timestamp": 1787362200,
+      "end_timestamp": 1787413200,
+      "active": false,
+      "search_volume": 5000,
+      "increase_percentage": 1000,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "trend_breakdown": [
+        "cubs",
+        "chicago cubs"
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=cubs+vs+mariners&tz=420",
+      "news_page_token": "DqBNH3ica1xTlFpYmlpcEp-SWJJ4h0F48nkGBgZGWT7LE4tS8xaFBkP5CpzrUPg2KeYo_C0fVqHwV8joofKFOVD4prczUfjr355E4S_nQLFP5r76IhS-WehPFP6G0P0o_E8n4lDM23x5KjJf-ts0bhT5rXaTUfiLV0uhmLeWOw2Fv_KnLIQPAGuldEQ",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=DqBNH3ica1xTlFpYmlpcEp-SWJJ4h0F48nkGBgZGWT7LE4tS8xaFBkP5CpzrUPg2KeYo_C0fVqHwV8joofKFOVD4prczUfjr355E4S_nQLFP5r76IhS-WehPFP6G0P0o_E8n4lDM23x5KjJf-ts0bhT5rXaTUfiLV0uhmLeWOw2Fv_KnLIQPAGuldEQ"
+    },
+    {
+      "query": "donald trump state level polling",
+      "start_timestamp": 1787404800,
+      "end_timestamp": 1787434800,
+      "active": false,
+      "search_volume": 500,
+      "increase_percentage": 400,
+      "categories": [
+        {
+          "id": 14,
+          "name": "Politics"
+        },
+        {
+          "id": 10,
+          "name": "Law and Government"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=donald+trump+state+level+polling&tz=420",
+      "news_page_token": "PD_UcXica1xTlFpYmlpcEp-SWJI4afJ5BgYGRlmtwIRFqXmLQoMnn7v0YudkCBsAjfITAg",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=PD_UcXica1xTlFpYmlpcEp-SWJI4afJ5BgYGRlmtwIRFqXmLQoMnn7v0YudkCBsAjfITAg"
+    },
+    {
+      "query": "james o keefe",
+      "start_timestamp": 1787398200,
+      "end_timestamp": 1787436600,
+      "active": false,
+      "search_volume": 1000,
+      "increase_percentage": 500,
+      "categories": [
+        {
+          "id": 10,
+          "name": "Law and Government"
+        },
+        {
+          "id": 14,
+          "name": "Politics"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=james+o+keefe&tz=420",
+      "news_page_token": "f25pE3ica1xTlFpYmlpcEp-SWJI4efJ5BgYGRtlFJhMXpeYtCg2G8GWenHyAzJft5O2D8AEpOhiX",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=f25pE3ica1xTlFpYmlpcEp-SWJI4efJ5BgYGRtlFJhMXpeYtCg2G8GWenHyAzJft5O2D8AEpOhiX"
+    },
+    {
+      "query": "john sarcone disqualified u.s. attorney",
+      "start_timestamp": 1787361600,
+      "end_timestamp": 1787430000,
+      "active": false,
+      "search_volume": 1000,
+      "increase_percentage": 800,
+      "categories": [
+        {
+          "id": 10,
+          "name": "Law and Government"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=john+sarcone+disqualified+u.s.+attorney&tz=420",
+      "news_page_token": "Tjctv3ica1xTlFpYmlpcEp-SWJI4cfJ5BgYGRtlZlnMXpeYtCg0GANAWDHA",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=Tjctv3ica1xTlFpYmlpcEp-SWJI4cfJ5BgYGRtlZlnMXpeYtCg0GANAWDHA"
+    },
+    {
+      "query": "dortmund vs bayern",
+      "start_timestamp": 1787424600,
+      "end_timestamp": 1787434800,
+      "active": false,
+      "search_volume": 200,
+      "increase_percentage": 1000,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=dortmund+vs+bayern&tz=420",
+      "news_page_token": "9WuHqHica1xTlFpYmlpcEp-SWJI4dfJ5BgYGRtktSVcWpaQuCg2G8rcKfEXhi17VQ-EzntBH4Xu4PIDwAdHjIu4",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=9WuHqHica1xTlFpYmlpcEp-SWJI4dfJ5BgYGRtktSVcWpaQuCg2G8rcKfEXhi17VQ-EzntBH4Xu4PIDwAdHjIu4"
+    },
+    {
+      "query": "luis lara",
+      "start_timestamp": 1787430600,
+      "end_timestamp": 1787435400,
+      "active": false,
+      "search_volume": 200,
+      "increase_percentage": 600,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=luis+lara&tz=420",
+      "news_page_token": "8rQYZ3ica1xTlFpYmlpcEp-SWJI4dfJ5BgYGRtkog0mLUosXhQZD-YueuqPw-SylUfjTH3ij8MP5dSB8AJhgIbk",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=8rQYZ3ica1xTlFpYmlpcEp-SWJI4dfJ5BgYGRtkog0mLUosXhQZD-YueuqPw-SylUfjTH3ij8MP5dSB8AJhgIbk"
+    },
+    {
+      "query": "brandon woodruff",
+      "start_timestamp": 1787422200,
+      "end_timestamp": 1787433600,
+      "active": false,
+      "search_volume": 200,
+      "increase_percentage": 900,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=brandon+woodruff&tz=420",
+      "news_page_token": "NBe7cnica1xTlFpYmlpcEp-SWJI4cfJ5BgYGRtmNs00XpeYtCg0GANEdDIE",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=NBe7cnica1xTlFpYmlpcEp-SWJI4cfJ5BgYGRtmNs00XpeYtCg0GANEdDIE"
+    },
+    {
+      "query": "drake baldwin",
+      "start_timestamp": 1787422200,
+      "end_timestamp": 1787434200,
+      "active": false,
+      "search_volume": 200,
+      "increase_percentage": 600,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=drake+baldwin&tz=420",
+      "news_page_token": "3yH4Inica1xTlFpYmlpcEp-SWJI4ZfJ5BgYGRtk1jVaLUvMWhQZD-XyW0ij8qpcZKHyBkgYIHwCVCRxY",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=3yH4Inica1xTlFpYmlpcEp-SWJI4ZfJ5BgYGRtk1jVaLUvMWhQZD-XyW0ij8qpcZKHyBkgYIHwCVCRxY"
+    },
+    {
+      "query": "brent suter",
+      "start_timestamp": 1787429400,
+      "end_timestamp": 1787435400,
+      "active": false,
+      "search_volume": 200,
+      "increase_percentage": 900,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "trend_breakdown": [
+        "brewer score"
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=brent+suter&tz=420",
+      "news_page_token": "w3X7W3ica1xTlFpYmlpcEp-SWJI4bfJ5BgYGRlk-S-lFqXmLQoMhfJlrInrIfNmlBm9Q-B2pJSj8rLZjKPpPmPNA-AC-WCeb",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=w3X7W3ica1xTlFpYmlpcEp-SWJI4bfJ5BgYGRlk-S-lFqXmLQoMhfJlrInrIfNmlBm9Q-B2pJSj8rLZjKPpPmPNA-AC-WCeb"
+    },
+    {
+      "query": "wisconsin high school football scores",
+      "start_timestamp": 1787361000,
+      "end_timestamp": 1787413200,
+      "active": false,
+      "search_volume": 1000,
+      "increase_percentage": 500,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "trend_breakdown": [
+        "wiaa football scores",
+        "wiaa football"
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=wisconsin+high+school+football+scores&tz=420",
+      "news_page_token": "8H2boXica1xTlFpYmlpcEp-SWJI4cfJ5BgYGRllRA9dFqXmLQoMByLkLig",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=8H2boXica1xTlFpYmlpcEp-SWJI4cfJ5BgYGRllRA9dFqXmLQoMByLkLig"
+    },
+    {
+      "query": "detroit lions",
+      "start_timestamp": 1787416800,
+      "end_timestamp": 1787428800,
+      "active": false,
+      "search_volume": 1000,
+      "increase_percentage": 700,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "trend_breakdown": [
+        "nfl scores"
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=detroit+lions&tz=420",
+      "news_page_token": "QX136Xica1xTlFpYmlpcEp-SWJI4a_J5BgYGRtlkG_NFqXmLQoOhfONb_5H5Mi_-dqPwn3Yxo6gPjeZF5ktneK9EUX8yVxGFr9jkg6J_xT8U-6Vb792C8AFSgUB1",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=QX136Xica1xTlFpYmlpcEp-SWJI4a_J5BgYGRtlkG_NFqXmLQoOhfONb_5H5Mi_-dqPwn3Yxo6gPjeZF5ktneK9EUX8yVxGFr9jkg6J_xT8U-6Vb792C8AFSgUB1"
+    },
+    {
+      "query": "nick chubb",
+      "start_timestamp": 1787362800,
+      "end_timestamp": 1787419200,
+      "active": false,
+      "search_volume": 1000,
+      "increase_percentage": 700,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=nick+chubb&tz=420",
+      "news_page_token": "4jtUb3ica1xTlFpYmlpcEp-SWJI4cfJ5BgYGRtmlhoaLUvMWhQYDAM1FDAc",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=4jtUb3ica1xTlFpYmlpcEp-SWJI4cfJ5BgYGRtmlhoaLUvMWhQYDAM1FDAc"
+    },
+    {
+      "query": "bigx arrested",
+      "start_timestamp": 1787430000,
+      "end_timestamp": 1787434800,
+      "active": false,
+      "search_volume": 200,
+      "increase_percentage": 500,
+      "categories": [
+        {
+          "id": 4,
+          "name": "Entertainment"
+        }
+      ],
+      "trend_breakdown": [
+        "big x the plug jail"
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=bigx+arrested&tz=420",
+      "news_page_token": "QjXrhnica1xTlFpYmlpcEp-SWJI4cfJ5BgYGRtkl_04vSs1bFBoMANfaDW0",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=QjXrhnica1xTlFpYmlpcEp-SWJI4cfJ5BgYGRtkl_04vSs1bFBoMANfaDW0"
+    },
+    {
+      "query": "uss abraham lincoln (cvn-72)",
+      "start_timestamp": 1787415600,
+      "end_timestamp": 1787430000,
+      "active": false,
+      "search_volume": 200,
+      "increase_percentage": 600,
+      "categories": [
+        {
+          "id": 10,
+          "name": "Law and Government"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=uss+abraham+lincoln+%28cvn-72%29&tz=420",
+      "news_page_token": "HNzhJnica1xTlFpYmlpcEp-SWJI4dfJ5BgYGRtnNca2LUvMWhQZD-DJibzyQ-bKrH2qh8D1XPEbhN-5gh_AB1iIjqQ",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=HNzhJnica1xTlFpYmlpcEp-SWJI4dfJ5BgYGRtnNca2LUvMWhQZD-DJibzyQ-bKrH2qh8D1XPEbhN-5gh_AB1iIjqQ"
+    },
+    {
+      "query": "epl",
+      "start_timestamp": 1787403000,
+      "end_timestamp": 1787423400,
+      "active": false,
+      "search_volume": 1000,
+      "increase_percentage": 400,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "trend_breakdown": [
+        "hull vs man united",
+        "manchester united",
+        "hull city"
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=epl&tz=420",
+      "news_page_token": "WXUEbHica1xTlFpYmlpcEp-SWJJ4h0Fs8nkGBgZGmdlyhYtKihaFBkP4suHi91H4iswbkPlg9al5CP5VmZvIfNnGgiQU-XPdEijypb6cKPJeSrrIfOltlrNQ1CeesUPhu16ci8yX3H4xHMW8zNvHUPgHXE1Q9Hu4PECRN3DahsJfvakMRf3K9q8o8p809VHkN9hkoIbHMjMIHwBwi4O_",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=WXUEbHica1xTlFpYmlpcEp-SWJJ4h0Fs8nkGBgZGmdlyhYtKihaFBkP4suHi91H4iswbkPlg9al5CP5VmZvIfNnGgiQU-XPdEijypb6cKPJeSrrIfOltlrNQ1CeesUPhu16ci8yX3H4xHMW8zNvHUPgHXE1Q9Hu4PECRN3DahsJfvakMRf3K9q8o8p809VHkN9hkoIbHMjMIHwBwi4O_"
+    },
+    {
+      "query": "christian yelich",
+      "start_timestamp": 1787433000,
+      "end_timestamp": 1787435400,
+      "active": false,
+      "search_volume": 100,
+      "increase_percentage": 900,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=christian+yelich&tz=420",
+      "news_page_token": "hVMY7nica1xTlFpYmlpcEp-SWJI4ZfJ5BgYGRplPy98tSs1bFBoM4ctOfOmDwvctuIrMl7kmogfhAwAHHh61",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=hVMY7nica1xTlFpYmlpcEp-SWJI4ZfJ5BgYGRplPy98tSs1bFBoM4ctOfOmDwvctuIrMl7kmogfhAwAHHh61"
+    },
+    {
+      "query": "police",
+      "start_timestamp": 1787414400,
+      "end_timestamp": 1787436600,
+      "active": false,
+      "search_volume": 200,
+      "increase_percentage": 400,
+      "categories": [
+        {
+          "id": 10,
+          "name": "Law and Government"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=police&tz=420",
+      "news_page_token": "cObwiXica1xTlFpYmlpcEp-SWJJ4h0Fo8nkGBgZGWZ-9_otS8xaFBkP5G4uzUPhLdy5BlTc7jMLfcOQJCn92UCkKf3HuTRT-plJGFP66de-R-TL_w71Q-I9tt6Ko3yq0E4W_5cUyFH77_WQU_hKVUBS-qLw4Cn_6FhFU82ZA7QcAXwZwjw",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=cObwiXica1xTlFpYmlpcEp-SWJJ4h0Fo8nkGBgZGWZ-9_otS8xaFBkP5G4uzUPhLdy5BlTc7jMLfcOQJCn92UCkKf3HuTRT-plJGFP66de-R-TL_w71Q-I9tt6Ko3yq0E4W_5cUyFH77_WQU_hKVUBS-qLw4Cn_6FhFU82ZA7QcAXwZwjw"
+    },
+    {
+      "query": "trey smack",
+      "start_timestamp": 1787364000,
+      "end_timestamp": 1787407200,
+      "active": false,
+      "search_volume": 2000,
+      "increase_percentage": 1000,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=trey+smack&tz=420",
+      "news_page_token": "rVWCfnica1xTlFpYmlpcEp-SWJI4ZfJ5BgYGRpmny24uSs1bFBoM4ctyr56Fwuc6_BaFzxd7H8IHAO-xHnc",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=rVWCfnica1xTlFpYmlpcEp-SWJI4ZfJ5BgYGRpmny24uSs1bFBoM4ctyr56Fwuc6_BaFzxd7H8IHAO-xHnc"
+    },
+    {
+      "query": "packer score",
+      "start_timestamp": 1787363400,
+      "end_timestamp": 1787406600,
+      "active": false,
+      "search_volume": 1000,
+      "increase_percentage": 900,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "trend_breakdown": [
+        "green bay packers vs denver broncos match player stats"
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=packer+score&tz=420",
+      "news_page_token": "cxMLiXica1xTlFpYmlpcEp-SWJI4efJ5BgYGRtlO08pFqXmLQoOhfO7Vs5D5MrcXuUH4AAkQF8k",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=cxMLiXica1xTlFpYmlpcEp-SWJI4efJ5BgYGRtlO08pFqXmLQoOhfO7Vs5D5MrcXuUH4AAkQF8k"
+    },
+    {
+      "query": "kingston allen",
+      "start_timestamp": 1787373000,
+      "end_timestamp": 1787427600,
+      "active": false,
+      "search_volume": 500,
+      "increase_percentage": 500,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=kingston+allen&tz=420",
+      "news_page_token": "RLLm7nica1xTlFpYmlpcEp-SWJI4cfJ5BgYGRlnrI_GLUvMWhQYDAM9lDF4",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=RLLm7nica1xTlFpYmlpcEp-SWJI4cfJ5BgYGRlnrI_GLUvMWhQYDAM9lDF4"
+    },
+    {
+      "query": "the hollies band retirement",
+      "start_timestamp": 1787398800,
+      "end_timestamp": 1787425800,
+      "active": false,
+      "search_volume": 200,
+      "increase_percentage": 700,
+      "categories": [
+        {
+          "id": 4,
+          "name": "Entertainment"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=the+hollies+band+retirement&tz=420",
+      "news_page_token": "s2C6RXica1xTlFpYmlpcEp-SWJI4cfJ5BgYGRtmWxn2LUvMWhQYDANJ3DMM",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=s2C6RXica1xTlFpYmlpcEp-SWJI4cfJ5BgYGRtmWxn2LUvMWhQYDANJ3DMM"
+    },
+    {
+      "query": "brentford vs spurs",
+      "start_timestamp": 1787419200,
+      "end_timestamp": 1787425200,
+      "active": false,
+      "search_volume": 200,
+      "increase_percentage": 800,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "trend_breakdown": [
+        "tottenham"
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=brentford+vs+spurs&tz=420",
+      "news_page_token": "sjF-cXica1xTlFpYmlpcEp-SWJI4f_J5BgYGRpnM28cWpeYtCg2G8j3mLUHhv-QWROHPfrYZmS-7cft6VHm5QhT5qRvzkfkSV-N6kflSXUu-IfOllz9DcY8so5MNivk_V2mgyMv850HmS57WfY-ifrHDFwgfAE0oX5Q",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=sjF-cXica1xTlFpYmlpcEp-SWJI4f_J5BgYGRpnM28cWpeYtCg2G8j3mLUHhv-QWROHPfrYZmS-7cft6VHm5QhT5qRvzkfkSV-N6kflSXUu-IfOllz9DcY8so5MNivk_V2mgyMv850HmS57WfY-ifrHDFwgfAE0oX5Q"
+    },
+    {
+      "query": "pirates vs dodgers",
+      "start_timestamp": 1787363400,
+      "end_timestamp": 1787407200,
+      "active": false,
+      "search_volume": 500,
+      "increase_percentage": 900,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=pirates+vs+dodgers&tz=420",
+      "news_page_token": "d-1av3ica1xTlFpYmlpcEp-SWJI4ZfJ5BgYGRpn7DVyLUvMWhQZD-LIrJjGg8Cve3EDhy2y8BOEDAMbPHj0",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=d-1av3ica1xTlFpYmlpcEp-SWJI4ZfJ5BgYGRpn7DVyLUvMWhQZD-LIrJjGg8Cve3EDhy2y8BOEDAMbPHj0"
+    },
+    {
+      "query": "canada tariffs trump",
+      "start_timestamp": 1787423400,
+      "end_timestamp": 1787436600,
+      "active": false,
+      "search_volume": 500,
+      "increase_percentage": 500,
+      "categories": [
+        {
+          "id": 10,
+          "name": "Law and Government"
+        }
+      ],
+      "trend_breakdown": [
+        "trump",
+        "news"
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=canada+tariffs+trump&tz=420",
+      "news_page_token": "IZ2TC3ica1xTlFpYmlpcEp-SWJJ4h0Fi8nkGBgZGGU-fC4tS8xaFBkP4shXnQpD5khd-rEORFzd0R-Gv61uJwp9t8xyZL_M3wxhFPsjECZkvffYSO4r8ht2mKPonvelDUb_Y6BWKej1rKxS-efIlFPdPWNeBIu9h3I3CX5DAi8LfHNeKYn_ng2wU-Wnzd6Lw51VMQeFvaqhB4a_VSkHhL-cUgPABtAaQpw",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=IZ2TC3ica1xTlFpYmlpcEp-SWJJ4h0Fi8nkGBgZGGU-fC4tS8xaFBkP4shXnQpD5khd-rEORFzd0R-Gv61uJwp9t8xyZL_M3wxhFPsjECZkvffYSO4r8ht2mKPonvelDUb_Y6BWKej1rKxS-efIlFPdPWNeBIu9h3I3CX5DAi8LfHNeKYn_ng2wU-Wnzd6Lw51VMQeFvaqhB4a_VSkHhL-cUgPABtAaQpw"
+    },
+    {
+      "query": "arrest",
+      "start_timestamp": 1787413200,
+      "end_timestamp": 1787425200,
+      "active": false,
+      "search_volume": 200,
+      "increase_percentage": 500,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=arrest&tz=420",
+      "news_page_token": "fxmhgnica1xTlFpYmlpcEp-SWJI4b_J5BgYGRtlFSYcXpeYtCg2G8n32-qPwl0e6ofAXaiig8LealaDwZ881ReFvPhiCwm-_n4zCn2tVj8Jf8u80Cj-zNQiFv2yvNwp_0zNU_YkSvhA-ADrDV3k",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=fxmhgnica1xTlFpYmlpcEp-SWJI4b_J5BgYGRtlFSYcXpeYtCg2G8n32-qPwl0e6ofAXaiig8LealaDwZ881ReFvPhiCwm-_n4zCn2tVj8Jf8u80Cj-zNQiFv2yvNwp_0zNU_YkSvhA-ADrDV3k"
+    },
+    {
+      "query": "will sheppard",
+      "start_timestamp": 1787367000,
+      "end_timestamp": 1787408400,
+      "active": false,
+      "search_volume": 500,
+      "increase_percentage": 600,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=will+sheppard&tz=420",
+      "news_page_token": "74sj0nica1xTlFpYmlpcEp-SWJI4efJ5BgYGRpnn378sSs1bFBoM4cvyxd5H4XOvngXhAwBDfRjr",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=74sj0nica1xTlFpYmlpcEp-SWJI4efJ5BgYGRpnn378sSs1bFBoM4cvyxd5H4XOvngXhAwBDfRjr"
+    },
+    {
+      "query": "maxpreps",
+      "start_timestamp": 1787357400,
+      "end_timestamp": 1787409000,
+      "active": false,
+      "search_volume": 500,
+      "increase_percentage": 400,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=maxpreps&tz=420",
+      "news_page_token": "bCXzAXica1xTlFpYmlpcEp-SWJI4ZfJ5BgYGRtnFvRsXpeYtCg2G8nsXHEPhrz8lisJfsOsdhA8A8scfag",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=bCXzAXica1xTlFpYmlpcEp-SWJI4ZfJ5BgYGRtnFvRsXpeYtCg2G8nsXHEPhrz8lisJfsOsdhA8A8scfag"
+    },
+    {
+      "query": "johnathan hillstrand",
+      "start_timestamp": 1787414400,
+      "end_timestamp": 1787429400,
+      "active": false,
+      "search_volume": 200,
+      "increase_percentage": 400,
+      "categories": [
+        {
+          "id": 4,
+          "name": "Entertainment"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=johnathan+hillstrand&tz=420",
+      "news_page_token": "JYBmOXica1xTlFpYmlpcEp-SWJI4cfJ5BgYGRlmGEsZFqXmLQoMByEALdQ",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=JYBmOXica1xTlFpYmlpcEp-SWJI4cfJ5BgYGRlmGEsZFqXmLQoMByEALdQ"
+    },
+    {
+      "query": "jaden nixon",
+      "start_timestamp": 1787370600,
+      "end_timestamp": 1787407200,
+      "active": false,
+      "search_volume": 500,
+      "increase_percentage": 500,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=jaden+nixon&tz=420",
+      "news_page_token": "ctCPSnica1xTlFpYmlpcEp-SWJI4efJ5BgYGRtnQaN5FqXmLQoOh_OU_w1H43KtnQfgAAg0XhA",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=ctCPSnica1xTlFpYmlpcEp-SWJI4efJ5BgYGRtnQaN5FqXmLQoOh_OU_w1H43KtnQfgAAg0XhA"
+    },
+    {
+      "query": "mets vs white sox",
+      "start_timestamp": 1787356200,
+      "end_timestamp": 1787391000,
+      "active": false,
+      "search_volume": 500,
+      "increase_percentage": 1000,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=mets+vs+white+sox&tz=420",
+      "news_page_token": "zELPrHica1xTlFpYmlpcEp-SWJI4bfJ5BgYGRlk-y4-LUvMWhQZD-Ut4d6Lwl_5IQuHbs39B5suskWxHkV-_tBTCBwAg5ikv",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=zELPrHica1xTlFpYmlpcEp-SWJI4bfJ5BgYGRlk-y4-LUvMWhQZD-Ut4d6Lwl_5IQuHbs39B5suskWxHkV-_tBTCBwAg5ikv"
+    },
+    {
+      "query": "twins vs padres",
+      "start_timestamp": 1787362200,
+      "end_timestamp": 1787401800,
+      "active": false,
+      "search_volume": 500,
+      "increase_percentage": 1000,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=twins+vs+padres&tz=420",
+      "news_page_token": "0i3Qr3ica1xTlFpYmlpcEp-SWJI4ZfJ5BgYGRlk-y_JFqXmLQoOh_FXliSj8ZVODkPkyZ1cshvABoC4dpA",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=0i3Qr3ica1xTlFpYmlpcEp-SWJI4ZfJ5BgYGRlk-y_JFqXmLQoOh_FXliSj8ZVODkPkyZ1cshvABoC4dpA"
+    },
+    {
+      "query": "postal service mail ballot regulations",
+      "start_timestamp": 1787407800,
+      "end_timestamp": 1787421000,
+      "active": false,
+      "search_volume": 200,
+      "increase_percentage": 500,
+      "categories": [
+        {
+          "id": 14,
+          "name": "Politics"
+        },
+        {
+          "id": 10,
+          "name": "Law and Government"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=postal+service+mail+ballot+regulations&tz=420",
+      "news_page_token": "tUfLunica1xTlFpYmlpcEp-SWJI4cfJ5BgYGRtmyZQcWpeYtCg0GANMvDNw",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=tUfLunica1xTlFpYmlpcEp-SWJI4cfJ5BgYGRtmyZQcWpeYtCg0GANMvDNw"
+    },
+    {
+      "query": "marshawn lloyd",
+      "start_timestamp": 1787361600,
+      "end_timestamp": 1787400600,
+      "active": false,
+      "search_volume": 500,
+      "increase_percentage": 1000,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "trend_breakdown": [
+        "pierre strong jr."
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=marshawn+lloyd&tz=420",
+      "news_page_token": "lYhjvnica1xTlFpYmlpcEp-SWJI4dfJ5BgYGRlm-2PuLUvMWhQZD-dyrZyHzZR6HX0GRn_jSB4W_jFUfwgcAynAjRw",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=lYhjvnica1xTlFpYmlpcEp-SWJI4dfJ5BgYGRlm-2PuLUvMWhQZD-dyrZyHzZR6HX0GRn_jSB4W_jFUfwgcAynAjRw"
+    },
+    {
+      "query": "juárez - américa",
+      "start_timestamp": 1787368200,
+      "end_timestamp": 1787399400,
+      "active": false,
+      "search_volume": 500,
+      "increase_percentage": 800,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=ju%C3%A1rez+-+am%C3%A9rica&tz=420",
+      "news_page_token": "Oyd7QXica1xTlFpYmlpcEp-SWJI4afJ5BgYGRlmhc7sWpRYvCg2G8GWyXKwhfADDVBHM",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=Oyd7QXica1xTlFpYmlpcEp-SWJI4afJ5BgYGRlmhc7sWpRYvCg2G8GWyXKwhfADDVBHM"
+    },
+    {
+      "query": "musk",
+      "start_timestamp": 1787401800,
+      "end_timestamp": 1787410800,
+      "active": false,
+      "search_volume": 200,
+      "increase_percentage": 700,
+      "categories": [
+        {
+          "id": 1,
+          "name": "Autos and Vehicles"
+        },
+        {
+          "id": 3,
+          "name": "Business and Finance"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=musk&tz=420",
+      "news_page_token": "XA2b6nica1xTlFpYmlpcEp-SWJI4c_J5BgYGRtney48XpeYtCg2G8GUe1bag8L8d-4rCv73ZCJkva2rOhsIP3c6Kwq_peIuiP8r_O4p8_ZoUCB8AYyQ8Ng",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=XA2b6nica1xTlFpYmlpcEp-SWJI4c_J5BgYGRtney48XpeYtCg2G8GUe1bag8L8d-4rCv73ZCJkva2rOhsIP3c6Kwq_peIuiP8r_O4p8_ZoUCB8AYyQ8Ng"
+    },
+    {
+      "query": "william contreras",
+      "start_timestamp": 1787350800,
+      "end_timestamp": 1787432400,
+      "active": false,
+      "search_volume": 1000,
+      "increase_percentage": 700,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "trend_breakdown": [
+        "jacob misiorowski",
+        "brewers score today"
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=william+contreras&tz=420",
+      "news_page_token": "AOQxLXica1xTlFpYmlpcEp-SWJI4Z_J5BgYGRtn1kuqLUvMWhQZD-VVMb1D4fJbSKPwQGVEUvpDNC2S-zDURPRT5ukurUfhLDVDN70gtQeFntR1D4W9-G4xi_qfl7yB8AH0nSpc",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=AOQxLXica1xTlFpYmlpcEp-SWJI4Z_J5BgYGRtn1kuqLUvMWhQZD-VVMb1D4fJbSKPwQGVEUvpDNC2S-zDURPRT5ukurUfhLDVDN70gtQeFntR1D4W9-G4xi_qfl7yB8AH0nSpc"
+    },
+    {
+      "query": "kyle mccord",
+      "start_timestamp": 1787367600,
+      "end_timestamp": 1787395200,
+      "active": false,
+      "search_volume": 500,
+      "increase_percentage": 1000,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=kyle+mccord&tz=420",
+      "news_page_token": "bZ2C1Xica1xTlFpYmlpcEp-SWJI4bfJ5BgYGRlmuxMxFqXmLQoOhfO7Vs1D4C5b_QeGHRvOi8Pmv96DwuQ6_hfAB9FookA",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=bZ2C1Xica1xTlFpYmlpcEp-SWJI4bfJ5BgYGRlmuxMxFqXmLQoOhfO7Vs1D4C5b_QeGHRvOi8Pmv96DwuQ6_hfAB9FookA"
+    },
+    {
+      "query": "cyclospora",
+      "start_timestamp": 1787408400,
+      "end_timestamp": 1787415600,
+      "active": false,
+      "search_volume": 100,
+      "increase_percentage": 600,
+      "categories": [
+        {
+          "id": 7,
+          "name": "Health"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=cyclospora&tz=420",
+      "news_page_token": "-JDDAnica1xTlFpYmlpcEp-SWJI4a_J5BgYGRtnYhMWLUvMWhQZD-DIfvKch82W7eO6i8DceWobCD7w2E4Xf9rcOhT8v-x2Uf25XNBeK2eLJSqtQ1MqtmgXhAwA1UkHV",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=-JDDAnica1xTlFpYmlpcEp-SWJI4a_J5BgYGRtnYhMWLUvMWhQZD-DIfvKch82W7eO6i8DceWobCD7w2E4Xf9rcOhT8v-x2Uf25XNBeK2eLJSqtQ1MqtmgXhAwA1UkHV"
+    },
+    {
+      "query": "tyrod taylor",
+      "start_timestamp": 1787362800,
+      "end_timestamp": 1787370000,
+      "active": false,
+      "search_volume": 500,
+      "increase_percentage": 1000,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=tyrod+taylor&tz=420",
+      "news_page_token": "EchHwnica1xTlFpYmlpcEp-SWJI4efJ5BgYGRtmNa18vSs1bFBoM5XMlZqLwuVfPgvABI3QX7Q",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=EchHwnica1xTlFpYmlpcEp-SWJI4efJ5BgYGRtmNa18vSs1bFBoM5XMlZqLwuVfPgvABI3QX7Q"
+    },
+    {
+      "query": "high school football scores",
+      "start_timestamp": 1787397600,
+      "end_timestamp": 1787408400,
+      "active": false,
+      "search_volume": 100,
+      "increase_percentage": 300,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        },
+        {
+          "id": 9,
+          "name": "Jobs and Education"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=high+school+football+scores&tz=420",
+      "news_page_token": "RORS5Hica1xTlFpYmlpcEp-SWJI4Y_J5BgYGRhlXmbhFqXmLQoMhfNnizb0o_MW9G1H4vqY8KPxIr0ko_PK3t5H5MhfZHqPI1-_xg_ABu1I0Vg",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=RORS5Hica1xTlFpYmlpcEp-SWJI4Y_J5BgYGRhlXmbhFqXmLQoMhfNnizb0o_MW9G1H4vqY8KPxIr0ko_PK3t5H5MhfZHqPI1-_xg_ABu1I0Vg"
+    },
+    {
+      "query": "f1",
+      "start_timestamp": 1787406600,
+      "end_timestamp": 1787419200,
+      "active": false,
+      "search_volume": 100,
+      "increase_percentage": 200,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=f1&tz=420",
+      "news_page_token": "MUdgJnica1xTlFpYmlpcEp-SWJI4d_J5BgYGRtk5nk6LUvMWhQZD-DIuNdLIfFnxzbtR-Fv2J6Kof8XxB0V-1f9bKPzcQm0U9ccqFqLw90_rRtV_8R2K_P0LTch8aYlLPij8Iom7ED4Ah4xTwg",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=MUdgJnica1xTlFpYmlpcEp-SWJI4d_J5BgYGRtk5nk6LUvMWhQZD-DIuNdLIfFnxzbtR-Fv2J6Kof8XxB0V-1f9bKPzcQm0U9ccqFqLw90_rRtV_8R2K_P0LTch8aYlLPij8Iom7ED4Ah4xTwg"
+    },
+    {
+      "query": "josh jacobs",
+      "start_timestamp": 1787361000,
+      "end_timestamp": 1787394000,
+      "active": false,
+      "search_volume": 500,
+      "increase_percentage": 500,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=josh+jacobs&tz=420",
+      "news_page_token": "MS5E9nica1xTlFpYmlpcEp-SWJI4ZfJ5BgYGRtnZu-YvSs1bFBoM5fefZUfmy2y6vhRFfsNuaQgfAOpmHso",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=MS5E9nica1xTlFpYmlpcEp-SWJI4ZfJ5BgYGRtnZu-YvSs1bFBoM5fefZUfmy2y6vhRFfsNuaQgfAOpmHso"
+    },
+    {
+      "query": "los angeles dodgers",
+      "start_timestamp": 1787353200,
+      "end_timestamp": 1787436000,
+      "active": false,
+      "search_volume": 200,
+      "increase_percentage": 300,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "trend_breakdown": [
+        "dodgers"
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=los+angeles+dodgers&tz=420",
+      "news_page_token": "6t-9Y3ica1xTlFpYmlpcEp-SWJJ4h0Fw8nkGBgZGWZmNlxal5i0KDYby1953R-GnH7BF5svcb-BCkY_7p4Eif1u2AUVe4NV1FP6KSQwo6quEDFD4J_VkUfg-FRtQ9G-5j-Ie2YWxF1DU_2GWQJEP1khF4c_7fgeFryDcCOEDAGg0Z4o",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=6t-9Y3ica1xTlFpYmlpcEp-SWJJ4h0Fw8nkGBgZGWZmNlxal5i0KDYby1953R-GnH7BF5svcb-BCkY_7p4Eif1u2AUVe4NV1FP6KSQwo6quEDFD4J_VkUfg-FRtQ9G-5j-Ie2YWxF1DU_2GWQJEP1khF4c_7fgeFryDcCOEDAGg0Z4o"
+    },
+    {
+      "query": "lynx vs mystics",
+      "start_timestamp": 1787356200,
+      "end_timestamp": 1787366400,
+      "active": false,
+      "search_volume": 200,
+      "increase_percentage": 1000,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=lynx+vs+mystics&tz=420",
+      "news_page_token": "Uqx1ZXica1xTlFpYmlpcEp-SWJI4ZfJ5BgYGRlmHiVaLUvMWhQZD-DJ1pUzIfNnaJfNQ-KHS5hA-AJQnHCU",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=Uqx1ZXica1xTlFpYmlpcEp-SWJI4ZfJ5BgYGRlmHiVaLUvMWhQZD-DJ1pUzIfNnaJfNQ-KHS5hA-AJQnHCU"
+    },
+    {
+      "query": "valkyries vs sky",
+      "start_timestamp": 1787357400,
+      "end_timestamp": 1787367000,
+      "active": false,
+      "search_volume": 200,
+      "increase_percentage": 1000,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=valkyries+vs+sky&tz=420",
+      "news_page_token": "9Z5x6Hica1xTlFpYmlpcEp-SWJI4dfJ5BgYGRtk-hqxFqXmLQoOhfO7f3Sj81rkPUPgdXT9Q-NMifkL4AM21JHw",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=9Z5x6Hica1xTlFpYmlpcEp-SWJI4dfJ5BgYGRtk-hqxFqXmLQoOhfO7f3Sj81rkPUPgdXT9Q-NMifkL4AM21JHw"
+    },
+    {
+      "query": "giants vs red sox",
+      "start_timestamp": 1787356800,
+      "end_timestamp": 1787368200,
+      "active": false,
+      "search_volume": 200,
+      "increase_percentage": 700,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=giants+vs+red+sox&tz=420",
+      "news_page_token": "qToRjXica1xTlFpYmlpcEp-SWJI4Y_J5BgYGRpn7an8XpeYtCg2G8tViTiHzZedaLkPhrzw-E4Vf7MOLwl93uB5N_WMU86_1pEH4AF4FNmc",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=qToRjXica1xTlFpYmlpcEp-SWJI4Y_J5BgYGRpn7an8XpeYtCg2G8tViTiHzZedaLkPhrzw-E4Vf7MOLwl93uB5N_WMU86_1pEH4AF4FNmc"
+    },
+    {
+      "query": "premier league schedule",
+      "start_timestamp": 1787406000,
+      "end_timestamp": 1787413800,
+      "active": false,
+      "search_volume": 100,
+      "increase_percentage": 200,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=premier+league+schedule&tz=420",
+      "news_page_token": "5brgrHica1xTlFpYmlpcEp-SWJI4ZfJ5BgYGRpkDriaLUvMWhQZD-as3laHwV-oZIfNlK1ZWQvgAt9MdbA",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=5brgrHica1xTlFpYmlpcEp-SWJI4ZfJ5BgYGRpkDriaLUvMWhQZD-as3laHwV-oZIfNlK1ZWQvgAt9MdbA"
+    },
+    {
+      "query": "steelers",
+      "start_timestamp": 1787358000,
+      "end_timestamp": 1787367000,
+      "active": false,
+      "search_volume": 200,
+      "increase_percentage": 800,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=steelers&tz=420",
+      "news_page_token": "-5JsdXica1xTlFpYmlpcEp-SWJI4e_J5BgYGRlmuw28XpeYtCg2G8GVO9_Aj82Vt3R-i8GesDEfhi1V1ofBLvdeh8Jc07UAx_-DZ08h86WSNeBT1jBbTUNTv2V0B4QMAmVFF_w",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=-5JsdXica1xTlFpYmlpcEp-SWJI4e_J5BgYGRlmuw28XpeYtCg2G8GVO9_Aj82Vt3R-i8GesDEfhi1V1ofBLvdeh8Jc07UAx_-DZ08h86WSNeBT1jBbTUNTv2V0B4QMAmVFF_w"
+    },
+    {
+      "query": "andrew haden san diego",
+      "start_timestamp": 1787351400,
+      "end_timestamp": 1787363400,
+      "active": false,
+      "search_volume": 200,
+      "increase_percentage": 300,
+      "categories": [
+        {
+          "id": 10,
+          "name": "Law and Government"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=andrew+haden+san+diego&tz=420",
+      "news_page_token": "pIZCw3ica1xTlFpYmlpcEp-SWJI4cfJ5BgYGRtmu1DWLUvMWhQYDANFPDJs",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=pIZCw3ica1xTlFpYmlpcEp-SWJI4cfJ5BgYGRtmu1DWLUvMWhQYDANFPDJs"
+    },
+    {
+      "query": "cubs score",
+      "start_timestamp": 1787395800,
+      "end_timestamp": 1787401800,
+      "active": false,
+      "search_volume": 200,
+      "increase_percentage": 100,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=cubs+score&tz=420",
+      "news_page_token": "0HwIpXica1xTlFpYmlpcEp-SWJI4bfJ5BgYGRtkVMnqLUvMWhQZD-DIbQvcj82ULXwuh8Nkux6Dwc7qrUfjZmbIQPgAABCf7",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=0HwIpXica1xTlFpYmlpcEp-SWJI4bfJ5BgYGRtkVMnqLUvMWhQZD-DIbQvcj82ULXwuh8Nkux6Dwc7qrUfjZmbIQPgAABCf7"
+    },
+    {
+      "query": "jelly roll wife bunnie xo split",
+      "start_timestamp": 1787360400,
+      "end_timestamp": 1787400000,
+      "active": false,
+      "search_volume": 100,
+      "increase_percentage": 300,
+      "categories": [
+        {
+          "id": 4,
+          "name": "Entertainment"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=jelly+roll+wife+bunnie+xo+split&tz=420",
+      "news_page_token": "vDykFnica1xTlFpYmlpcEp-SWJI4cfJ5BgYGRtnGQO5FqXmLQoMBy_cL3Q",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=vDykFnica1xTlFpYmlpcEp-SWJI4cfJ5BgYGRtnGQO5FqXmLQoMBy_cL3Q"
+    },
+    {
+      "query": "malik willis",
+      "start_timestamp": 1787364600,
+      "end_timestamp": 1787368800,
+      "active": false,
+      "search_volume": 200,
+      "increase_percentage": 1000,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=malik+willis&tz=420",
+      "news_page_token": "ZuYy1nica1xTlFpYmlpcEp-SWJI4dfJ5BgYGRtl0p62LUvMWhQZD-DKnplgj82VlNhmh8BvzT6HwM_VfQ_gAueUjMw",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=ZuYy1nica1xTlFpYmlpcEp-SWJI4dfJ5BgYGRtl0p62LUvMWhQZD-DKnplgj82VlNhmh8BvzT6HwM_VfQ_gAueUjMw"
+    },
+    {
+      "query": "youtube tv",
+      "start_timestamp": 1787360400,
+      "end_timestamp": 1787365200,
+      "active": false,
+      "search_volume": 200,
+      "increase_percentage": 200,
+      "categories": [
+        {
+          "id": 4,
+          "name": "Entertainment"
+        },
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=youtube+tv&tz=420",
+      "news_page_token": "jC-CZXica1xTlFpYmlpcEp-SWJI4ZfJ5BgYGRtmaszMWpeYtCg2G8GWeyy1E5svOfbgNhR9qcQTCBwDuCh7L",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=jC-CZXica1xTlFpYmlpcEp-SWJI4ZfJ5BgYGRtmaszMWpeYtCg2G8GWeyy1E5svOfbgNhR9qcQTCBwDuCh7L"
+    },
+    {
+      "query": "mlb standings",
+      "start_timestamp": 1787394600,
+      "end_timestamp": 1787398200,
+      "active": false,
+      "search_volume": 200,
+      "increase_percentage": 100,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=mlb+standings&tz=420",
+      "news_page_token": "NF7lW3ica1xTlFpYmlpcEp-SWJI4Y_J5BgYGRtkVeecWpeYtCg2G8mWiMlD4diIWKHzh507IfJn7an9R5NdLqqPw5cKXovCXvzaF8AGVBDMZ",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=NF7lW3ica1xTlFpYmlpcEp-SWJI4Y_J5BgYGRtkVeecWpeYtCg2G8mWiMlD4diIWKHzh507IfJn7an9R5NdLqqPw5cKXovCXvzaF8AGVBDMZ"
+    },
+    {
+      "query": "kelly ripa mark consuelos wedding advice",
+      "start_timestamp": 1787352600,
+      "end_timestamp": 1787360400,
+      "active": false,
+      "search_volume": 100,
+      "increase_percentage": 400,
+      "categories": [
+        {
+          "id": 4,
+          "name": "Entertainment"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=kelly+ripa+mark+consuelos+wedding+advice&tz=420",
+      "news_page_token": "zmFhe3ica1xTlFpYmlpcEp-SWJI4cfJ5BgYGRtmWpdGLUvMWhQYDANDiDIQ",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=zmFhe3ica1xTlFpYmlpcEp-SWJI4cfJ5BgYGRtmWpdGLUvMWhQYDANDiDIQ"
+    },
+    {
+      "query": "trevor megill",
+      "start_timestamp": 1787351400,
+      "end_timestamp": 1787356200,
+      "active": false,
+      "search_volume": 200,
+      "increase_percentage": 600,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=trevor+megill&tz=420",
+      "news_page_token": "JyAcjnica1xTlFpYmlpcEp-SWJI4efJ5BgYGRtlOU_ZFqXmLQoOh_HkmN1D4fJbSED4A9MgWUQ",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=JyAcjnica1xTlFpYmlpcEp-SWJI4efJ5BgYGRtlOU_ZFqXmLQoOh_HkmN1D4fJbSED4A9MgWUQ"
+    },
+    {
+      "query": "tigers vs royals",
+      "start_timestamp": 1787366400,
+      "end_timestamp": 1787371200,
+      "active": false,
+      "search_volume": 100,
+      "increase_percentage": 400,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=tigers+vs+royals&tz=420",
+      "news_page_token": "w9cZOnica1xTlFpYmlpcEp-SWJI4ZfJ5BgYGRtl09pxFqXmLQoOh_PVvA1D4xhPTUfgzpbUhfACkJhyQ",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=w9cZOnica1xTlFpYmlpcEp-SWJI4ZfJ5BgYGRtl09pxFqXmLQoOh_PVvA1D4xhPTUfgzpbUhfACkJhyQ"
+    },
+    {
+      "query": "mike yastrzemski",
+      "start_timestamp": 1787350800,
+      "end_timestamp": 1787355600,
+      "active": false,
+      "search_volume": 100,
+      "increase_percentage": 600,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=mike+yastrzemski&tz=420",
+      "news_page_token": "Oxv8x3ica1xTlFpYmlpcEp-SWJI4efJ5BgYGRtmVx_MWpeYtCg2G8tdLqqPw-SylIXwAD7IWrw",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=Oxv8x3ica1xTlFpYmlpcEp-SWJI4efJ5BgYGRtmVx_MWpeYtCg2G8tdLqqPw-SylIXwAD7IWrw"
+    },
+    {
+      "query": "antonio senzatela",
+      "start_timestamp": 1787352000,
+      "end_timestamp": 1787354400,
+      "active": false,
+      "search_volume": 200,
+      "increase_percentage": 1000,
+      "categories": [
+        {
+          "id": 17,
+          "name": "Sports"
+        }
+      ],
+      "serpapi_google_trends_link": "https://serpapi.com/search.json?data_type=TIMESERIES&date=now+1-d&engine=google_trends&geo=US-WI&hl=en&q=antonio+senzatela&tz=420",
+      "news_page_token": "AbaF-Hica1xTlFpYmlpcEp-SWJI4afJ5BgYGRtmMOSqLUvMWhQZD-XyW0hA-ALSuEMo",
+      "serpapi_news_link": "https://serpapi.com/search.json?engine=google_trends_news&page_token=AbaF-Hica1xTlFpYmlpcEp-SWJI4afJ5BgYGRtmMOSqLUvMWhQZD-XyW0hA-ALSuEMo"
+    }
+  ]
+}

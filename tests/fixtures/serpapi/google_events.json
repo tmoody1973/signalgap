@@ -1,0 +1,30 @@
+{
+  "_handwritten": true,
+  "_note": "Live capture attempts for events-housing-01 and a simplified 'Milwaukee events' query both returned SerpApi's 'Google hasn't returned any results for this query' error (2 of the 8 authorized calls). Hand-written from SerpApi's documented Google Events API response shape. Must be replaced with a live capture during item 10's live scan.",
+  "events_results": [
+    {
+      "title": "Metcalfe Park Neighborhood Association Meeting",
+      "date": { "start_date": "Aug 28", "when": "Fri, Aug 28, 6:00 – 7:30 PM" },
+      "address": ["2200 W Wright St", "Milwaukee, WI"],
+      "link": "https://city.milwaukee.gov/News-Events/calendar/City-Event?DataID=481200",
+      "description": "Monthly community meeting covering housing, zoning, and neighborhood planning updates.",
+      "venue": {
+        "name": "Metcalfe Park Community Center",
+        "rating": 4.6,
+        "reviews": 18,
+        "link": "https://www.google.com/search?q=Metcalfe+Park+Community+Center"
+      },
+      "thumbnail": "https://example.com/thumb1.jpg"
+    },
+    {
+      "title": "Home and Habitat Fest",
+      "date": { "start_date": "Aug 28" },
+      "address": ["Milwaukee, WI"],
+      "link": "https://city.milwaukee.gov/City-Events/ECO/Home-and-Habitat-Fest.htm",
+      "description": "Back-to-school giveaway and housing resource fair with WHEDA.",
+      "venue": { "name": "" },
+      "thumbnail": "https://example.com/thumb2.jpg"
+    },
+    { "date": { "start_date": "Sep 2" } }
+  ]
+}

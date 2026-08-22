@@ -1,0 +1,819 @@
+{
+  "search_parameters": {
+    "engine": "google_news",
+    "gl": "us",
+    "hl": "en",
+    "q": "Milwaukee (housing OR zoning OR development OR displacement OR neighborhood) when:7d"
+  },
+  "news_results": [
+    {
+      "position": 1,
+      "title": "Milwaukee Neighborhood News Service publishes in-depth retrospective on Sherman Park uprising",
+      "source": {
+        "name": "Marquette Today",
+        "icon": "https://encrypted-tbn3.gstatic.com/faviconV2?url=https://today.marquette.edu&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Andrew Goldstein"
+        ]
+      },
+      "link": "https://today.marquette.edu/2026/08/milwaukee-neighborhood-news-service-publishes-in-depth-retrospective-on-sherman-park-uprising/",
+      "thumbnail": "https://today.marquette.edu/wp-content/uploads/2026/08/Screenshot-2026-08-19-at-4.23.33-PM-1536x757.png",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iL0NnNXFaVUZxVjA5eU56UldTMnRGVFJDRkF4aVZCaWdLTWdrQklJZ3hGQ1d4TVFF",
+      "date": "08/20/2026, 04:42 PM, +0000 UTC",
+      "iso_date": "2026-08-20T16:42:03Z"
+    },
+    {
+      "position": 2,
+      "title": "Leaders react to federal investigation into whether MPS considers race when disciplining students",
+      "source": {
+        "name": "Milwaukee Neighborhood News Service",
+        "icon": "https://encrypted-tbn1.gstatic.com/faviconV2?url=https://milwaukeenns.org&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Meredith Melland"
+        ]
+      },
+      "link": "https://milwaukeenns.org/2026/08/19/leaders-react-to-federal-investigation-into-whether-mps-considers-race-when-disciplining-students/",
+      "thumbnail": "https://i0.wp.com/milwaukeenns.org/wp-content/uploads/2026/08/DSC_0127-scaled.jpg?fit=1200%2C799&ssl=1",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iJ0NnNVVZMnhHWW1kT2N6bFFkaTFOVFJEREF4aW5CU2dLTWdNQndBZw",
+      "date": "08/19/2026, 10:30 PM, +0000 UTC",
+      "iso_date": "2026-08-19T22:30:00Z"
+    },
+    {
+      "position": 3,
+      "title": "Milwaukee neighborhood conducts food audit walk to address grocery deserts",
+      "source": {
+        "name": "Spectrum News",
+        "icon": "https://encrypted-tbn0.gstatic.com/faviconV2?url=https://spectrumnews1.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Rachel Ryan"
+        ]
+      },
+      "link": "https://spectrumnews1.com/wi/milwaukee/news/2026/08/19/milwaukee-audit-walk-food-deserts-grocery-stores",
+      "thumbnail": "https://s7d2.scene7.com/is/image/TWCNews/food_audit_wi_0819",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNXVXSFZXUzBVdFNFaHVaRmx2VFJDZkF4ampCU2dLTWdZQmNaVEFMQWc",
+      "date": "08/19/2026, 05:45 PM, +0000 UTC",
+      "iso_date": "2026-08-19T17:45:00Z"
+    },
+    {
+      "position": 4,
+      "title": "10 years after uprising, stubborn challenges persist in Milwaukee’s Sherman Park neighborhood",
+      "source": {
+        "name": "Wisconsin Watch",
+        "icon": "https://encrypted-tbn0.gstatic.com/faviconV2?url=https://wisconsinwatch.org&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Devin Blake"
+        ]
+      },
+      "link": "https://wisconsinwatch.org/2026/08/milwaukee-sherman-park-neighborhood-10-years-after-uprising-challenges-poverty-housing/",
+      "thumbnail": "https://i0.wp.com/wisconsinwatch.org/wp-content/uploads/2026/08/DJI_0287-scaled-1.jpg?fit=1200%2C799&quality=100&ssl=1",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iL0NnNTJlWGt5Um5jd1JubFRhazFHVFJERUF4aW5CU2dLTWdrQllJQncwS0dwS1FJ",
+      "date": "08/21/2026, 11:00 AM, +0000 UTC",
+      "iso_date": "2026-08-21T11:00:00Z"
+    },
+    {
+      "position": 5,
+      "title": "Pope Leo Village brings affordable housing to Milwaukee's Harambee neighborhood",
+      "source": {
+        "name": "WISN",
+        "icon": "https://encrypted-tbn2.gstatic.com/faviconV2?url=https://www.wisn.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Zoie Henry"
+        ]
+      },
+      "link": "https://www.wisn.com/article/pope-leo-village-brings-affordable-housing-to-milwaukees-harambee-neighborhood/73496330",
+      "thumbnail": "https://hips.hearstapps.com/vidthumb/097063fc-bd42-4788-a706-19f05e6792a2/67bdca2a-93ba-4819-b0e1-e6dd627d9c43.jpg?crop=1xw:1.0xh;center,top",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNUlXRFJXUlhGR1ZHWnNibGRhVFJDZkF4ampCU2dLTWdZSkE0QlNqUXM",
+      "date": "08/21/2026, 11:46 PM, +0000 UTC",
+      "iso_date": "2026-08-21T23:46:00Z"
+    },
+    {
+      "position": 6,
+      "title": "City Commission Approves Metcalfe Park Development",
+      "source": {
+        "name": "Urban Milwaukee",
+        "icon": "https://encrypted-tbn1.gstatic.com/faviconV2?url=https://urbanmilwaukee.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL"
+      },
+      "link": "https://urbanmilwaukee.com/2026/08/18/city-commission-approves-metcalfe-park-development/",
+      "thumbnail": "https://urbanmilwaukee.com/wp-content/uploads/2026/08/lh01.jpg",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iJ0NnNHRjbGhaWlV0RmNtOUZTV2x3VFJDb0FSaXNBaWdCTWdNQlVCQQ",
+      "date": "08/18/2026, 04:57 PM, +0000 UTC",
+      "iso_date": "2026-08-18T16:57:00Z"
+    },
+    {
+      "position": 7,
+      "title": "After Milwaukee veto, affordable housing bonds advance through different conduit",
+      "source": {
+        "name": "Bond Buyer",
+        "icon": "https://encrypted-tbn0.gstatic.com/faviconV2?url=https://www.bondbuyer.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Jennifer Shea"
+        ]
+      },
+      "link": "https://www.bondbuyer.com/news/conduit-change-advances-milwaukee-affordable-housing-bonds",
+      "thumbnail": "https://arizent.brightspotcdn.com/dims4/default/7661f30/2147483647/strip/true/crop/5706x3804+0+0/resize/740x493!/quality/90/?url=https%3A%2F%2Fsource-media-brightspot.s3.us-east-1.amazonaws.com%2F98%2F89%2Fdf11f47849b2996c325b91e34da7%2F413712668-1.jpg",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iJ0NnNDBXak5qVUY4d01ESkhhMXBmVFJDM0FSaVRBaWdCTWdNQllBZw",
+      "date": "08/19/2026, 12:00 PM, +0000 UTC",
+      "iso_date": "2026-08-19T12:00:00Z"
+    },
+    {
+      "position": 8,
+      "title": "Opinion: Mr. Rogers keeps finding a new neighborhood",
+      "source": {
+        "name": "WUWM",
+        "icon": "https://encrypted-tbn1.gstatic.com/faviconV2?url=https://www.wuwm.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Scott Simon"
+        ]
+      },
+      "link": "https://www.wuwm.com/2026-08-22/opinion-mr-rogers-keeps-finding-a-new-neighborhood",
+      "thumbnail": "https://npr.brightspotcdn.com/dims4/default/bdf2b16/2147483647/strip/true/crop/3425x2284+0+0/resize/880x587!/quality/90/?url=https%3A%2F%2Fnpr.brightspotcdn.com%2Fdims3%2Fdefault%2Fstrip%2Ffalse%2Fcrop%2F3425x2284%200%200%2Fresize%2F3425x2284%21%2F%3Furl%3Dhttp%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2Fd6%2Fae%2Fe3d4783f448881c90fff4f3419f1%2Fgettyimages-2290067647.jpg",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNDJNRVZXTVdOTWFGODRha04yVFJERUF4aW1CU2dLTWdZWlFKWXFuUWs",
+      "date": "08/22/2026, 12:00 PM, +0000 UTC",
+      "iso_date": "2026-08-22T12:00:00Z"
+    },
+    {
+      "position": 9,
+      "title": "FHLBank Chicago and WHEDA Recognize Housing Counseling Grants Supporting Milwaukee-Area Homebuyers",
+      "source": {
+        "name": "Yahoo Finance UK",
+        "icon": "https://encrypted-tbn1.gstatic.com/faviconV2?url=https://uk.finance.yahoo.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL"
+      },
+      "link": "https://uk.finance.yahoo.com/news/fhlbank-chicago-wheda-recognize-housing-181600023.html",
+      "thumbnail": "https://media.zenfs.com/en/business-wire.com/e371d4c8413a573bf2544284c831bdf3.jpg",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iL0NnNVdVM3BKVGtFd2FFUnVlV1pTVFJDWkFoamdBeWdLTWdrQkVKU2xuZWNzN1FF",
+      "date": "08/20/2026, 06:16 PM, +0000 UTC",
+      "iso_date": "2026-08-20T18:16:00Z"
+    },
+    {
+      "position": 10,
+      "title": "The uprising in Sherman Park: 10 years later",
+      "source": {
+        "name": "Milwaukee Neighborhood News Service",
+        "icon": "https://encrypted-tbn1.gstatic.com/faviconV2?url=https://milwaukeenns.org&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL"
+      },
+      "link": "https://milwaukeenns.org/the-uprising-in-sherman-park-10-years-later/",
+      "thumbnail": "https://i0.wp.com/milwaukeenns.org/wp-content/uploads/2026/08/sherman-park-10-years.jpg?fit=2000%2C1332&ssl=1",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iL0NnNUJSM0JqTlVWdk5UYzFXRFJKVFJERUF4aW5CU2dLTWdrQklKckFGS2tXeGdJ",
+      "date": "08/18/2026, 12:32 PM, +0000 UTC",
+      "iso_date": "2026-08-18T12:32:42Z"
+    },
+    {
+      "position": 11,
+      "title": "Sherman Phoenix remains a symbol of growth for Milwaukee business owners",
+      "source": {
+        "name": "Wisconsin Watch",
+        "icon": "https://encrypted-tbn0.gstatic.com/faviconV2?url=https://wisconsinwatch.org&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Princesssafiya Byers"
+        ]
+      },
+      "link": "https://wisconsinwatch.org/2026/08/milwaukee-sherman-phoenix-marketplace-business-owners-symbol-of-growth-park-unrest/",
+      "thumbnail": "https://i0.wp.com/wisconsinwatch.org/wp-content/uploads/2026/08/G86A2063-scaled-1.jpg?fit=1200%2C800&quality=100&ssl=1",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNTNabUpwUkZrME1sZE5XREJEVFJERUF4aW1CU2dLTWdZaFpJck1yUVk",
+      "date": "08/22/2026, 11:00 AM, +0000 UTC",
+      "iso_date": "2026-08-22T11:00:00Z"
+    },
+    {
+      "position": 12,
+      "title": "Op Ed: Lessons From Milwaukee’s Flooding",
+      "source": {
+        "name": "Urban Milwaukee",
+        "icon": "https://encrypted-tbn1.gstatic.com/faviconV2?url=https://urbanmilwaukee.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL"
+      },
+      "link": "https://urbanmilwaukee.com/2026/08/20/op-ed-lessons-from-milwaukees-flooding/",
+      "thumbnail": "https://urbanmilwaukee.com/wp-content/uploads/2025/08/245-scaled.jpg",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNVNNbmd0TURWSlNsa3pia3A2VFJDM0FSaVRBaWdCTWdhQmdJN1ZOQWM",
+      "date": "08/20/2026, 02:13 PM, +0000 UTC",
+      "iso_date": "2026-08-20T14:13:00Z"
+    },
+    {
+      "position": 13,
+      "title": "Travis Landry builds communities by building people",
+      "source": {
+        "name": "Milwaukee Neighborhood News Service",
+        "icon": "https://encrypted-tbn1.gstatic.com/faviconV2?url=https://milwaukeenns.org&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Princesssafiya Byers"
+        ]
+      },
+      "link": "https://milwaukeenns.org/2026/08/19/travis-landry-builds-communities-by-building-people/",
+      "thumbnail": "https://i0.wp.com/milwaukeenns.org/wp-content/uploads/2026/07/G84A3043-scaled.jpg?fit=1200%2C800&ssl=1",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNHRibTFEWkhCNFozTkNjRlprVFJERUF4aW1CU2dLTWdZbEU0b1RFUXM",
+      "date": "08/19/2026, 10:15 PM, +0000 UTC",
+      "iso_date": "2026-08-19T22:15:00Z"
+    },
+    {
+      "position": 14,
+      "title": "Investments changed Milwaukee’s Sherman Park after 2016 uprising, but who benefited remains unclear",
+      "source": {
+        "name": "Wisconsin Watch",
+        "icon": "https://encrypted-tbn0.gstatic.com/faviconV2?url=https://wisconsinwatch.org&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Meredith Melland"
+        ]
+      },
+      "link": "https://wisconsinwatch.org/2026/08/milwaukee-sherman-park-investments-uprising-change-improvements-residents-benefit/",
+      "thumbnail": "https://i0.wp.com/wisconsinwatch.org/wp-content/uploads/2026/08/DJI_0288-scaled-1.jpg?fit=1200%2C799&quality=100&ssl=1",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNU1Ta2wzVW5NMVMxbE9UM3BVVFJERUF4aW5CU2dLTWdZQmNJWml0Z1E",
+      "date": "08/21/2026, 02:00 PM, +0000 UTC",
+      "iso_date": "2026-08-21T14:00:00Z"
+    },
+    {
+      "position": 15,
+      "title": "Metcalfe Park Liberation Hub Site Plan",
+      "source": {
+        "name": "Urban Milwaukee",
+        "icon": "https://encrypted-tbn1.gstatic.com/faviconV2?url=https://urbanmilwaukee.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Jeramey Jannene"
+        ]
+      },
+      "link": "https://urbanmilwaukee.com/2026/08/18/city-commission-approves-metcalfe-park-development/nggallery/image/metcalfe-park-liberation-hub-site-plan-3",
+      "thumbnail": "https://urbanmilwaukee.com/wp-content/gallery/metcalfe-park/lh03.jpg",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNXJaa0pRZGxwa1ZEUllSM0JpVFJDb0FSaXNBaWdCTWdZQjBJelRSQVU",
+      "date": "08/18/2026, 04:57 PM, +0000 UTC",
+      "iso_date": "2026-08-18T16:57:00Z"
+    },
+    {
+      "position": 16,
+      "title": "‘We would like to see it get better': How three of Sherman Park's elders view their neighborhood",
+      "source": {
+        "name": "Milwaukee Neighborhood News Service",
+        "icon": "https://encrypted-tbn1.gstatic.com/faviconV2?url=https://milwaukeenns.org&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Chesnie Wardell"
+        ]
+      },
+      "link": "https://milwaukeenns.org/2026/08/17/the-environment-has-changed-tremendously-sherman-park-seniors-reflect-on-the-state-of-their-neighborhood/",
+      "thumbnail": "https://i0.wp.com/milwaukeenns.org/wp-content/uploads/2026/08/IMG_8558-scaled.jpeg?fit=1200%2C900&ssl=1",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNHdWa0o2U1RrMExVWlJTbTlVVFJEZ0F4aUFCU2dLTWdZWmRZN0tyUWM",
+      "date": "08/17/2026, 10:00 PM, +0000 UTC",
+      "iso_date": "2026-08-17T22:00:00Z"
+    },
+    {
+      "position": 17,
+      "title": "Inside the NNS Newsroom: Why we remember when others move on",
+      "source": {
+        "name": "Milwaukee Neighborhood News Service",
+        "icon": "https://encrypted-tbn1.gstatic.com/faviconV2?url=https://milwaukeenns.org&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Ron Smith"
+        ]
+      },
+      "link": "https://milwaukeenns.org/2026/08/21/inside-the-nns-newsroom-why-we-remember-when-others-move-on/",
+      "thumbnail": "https://i0.wp.com/milwaukeenns.org/wp-content/uploads/2026/08/saturday-promo.webp?fit=1200%2C799&ssl=1",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNVhWVjloU1VSTFNWUmpYemxMVFJERUF4aW5CU2dLTWdZQmNJWml0Z1E",
+      "date": "08/21/2026, 09:57 PM, +0000 UTC",
+      "iso_date": "2026-08-21T21:57:29Z"
+    },
+    {
+      "position": 18,
+      "title": "5 things to know and do the week of Aug. 17",
+      "source": {
+        "name": "Milwaukee Neighborhood News Service",
+        "icon": "https://encrypted-tbn1.gstatic.com/faviconV2?url=https://milwaukeenns.org&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Alex Klaus"
+        ]
+      },
+      "link": "https://milwaukeenns.org/2026/08/16/5-things-to-know-and-do-the-week-of-aug-17/",
+      "thumbnail": "https://i0.wp.com/milwaukeenns.org/wp-content/uploads/2026/08/DSC_0049-scaled.jpg?fit=1200%2C798&ssl=1",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iJ0NnNXdUMlJJTkU5WGIwWktORlJOVFJEREF4aW5CU2dLTWdNZGd3NA",
+      "date": "08/16/2026, 09:00 PM, +0000 UTC",
+      "iso_date": "2026-08-16T21:00:00Z"
+    },
+    {
+      "position": 19,
+      "title": "Flashback: Community members at the Sherman Phoenix remember unrest, recognize progress in 2019",
+      "source": {
+        "name": "Milwaukee Neighborhood News Service",
+        "icon": "https://encrypted-tbn1.gstatic.com/faviconV2?url=https://milwaukeenns.org&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Bridget Fogarty"
+        ]
+      },
+      "link": "https://milwaukeenns.org/2026/08/16/flashback-voices-of-sherman-park-community-members-at-the-sherman-phoenix-remember-unrest-recognize-progress-in-2019/",
+      "thumbnail": "https://i0.wp.com/milwaukeenns.org/wp-content/uploads/2019/08/48516583627_f8fb07a34e_k.jpg?fit=1200%2C801&ssl=1",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNUtSWFZ4U21SVlNYSmZWREZyVFJERUF4aW1CU2dLTWdhQkVvNW9sUXM",
+      "date": "08/16/2026, 04:45 PM, +0000 UTC",
+      "iso_date": "2026-08-16T16:45:55Z"
+    },
+    {
+      "position": 20,
+      "title": "5 things to know and do the weekend of Aug. 21",
+      "source": {
+        "name": "Milwaukee Neighborhood News Service",
+        "icon": "https://encrypted-tbn1.gstatic.com/faviconV2?url=https://milwaukeenns.org&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Alex Klaus"
+        ]
+      },
+      "link": "https://milwaukeenns.org/2026/08/20/5-things-to-know-and-do-the-weekend-of-aug-21/",
+      "thumbnail": "https://i0.wp.com/milwaukeenns.org/wp-content/uploads/2026/08/37575343891_9037aea358_k.jpg?fit=780%2C520&ssl=1",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNXRha2xPYzNFMmQySnRlRmRZVFJERUF4aW1CU2dLTWdZQllJUk1zUVE",
+      "date": "08/20/2026, 08:00 PM, +0000 UTC",
+      "iso_date": "2026-08-20T20:00:00Z"
+    },
+    {
+      "position": 21,
+      "title": "Kenosha moves to turn former McKinley school site into 28-home neighborhood",
+      "source": {
+        "name": "The Business Journals",
+        "icon": "https://encrypted-tbn0.gstatic.com/faviconV2?url=https://www.bizjournals.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Juan Lasso"
+        ]
+      },
+      "link": "https://www.bizjournals.com/milwaukee/news/2026/08/18/kenosha-mckinley-school-redevelopment.html",
+      "thumbnail": "https://media.bizj.us/view/img/13253876/gettyimages-1392779291*900xx7008-3942-0-365.jpg",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNVlTR3RPVVU0M05XaEVRVXM0VFJDZkF4ampCU2dLTWdZQkFKS2ttZ2s",
+      "date": "08/18/2026, 08:00 PM, +0000 UTC",
+      "iso_date": "2026-08-18T20:00:00Z"
+    },
+    {
+      "position": 22,
+      "title": "Post From Community: Sixteenth Street Ranks Among Top 10% of Health Centers Nationwide",
+      "source": {
+        "name": "Milwaukee Neighborhood News Service",
+        "icon": "https://encrypted-tbn1.gstatic.com/faviconV2?url=https://milwaukeenns.org&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL"
+      },
+      "link": "https://milwaukeenns.org/2026/08/20/post-from-community-sixteenth-street-ranks-among-top-10-of-health-centers-nationwide/",
+      "thumbnail": "https://i0.wp.com/milwaukeenns.org/wp-content/uploads/2026/08/Chavez.png?fit=780%2C507&ssl=1",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNWhMWFZFYUV0UVN5MVhlWHA1VFJDLUF4aXZCU2dLTWdZQmtJYVcxQU0",
+      "date": "08/21/2026, 02:23 AM, +0000 UTC",
+      "iso_date": "2026-08-21T02:23:25Z"
+    },
+    {
+      "position": 23,
+      "title": "U.S. Department of Education investigates MPS for school disciplinary practices that consider race",
+      "source": {
+        "name": "Milwaukee Neighborhood News Service",
+        "icon": "https://encrypted-tbn1.gstatic.com/faviconV2?url=https://milwaukeenns.org&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Alex Klaus"
+        ]
+      },
+      "link": "https://milwaukeenns.org/2026/08/18/u-s-department-of-education-investigates-mps-for-school-disciplinary-practices-that-consider-race/",
+      "thumbnail": "https://i0.wp.com/milwaukeenns.org/wp-content/uploads/2026/08/G84A7463-1-scaled.jpg?fit=1200%2C800&ssl=1",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNUhhMDFuU3pCS05sWjRiM1ZEVFJERUF4aW1CU2dLTWdZbHNJWTBSQVE",
+      "date": "08/19/2026, 12:02 AM, +0000 UTC",
+      "iso_date": "2026-08-19T00:02:33Z"
+    },
+    {
+      "position": 24,
+      "title": "First-time homebuilders Tim and Mandy Vandeville want to disrupt the market",
+      "source": {
+        "name": "The Business Journals",
+        "icon": "https://encrypted-tbn0.gstatic.com/faviconV2?url=https://www.bizjournals.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Juan Lasso"
+        ]
+      },
+      "link": "https://www.bizjournals.com/milwaukee/news/2026/08/18/whitewater-stonehaven-development-vandeville.html",
+      "thumbnail": "https://media.bizj.us/view/img/13250863/imminkvandeville05*900xx5472-3084-0-354.jpg",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNXhjMmxZTFROeWRrbFNkRzU0VFJDZ0F4amlCU2dLTWdZdEZZcXVFUXM",
+      "date": "08/18/2026, 11:27 AM, +0000 UTC",
+      "iso_date": "2026-08-18T11:27:00Z"
+    },
+    {
+      "position": 25,
+      "title": "Milwaukee art therapists find new ways to help residents deal with emotions",
+      "source": {
+        "name": "OnMilwaukee",
+        "icon": "https://encrypted-tbn1.gstatic.com/faviconV2?url=https://onmilwaukee.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL"
+      },
+      "link": "https://onmilwaukee.com/articles/art-therapy-mental-health-milwaukee-nns",
+      "thumbnail": "https://storage.googleapis.com/onmilwaukee-article-images/variants/ljkjc6b0w2ty1sn1he6gaabdjhso/ff35c9310a7d5016e76853b0df7d033449d793b6f6dc2e4a0b4bc844add6c385",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iL0NnNUNTRnB6U1VFeWJtZFpUR3hqVFJEZ0F4aUFCU2dLTWdtbEU0aFBsV3B6RXdF",
+      "date": "08/16/2026, 12:01 PM, +0000 UTC",
+      "iso_date": "2026-08-16T12:01:00Z"
+    },
+    {
+      "position": 26,
+      "title": "Banker plans 26-unit rental development on long-vacant Oak Creek site he eyed for years",
+      "source": {
+        "name": "The Business Journals",
+        "icon": "https://encrypted-tbn0.gstatic.com/faviconV2?url=https://www.bizjournals.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Addison Lathers"
+        ]
+      },
+      "link": "https://www.bizjournals.com/milwaukee/news/2026/08/21/townhomes-oak-creek.html",
+      "thumbnail": "https://media.bizj.us/view/img/13258994/townhomerenderingtwo*1200xx2023-1138-118-0.png",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNWxjMjEwYkRCdlEyMTNSVWhZVFJDZkF4ampCU2dLTWdZQk1Jd0xvUVU",
+      "date": "08/21/2026, 07:57 PM, +0000 UTC",
+      "iso_date": "2026-08-21T19:57:00Z"
+    },
+    {
+      "position": 27,
+      "title": "Flashback: Unrest in Sherman Park: Three years later: Have police-community relations improved?",
+      "source": {
+        "name": "Milwaukee Neighborhood News Service",
+        "icon": "https://encrypted-tbn1.gstatic.com/faviconV2?url=https://milwaukeenns.org&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Edgar Mendez"
+        ]
+      },
+      "link": "https://milwaukeenns.org/2026/08/17/flashback-unrest-in-sherman-park-three-years-later-have-police-community-relations-improved/",
+      "thumbnail": "https://i0.wp.com/milwaukeenns.org/wp-content/uploads/2019/08/PARKPOLICE.jpg?fit=1200%2C717&ssl=1",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNXlOakpmV2w5Q2RESkNZelZ6VFJDc0F4ak5CU2dLTWdhTlVvem1zQWM",
+      "date": "08/17/2026, 09:21 PM, +0000 UTC",
+      "iso_date": "2026-08-17T21:21:19Z"
+    },
+    {
+      "position": 28,
+      "title": "Metcalfe Park project with cafe, laundromat and affordable units wins plan commission vote",
+      "source": {
+        "name": "The Business Journals",
+        "icon": "https://encrypted-tbn0.gstatic.com/faviconV2?url=https://www.bizjournals.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Addison Lathers"
+        ]
+      },
+      "link": "https://www.bizjournals.com/milwaukee/news/2026/08/18/metcalfe-park-hub-first-approval.html",
+      "thumbnail": "https://media.bizj.us/view/img/13255729/metcalfehub*1200xx1623-1214-320-0.png",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNW5OemgwU0VaVVVrSlpkaTB0VFJEZkF4aUFCU2dLTWdZQllJNmlNQVk",
+      "date": "08/18/2026, 11:31 AM, +0000 UTC",
+      "iso_date": "2026-08-18T11:31:00Z"
+    },
+    {
+      "position": 29,
+      "title": "15-home community planned in Delavan targets veterans, working families",
+      "source": {
+        "name": "The Business Journals",
+        "icon": "https://encrypted-tbn0.gstatic.com/faviconV2?url=https://www.bizjournals.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Juan Lasso"
+        ]
+      },
+      "link": "https://www.bizjournals.com/milwaukee/news/2026/08/20/delavan-john-tracy-cornerstone-crossing.html",
+      "thumbnail": "https://media.bizj.us/view/img/13257938/cornerstonecrossing*1200xx1670-1254-0-60.png",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNXRhMEZFWkdaMFF6QkRSM3BXVFJEZ0F4al9CQ2dLTWdhVlk0b0t2Z1E",
+      "date": "08/20/2026, 07:59 PM, +0000 UTC",
+      "iso_date": "2026-08-20T19:59:00Z"
+    },
+    {
+      "position": 30,
+      "title": "Three nonprofits receive $350,000 in grant funding to support homeowner education",
+      "source": {
+        "name": "Milwaukee Journal Sentinel",
+        "icon": "https://encrypted-tbn2.gstatic.com/faviconV2?url=https://www.jsonline.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Alyssa N. Salcedo"
+        ]
+      },
+      "link": "https://www.jsonline.com/story/news/local/milwaukee/neighborhoods/2026/08/20/local-homebuyer-education-agencies-receive-350000-in-grant-funding/91372992007/",
+      "thumbnail": "https://www.jsonline.com/gcdn/authoring/authoring-images/2026/08/19/PMJS/91377258007-actshousingphotolead.jpg?width=660&height=440&fit=crop&format=pjpg&auto=webp",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNVZOR3hSTVVkb2VXbHhlbWRuVFJDNEF4aVVCU2dLTWdZQlFJWU1IZ28",
+      "date": "08/20/2026, 10:07 AM, +0000 UTC",
+      "iso_date": "2026-08-20T10:07:00Z"
+    },
+    {
+      "position": 31,
+      "title": "Wisconsin Homelessness Rises Again in 2026",
+      "source": {
+        "name": "Urban Milwaukee",
+        "icon": "https://encrypted-tbn1.gstatic.com/faviconV2?url=https://urbanmilwaukee.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Graham Kilmer"
+        ]
+      },
+      "link": "https://urbanmilwaukee.com/2026/08/19/wisconsin-homelessness-rises-again-in-2026/",
+      "thumbnail": "https://urbanmilwaukee.com/wp-content/uploads/2023/02/IMG_1299.jpeg",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNHpiV3g0YnpWYU9YUjBlVTloVFJEZ0F4aUFCU2dLTWdhVjBwQnJ3UVU",
+      "date": "08/19/2026, 04:53 PM, +0000 UTC",
+      "iso_date": "2026-08-19T16:53:00Z"
+    },
+    {
+      "position": 32,
+      "title": "City Plan Commission approves Metcalfe Park improvement district",
+      "source": {
+        "name": "Milwaukee Journal Sentinel",
+        "icon": "https://encrypted-tbn2.gstatic.com/faviconV2?url=https://www.jsonline.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "April Quevedo"
+        ]
+      },
+      "link": "https://www.jsonline.com/story/news/local/milwaukee/neighborhoods/2026/08/17/metcalfe-park-neighborhood-improvement-district-moves-ahead-to-common-council-vote/91340621007/",
+      "thumbnail": "https://www.jsonline.com/gcdn/authoring/authoring-images/2026/08/17/PMJS/91344267007-mjs-metcalfe-nid-ae-001.JPG?width=660&height=440&fit=crop&format=pjpg&auto=webp",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNWZja05oU0RSRk1qVjRaMFJuVFJDNEF4aVVCU2dLTWdZQmdJNUR0QWM",
+      "date": "08/17/2026, 09:49 PM, +0000 UTC",
+      "iso_date": "2026-08-17T21:49:00Z"
+    },
+    {
+      "position": 33,
+      "title": "Dr. Lyle Ignace steps down as leader of the Gerald L. Ignace Indian Health Center",
+      "source": {
+        "name": "Milwaukee Neighborhood News Service",
+        "icon": "https://encrypted-tbn1.gstatic.com/faviconV2?url=https://milwaukeenns.org&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Chesnie Wardell"
+        ]
+      },
+      "link": "https://milwaukeenns.org/2026/08/20/dr-lyle-ignace-steps-down-as-leader-of-the-gerald-l-ignace-indian-health-center/",
+      "thumbnail": "https://i0.wp.com/milwaukeenns.org/wp-content/uploads/2026/08/55476872681_279ffd66b9_k.jpg?fit=1200%2C900&ssl=1",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNURURkZ0YjJKbUxWQk5ObXRLVFJEZ0F4aUFCU2dLTWdZTndJb3FRZ1k",
+      "date": "08/20/2026, 08:30 PM, +0000 UTC",
+      "iso_date": "2026-08-20T20:30:24Z"
+    },
+    {
+      "position": 34,
+      "title": "One goal for every Milwaukee Bucks player: Kasparas Jakucionis’s development",
+      "source": {
+        "name": "Dairyland Express",
+        "icon": "https://encrypted-tbn1.gstatic.com/faviconV2?url=https://dairylandexpress.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Brian Sampson"
+        ]
+      },
+      "link": "https://dairylandexpress.com/one-goal-for-every-milwaukee-bucks-player-kasparas-jakucionis-s-development-01m0800ndrm5",
+      "thumbnail": "https://images2.minutemediacdn.com/image/upload/c_crop,x_0,y_31,w_5444,h_3062/c_fill,w_720,ar_16:9,f_auto,q_auto,g_auto/images/ReutersImages/mmsport/325/01m0802b1503hdt6p94a.jpg",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNHdhRzQyVnpVMFpqVTVkRkZvVFJDVkF4alFCU2dLTWdZbEpZak5tUVk",
+      "date": "08/18/2026, 01:00 PM, +0000 UTC",
+      "iso_date": "2026-08-18T13:00:02Z"
+    },
+    {
+      "position": 35,
+      "title": "Thousands without power in Southeast Wisconsin following Tuesday night's storms",
+      "source": {
+        "name": "TMJ4 News",
+        "icon": "https://encrypted-tbn3.gstatic.com/faviconV2?url=https://www.tmj4.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Brendyn Jones",
+          "Chad Jorgenson"
+        ]
+      },
+      "link": "https://www.tmj4.com/news/local-news/in-your-community/milwaukee-county/thousands-without-power-in-southeast-wisconsin-following-tuesday-nights-storms",
+      "thumbnail": "https://ewscripps.brightspotcdn.com/dims4/default/c251af8/2147483647/strip/true/crop/3002x1576+0+45/resize/1200x630!/quality/90/?url=http%3A%2F%2Fewscripps-brightspot.s3.amazonaws.com%2Ff1%2F6e%2F7ca223dd4cd78c8131a2de67d00c%2Fscreenshot-2026-08-18-at-22-34-18.png",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iJ0NnNXhibWw1Y0ZjeWRuRkJOMk5tVFJDUkF4ajhCU2dLTWdNQmtBNA",
+      "date": "08/19/2026, 01:41 AM, +0000 UTC",
+      "iso_date": "2026-08-19T01:41:00Z"
+    },
+    {
+      "position": 36,
+      "title": "Bay View 'Pink Diamond' home, a popular party rental, lists for $469k",
+      "source": {
+        "name": "Milwaukee Journal Sentinel",
+        "icon": "https://encrypted-tbn2.gstatic.com/faviconV2?url=https://www.jsonline.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Francesca Pica"
+        ]
+      },
+      "link": "https://www.jsonline.com/story/money/business/2026/08/18/milwaukee-pink-diamond-rental-home-is-for-sale-in-bay-view/91255725007/",
+      "thumbnail": "https://www.jsonline.com/gcdn/authoring/authoring-images/2026/08/13/PMJS/91292555007-mjs-pink-house-0038.jpg?crop=2399,1350,x0,y240&width=660&height=371&format=pjpg&auto=webp",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iJ0NnNDNPSE0wWDFrNWJqRnhObEJmVFJEekFoaVVCU2dLTWdPQmtRUQ",
+      "date": "08/18/2026, 12:25 PM, +0000 UTC",
+      "iso_date": "2026-08-18T12:25:00Z"
+    },
+    {
+      "position": 37,
+      "title": "A scar, not a wound: Faith leaders reflect on the next 10 years for Sherman Park",
+      "source": {
+        "name": "Milwaukee Neighborhood News Service",
+        "icon": "https://encrypted-tbn1.gstatic.com/faviconV2?url=https://milwaukeenns.org&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL"
+      },
+      "link": "https://milwaukeenns.org/2026/08/16/faith-leaders-reflect-on-10-year-anniversary-of-sherman-park-uprising/",
+      "thumbnail": "https://i0.wp.com/milwaukeenns.org/wp-content/uploads/2026/08/NNS-Faith-Leaders.png?fit=1200%2C900&ssl=1",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iL0NnNURNR0ZRUzJwaGRYbERSamMwVFJEZ0F4aUFCU2dLTWdrQklKNXlJR21TNVFJ",
+      "date": "08/16/2026, 10:00 PM, +0000 UTC",
+      "iso_date": "2026-08-16T22:00:00Z"
+    },
+    {
+      "position": 38,
+      "title": "The Governorship of a Man of African Descent and Its Influence on Wisconsin's Institutions: Housing, Healthcare, Employment, Education, and Social Justice",
+      "source": {
+        "name": "The Milwaukee Courier",
+        "icon": "https://encrypted-tbn1.gstatic.com/faviconV2?url=https://milwaukeecourier.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL"
+      },
+      "link": "https://milwaukeecourier.com/news/2026/08/18/the-governorship-of-a-man-of-african-descent-and-its-influence-on-wisconsins-institutions-housing-healthcare-employment-education-and-social-justice",
+      "thumbnail": "https://img.civicmedia.us/img?url=https%3A%2F%2Fwp.civicmedia.us%2Fwp-content%2Fuploads%2F2026%2F08%2Faf1bcbb3-3610-4121-81ef-b01191103848.png&w=1920&q=75&f=auto",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNDNYelZoTkVaR2F5MWliMk4zVFJDMkF4aThCU2dLTWdZaFZZZ3J1Z1U",
+      "date": "08/18/2026, 05:37 PM, +0000 UTC",
+      "iso_date": "2026-08-18T17:37:00Z"
+    },
+    {
+      "position": 39,
+      "title": "Nia Imani Welcomes Sheena Adams as New Executive Director",
+      "source": {
+        "name": "Urban Milwaukee",
+        "icon": "https://encrypted-tbn1.gstatic.com/faviconV2?url=https://urbanmilwaukee.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL"
+      },
+      "link": "https://urbanmilwaukee.com/pressrelease/nia-imani-welcomes-sheena-adams-as-new-executive-director/",
+      "thumbnail": "https://urbanmilwaukee.com/wp-content/uploads/2026/08/Sheena_Adams.png",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNVpNMWRaVEVSRFlrOUNibmt5VFJEaEFSamhBU2dCTWdhTk1wQVVJUWs",
+      "date": "08/17/2026, 04:39 PM, +0000 UTC",
+      "iso_date": "2026-08-17T16:39:00Z"
+    },
+    {
+      "position": 40,
+      "title": "6 Wisconsin ZIP Codes Rank Among America's Hottest Housing Markets",
+      "source": {
+        "name": "Patch",
+        "icon": "https://encrypted-tbn3.gstatic.com/faviconV2?url=https://patch.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "William Bornhoft"
+        ]
+      },
+      "link": "https://patch.com/wisconsin/milwaukee/6-wisconsin-zip-codes-rank-among-americas-hottest-housing-markets",
+      "thumbnail": "https://patch.com/img/cdn20/shutterstock/22887410/20260817/103411/styles/patch_image/public/shutterstock-2653140901-2___17102641027.jpg",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNDBaWEJqT1ROUWEybDNiRVU0VFJEZ0F4aUFCU2dLTWdhQlVaVDByQWM",
+      "date": "08/17/2026, 02:34 PM, +0000 UTC",
+      "iso_date": "2026-08-17T14:34:12Z"
+    },
+    {
+      "position": 41,
+      "title": "The Milwaukee block that keeps getting flooded and one family's struggle to stay dry",
+      "source": {
+        "name": "WUWM",
+        "icon": "https://encrypted-tbn1.gstatic.com/faviconV2?url=https://www.wuwm.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL"
+      },
+      "link": "https://www.wuwm.com/the-milwaukee-block-that-keeps-getting-flooded",
+      "thumbnail": "https://npr.brightspotcdn.com/dims4/default/0c50e86/2147483647/strip/true/crop/1200x1600+0+0/resize/880x1173!/quality/90/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2F93%2F88%2F1403e0ec4ae3a47fd04720e09e56%2Fimage000001.jpg",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNTJjRzh0YkdkTmEycFBRVTk1VFJEX0JCamdBeWdLTWdhQmtKYWx0Z2M",
+      "date": "08/19/2026, 04:48 PM, +0000 UTC",
+      "iso_date": "2026-08-19T16:48:00Z"
+    },
+    {
+      "position": 42,
+      "title": "Abandoned motorcycles will now help facilitate youth STEM/STEAM development",
+      "source": {
+        "name": "Milwaukee Community Journal -",
+        "icon": "https://encrypted-tbn2.gstatic.com/faviconV2?url=https://communityjournal.net&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL"
+      },
+      "link": "https://communityjournal.net/abandoned-motorcycles-will-now-help-facilitate-youth-stem-steam-development/",
+      "thumbnail": "https://content.communityjournal.net/content/uploads/20260818154154/BikerFestMke.jpg",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNVNRamhhTjFOVFZHZEJOelJpVFJEUUF4aVVCU2dLTWdZbFpJNk5MUVk",
+      "date": "08/18/2026, 11:20 PM, +0000 UTC",
+      "iso_date": "2026-08-18T23:20:39Z"
+    },
+    {
+      "position": 43,
+      "title": "In the works since 2022, 310W conversion unlocked by city incentives",
+      "source": {
+        "name": "The Business Journals",
+        "icon": "https://encrypted-tbn0.gstatic.com/faviconV2?url=https://www.bizjournals.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Addison Lathers"
+        ]
+      },
+      "link": "https://www.bizjournals.com/milwaukee/news/2026/08/21/310w-conversion-incentives.html",
+      "thumbnail": "https://media.bizj.us/view/img/13064112/wtwentyone*900xx4606-2587-0-869.jpg",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iL0NnNDRiVU5OZVVwV1RsSk1lWFZYVFJDZkF4ampCU2dLTWdrQlVJWm9MT2Vaa2dF",
+      "date": "08/21/2026, 11:47 AM, +0000 UTC",
+      "iso_date": "2026-08-21T11:47:00Z"
+    },
+    {
+      "position": 44,
+      "title": "Work nears start on Royal Capital's long-awaited urban village in Texas",
+      "source": {
+        "name": "The Business Journals",
+        "icon": "https://encrypted-tbn0.gstatic.com/faviconV2?url=https://www.bizjournals.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Seth Bodine"
+        ]
+      },
+      "link": "https://www.bizjournals.com/milwaukee/news/2026/08/20/royal-capital-evans-rosedale-construction-timeline.html",
+      "thumbnail": "https://media.bizj.us/view/img/12902644/royalcapital1*1200xx2117-1198-112-158.png",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNVdjbWxyVkc1Zk5tRm9abTFIVFJDZ0F4amdCU2dLTWdZQllJaG5QUVU",
+      "date": "08/20/2026, 11:48 AM, +0000 UTC",
+      "iso_date": "2026-08-20T11:48:00Z"
+    },
+    {
+      "position": 45,
+      "title": "8041 W Bluemound Rd Apt 513, Milwaukee, WI 53213",
+      "source": {
+        "name": "Realtor.com",
+        "icon": "https://encrypted-tbn1.gstatic.com/faviconV2?url=https://www.realtor.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL"
+      },
+      "link": "https://www.realtor.com/rentals/details/8041-W-Bluemound-Rd-Apt-513_Milwaukee_WI_53213_M97339-77563",
+      "thumbnail": "https://ap.rdcpix.com/d7664d3c0d05e6520ef679b54676213dl-m1164505470rd-w1280_h960.webp",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iI0NnNW5hVXA1YjBFelMwMTFaazl5VFJDM0FSaVRBaWdCTWdB",
+      "date": "08/19/2026, 02:08 AM, +0000 UTC",
+      "iso_date": "2026-08-19T02:08:06Z"
+    },
+    {
+      "position": 46,
+      "title": "Firearms greatly increase the risk of death or injury in domestic violence situations. Here are some steps you can take to try and stay safe.",
+      "source": {
+        "name": "The Milwaukee Courier",
+        "icon": "https://encrypted-tbn1.gstatic.com/faviconV2?url=https://milwaukeecourier.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Devin Blake"
+        ]
+      },
+      "link": "https://milwaukeecourier.com/news/2026/08/19/firearms-greatly-increase-the-risk-of-death-or-injury-in-domestic-violence-situations-here-are-some-steps-you-can-take-to-try-and-stay-safe",
+      "thumbnail": "https://img.civicmedia.us/img?url=https%3A%2F%2Fwp.civicmedia.us%2Fwp-content%2Fuploads%2F2026%2F08%2FG86A4049-scaled-1.jpg&w=1920&q=75&f=auto",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iJ0NnNVlWWFU0ZHprMU1uRkhZVmR0VFJEdkF4anJCQ2dLTWdNRndBUQ",
+      "date": "08/19/2026, 02:13 PM, +0000 UTC",
+      "iso_date": "2026-08-19T14:13:00Z"
+    },
+    {
+      "position": 47,
+      "title": "Tree rips through roof of popular pizza shop on Milwaukee's West Side",
+      "source": {
+        "name": "WISN",
+        "icon": "https://encrypted-tbn2.gstatic.com/faviconV2?url=https://www.wisn.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Imani Fleming"
+        ]
+      },
+      "link": "https://www.wisn.com/article/tree-rips-through-roof-of-popular-pizza-shop-on-milwaukees-west-side/73476554",
+      "thumbnail": "https://hips.hearstapps.com/vidthumb/aa5425a2-ec55-4152-80ba-c20b318fe9c7/2c514e14-3772-43c8-be4d-5496db826890.jpg?crop=1xw:1.0xh;center,top",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNTVTakpWTkZwbFFVVmhXR0pYVFJDZkF4ampCU2dLTWdZQjhJRERYQUU",
+      "date": "08/19/2026, 10:59 PM, +0000 UTC",
+      "iso_date": "2026-08-19T22:59:00Z"
+    },
+    {
+      "position": 48,
+      "title": "Passenger train upgrades heading to Wisconsin, neighboring states",
+      "source": {
+        "name": "The Milwaukee Courier",
+        "icon": "https://encrypted-tbn1.gstatic.com/faviconV2?url=https://milwaukeecourier.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Erik Gunn"
+        ]
+      },
+      "link": "https://milwaukeecourier.com/news/2026/08/20/passenger-train-upgrades-heading-to-wisconsin-neighboring-states",
+      "thumbnail": "https://img.civicmedia.us/img?url=https%3A%2F%2Fwp.civicmedia.us%2Fwp-content%2Fuploads%2F2026%2F08%2FCOV-Hiawatha-01-080519-WisDOT-2136x1415-1.jpg&w=1920&q=75&f=auto",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iK0NnNHdMVjlHZHpkRFZFZFZVeTB0VFJEREF4aW9CU2dLTWdZQlFJNEdwZ1k",
+      "date": "08/20/2026, 04:06 PM, +0000 UTC",
+      "iso_date": "2026-08-20T16:06:00Z"
+    },
+    {
+      "position": 49,
+      "title": "Midtown apartment development getting $1 million city loan",
+      "source": {
+        "name": "Milwaukee Journal Sentinel",
+        "icon": "https://encrypted-tbn2.gstatic.com/faviconV2?url=https://www.jsonline.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL",
+        "authors": [
+          "Tom Daykin"
+        ]
+      },
+      "link": "https://www.jsonline.com/story/money/real-estate/commercial/2026/08/21/milwaukee-midtown-apartment-project-gets-city-loan-for-environmental-cleanup/91401808007/",
+      "thumbnail": "https://www.jsonline.com/gcdn/authoring/authoring-images/2026/03/23/PMJS/89286456007-midtown-commons.jpg?crop=700,393,x154,y0&width=660&height=371&format=pjpg&auto=webp",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iJ0NnNUtURVZTUTB0SVEzbHdOV1kxVFJEekFoaVVCU2dLTWdNaHdBZw",
+      "date": "08/21/2026, 03:48 PM, +0000 UTC",
+      "iso_date": "2026-08-21T15:48:00Z"
+    },
+    {
+      "position": 50,
+      "title": "FHLBank Chicago and WHEDA Recognize Housing Counseling Grants Supporting Milwaukee-Area Homebuyers",
+      "source": {
+        "name": "Eagle-Tribune",
+        "icon": "https://encrypted-tbn2.gstatic.com/faviconV2?url=https://www.eagletribune.com&client=NEWS_360&size=96&type=FAVICON&fallback_opts=TYPE,SIZE,URL"
+      },
+      "link": "https://www.eagletribune.com/region/fhlbank-chicago-and-wheda-recognize-housing-counseling-grants-supporting-milwaukee-area-homebuyers/article_7a3efc6b-7d78-56c1-a9fa-20572c966746.html",
+      "thumbnail": "https://bloximages.chicago2.vip.townnews.com/eagletribune.com/content/tncms/assets/v3/editorial/4/14/414125be-371c-57c0-aa13-dffa3b97de6b/6a8745f9c8794.image.jpg?resize=400%2C234",
+      "thumbnail_small": "https://news.google.com/api/attachments/CC8iL0NnNHphV1ZuU1ZweGJYUXRhRk5UVFJEcUFSaVFBeWdLTWdrQkVKU2xuZWNrN1FF",
+      "date": "08/20/2026, 06:16 PM, +0000 UTC",
+      "iso_date": "2026-08-20T18:16:57Z"
+    }
+  ],
+  "menu_links": [
+    {
+      "title": "U.S.",
+      "topic_token": "CAAqIggKIhxDQkFTRHdvSkwyMHZNRGxqTjNjd0VnSmxiaWdBUAE",
+      "serpapi_link": "https://serpapi.com/search.json?engine=google_news&gl=us&topic_token=CAAqIggKIhxDQkFTRHdvSkwyMHZNRGxqTjNjd0VnSmxiaWdBUAE"
+    },
+    {
+      "title": "World",
+      "topic_token": "CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx1YlY4U0FtVnVHZ0pWVXlnQVAB",
+      "serpapi_link": "https://serpapi.com/search.json?engine=google_news&gl=us&topic_token=CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx1YlY4U0FtVnVHZ0pWVXlnQVAB"
+    },
+    {
+      "title": "Your local news",
+      "topic_token": "CAAqHAgKIhZDQklTQ2pvSWJHOWpZV3hmZGpJb0FBUAE",
+      "serpapi_link": "https://serpapi.com/search.json?engine=google_news&gl=us&topic_token=CAAqHAgKIhZDQklTQ2pvSWJHOWpZV3hmZGpJb0FBUAE"
+    },
+    {
+      "title": "Business",
+      "topic_token": "CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FtVnVHZ0pWVXlnQVAB",
+      "serpapi_link": "https://serpapi.com/search.json?engine=google_news&gl=us&topic_token=CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FtVnVHZ0pWVXlnQVAB"
+    },
+    {
+      "title": "Technology",
+      "topic_token": "CAAqJggKIiBDQkFTRWdvSUwyMHZNRGRqTVhZU0FtVnVHZ0pWVXlnQVAB",
+      "serpapi_link": "https://serpapi.com/search.json?engine=google_news&gl=us&topic_token=CAAqJggKIiBDQkFTRWdvSUwyMHZNRGRqTVhZU0FtVnVHZ0pWVXlnQVAB"
+    },
+    {
+      "title": "Entertainment",
+      "topic_token": "CAAqJggKIiBDQkFTRWdvSUwyMHZNREpxYW5RU0FtVnVHZ0pWVXlnQVAB",
+      "serpapi_link": "https://serpapi.com/search.json?engine=google_news&gl=us&topic_token=CAAqJggKIiBDQkFTRWdvSUwyMHZNREpxYW5RU0FtVnVHZ0pWVXlnQVAB"
+    },
+    {
+      "title": "Sports",
+      "topic_token": "CAAqJggKIiBDQkFTRWdvSUwyMHZNRFp1ZEdvU0FtVnVHZ0pWVXlnQVAB",
+      "serpapi_link": "https://serpapi.com/search.json?engine=google_news&gl=us&topic_token=CAAqJggKIiBDQkFTRWdvSUwyMHZNRFp1ZEdvU0FtVnVHZ0pWVXlnQVAB"
+    },
+    {
+      "title": "Science",
+      "topic_token": "CAAqJggKIiBDQkFTRWdvSUwyMHZNRFp0Y1RjU0FtVnVHZ0pWVXlnQVAB",
+      "serpapi_link": "https://serpapi.com/search.json?engine=google_news&gl=us&topic_token=CAAqJggKIiBDQkFTRWdvSUwyMHZNRFp0Y1RjU0FtVnVHZ0pWVXlnQVAB"
+    },
+    {
+      "title": "Health",
+      "topic_token": "CAAqIQgKIhtDQkFTRGdvSUwyMHZNR3QwTlRFU0FtVnVLQUFQAQ",
+      "serpapi_link": "https://serpapi.com/search.json?engine=google_news&gl=us&topic_token=CAAqIQgKIhtDQkFTRGdvSUwyMHZNR3QwTlRFU0FtVnVLQUFQAQ"
+    }
+  ]
+}

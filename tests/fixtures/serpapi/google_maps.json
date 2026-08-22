@@ -1,0 +1,32 @@
+{
+  "_handwritten": true,
+  "_note": "Live capture for a 'Milwaukee Neighborhood News Service' google_maps query returned SerpApi HTTP 400 (1 of the 8 authorized calls); not retried further to stay within budget. Hand-written from SerpApi's documented Google Maps API local_results shape. Must be replaced with a live capture during item 10's live scan.",
+  "local_results": [
+    {
+      "position": 1,
+      "title": "Milwaukee Neighborhood News Service",
+      "place_id": "ChIJ_examplePlaceId1",
+      "data_id": "0x0:0x1",
+      "gps_coordinates": { "latitude": 43.0389, "longitude": -87.9065 },
+      "rating": 4.4,
+      "reviews": 12,
+      "type": "News service",
+      "types": ["News service", "Nonprofit organization"],
+      "address": "161 W Wisconsin Ave, Milwaukee, WI 53203",
+      "phone": "(414) 227-3122",
+      "website": "https://milwaukeenns.org",
+      "description": "Nonprofit community news organization covering Milwaukee neighborhoods."
+    },
+    {
+      "position": 2,
+      "title": "Milwaukee Neighborhood News Service Archive Room",
+      "place_id": "ChIJ_examplePlaceId2",
+      "data_id": "0x0:0x2",
+      "gps_coordinates": { "latitude": 43.039, "longitude": -87.907 },
+      "type": "Library",
+      "types": ["Library"],
+      "address": "161 W Wisconsin Ave, Milwaukee, WI 53203"
+    },
+    { "position": 3, "rating": 4.0 }
+  ]
+}
