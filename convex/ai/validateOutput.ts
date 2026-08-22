@@ -16,6 +16,8 @@ export type ValidationContext = {
   excerptsBySourceId: Readonly<Record<string, readonly string[]>>;
   /** Sources the DETERMINISTIC layer already classified as confirming. */
   confirmedSourceIds?: readonly string[];
+  /** Candidate ids we showed the model. A link to any other is an invention. */
+  knownCandidateIds?: readonly string[];
 };
 
 export type ValidationResult = { ok: true } | { ok: false; errors: string[] };
@@ -23,6 +25,7 @@ export type ValidationResult = { ok: true } | { ok: false; errors: string[] };
 const ID_FIELD = "sourceResultId";
 const IDS_FIELD = "sourceResultIds";
 const EXCERPT_FIELDS = ["exactExcerpt", "quotation"] as const;
+const CANDIDATE_ID_FIELDS = ["suggestedExistingCandidateId"] as const;
 
 // translated field -> the original-language field that must accompany it.
 const TRANSLATION_PAIRS: Record<string, string> = {
@@ -51,22 +54,26 @@ const citedIdsOf = (node: Record<string, unknown>): string[] => {
 export function validateAgainstSources(output: unknown, context: ValidationContext): ValidationResult {
   const known = new Set(context.knownSourceIds);
   const confirmed = context.confirmedSourceIds === undefined ? undefined : new Set(context.confirmedSourceIds);
+  const knownCandidates = context.knownCandidateIds === undefined ? undefined : new Set(context.knownCandidateIds);
   const errors: string[] = [];
 
   // `confirmedPath` is true once we are anywhere inside a `confirmedFacts` block,
   // so a nested citation cannot dodge the promotion check by sitting one level down.
-  const walk = (node: unknown, path: string, confirmedPath: boolean): void => {
+  // `inheritedCited` carries the nearest enclosing citation down the tree. A claim
+  // nested inside an analyzed result quotes THAT result — it does not repeat the id.
+  const walk = (node: unknown, path: string, confirmedPath: boolean, inheritedCited: string[]): void => {
     if (typeof node === "string") {
       if (URL_LIKE.test(node)) errors.push(`${path}: contains an executable URL or search operator`);
       return;
     }
     if (Array.isArray(node)) {
-      node.forEach((child, i) => walk(child, `${path}[${i}]`, confirmedPath));
+      node.forEach((child, i) => walk(child, `${path}[${i}]`, confirmedPath, inheritedCited));
       return;
     }
     if (!isRecord(node)) return;
 
     const cited = citedIdsOf(node);
+    const effectiveCited = cited.length > 0 ? cited : inheritedCited;
     for (const id of cited) {
       if (!known.has(id)) errors.push(`${path}: cites unknown source id "${id}"`);
     }
@@ -82,13 +89,21 @@ export function validateAgainstSources(output: unknown, context: ValidationConte
     for (const field of EXCERPT_FIELDS) {
       const quoted = node[field];
       if (typeof quoted !== "string") continue;
-      if (cited.length === 0) {
+      if (effectiveCited.length === 0) {
         errors.push(`${path}.${field}: a quotation with no cited source`);
         continue;
       }
-      const allowed = cited.flatMap((id) => context.excerptsBySourceId[id] ?? []);
+      const allowed = effectiveCited.flatMap((id) => context.excerptsBySourceId[id] ?? []);
       if (!allowed.some((stored) => stored === quoted)) {
         errors.push(`${path}.${field}: does not exactly match any stored excerpt of its cited sources`);
+      }
+    }
+
+    for (const field of CANDIDATE_ID_FIELDS) {
+      const suggested = node[field];
+      if (typeof suggested !== "string" || suggested.length === 0) continue;
+      if (knownCandidates === undefined || !knownCandidates.has(suggested)) {
+        errors.push(`${path}.${field}: suggests an unknown candidate id "${suggested}"`);
       }
     }
 
@@ -103,10 +118,10 @@ export function validateAgainstSources(output: unknown, context: ValidationConte
 
     for (const [key, value] of Object.entries(node)) {
       if (key === ID_FIELD || key === IDS_FIELD) continue;
-      walk(value, path ? `${path}.${key}` : key, confirmedPath || key === "confirmedFacts");
+      walk(value, path ? `${path}.${key}` : key, confirmedPath || key === "confirmedFacts", effectiveCited);
     }
   };
 
-  walk(output, "", false);
+  walk(output, "", false, []);
   return errors.length === 0 ? { ok: true } : { ok: false, errors };
 }

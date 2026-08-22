@@ -8,10 +8,13 @@
  * @module
  */
 
+import type * as ai_analyzeResults from "../ai/analyzeResults.js";
+import type * as ai_clusterSignals from "../ai/clusterSignals.js";
 import type * as ai_contracts from "../ai/contracts.js";
 import type * as ai_pricing from "../ai/pricing.js";
 import type * as ai_prompts from "../ai/prompts.js";
 import type * as ai_provider from "../ai/provider.js";
+import type * as ai_runOperation from "../ai/runOperation.js";
 import type * as ai_validateOutput from "../ai/validateOutput.js";
 import type * as config_beats from "../config/beats.js";
 import type * as config_coverageOutlets from "../config/coverageOutlets.js";
@@ -49,10 +52,13 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  "ai/analyzeResults": typeof ai_analyzeResults;
+  "ai/clusterSignals": typeof ai_clusterSignals;
   "ai/contracts": typeof ai_contracts;
   "ai/pricing": typeof ai_pricing;
   "ai/prompts": typeof ai_prompts;
   "ai/provider": typeof ai_provider;
+  "ai/runOperation": typeof ai_runOperation;
   "ai/validateOutput": typeof ai_validateOutput;
   "config/beats": typeof config_beats;
   "config/coverageOutlets": typeof config_coverageOutlets;

@@ -139,3 +139,57 @@ describe("validateAgainstSources — no executable URL may appear anywhere", () 
     expect(result.errors).toHaveLength(2);
   });
 });
+
+describe("validateAgainstSources — a nested quotation inherits its parent's citation", () => {
+  it("accepts a claim quoting the result it sits inside, without repeating the ID", () => {
+    const out = {
+      items: [{
+        sourceResultId: "src_a",
+        claims: [{ text: "The board approved it.", exactExcerpt: "The board voted 9-4 to approve the rezoning." }],
+      }],
+    };
+    expect(validateAgainstSources(out, ctx)).toEqual({ ok: true });
+  });
+
+  it("still rejects a nested quotation that belongs to a different source", () => {
+    const out = {
+      items: [{
+        sourceResultId: "src_a",
+        claims: [{ text: "Buses ran late.", exactExcerpt: "Riders reported 40-minute waits on the 30X." }],
+      }],
+    };
+    expect(validateAgainstSources(out, ctx).ok).toBe(false);
+  });
+
+  it("a nested block that cites its own sources uses those, not the parent's", () => {
+    const out = {
+      items: [{
+        sourceResultId: "src_a",
+        claims: [{ sourceResultIds: ["src_b"], text: "Buses ran late.", exactExcerpt: "Riders reported 40-minute waits on the 30X." }],
+      }],
+    };
+    expect(validateAgainstSources(out, ctx)).toEqual({ ok: true });
+  });
+});
+
+describe("validateAgainstSources — suggested candidate links", () => {
+  it("accepts a link to a candidate that was supplied", () => {
+    const out = { clusters: [{ sourceResultIds: ["src_a"], suggestedExistingCandidateId: "cand_1" }] };
+    expect(validateAgainstSources(out, { ...ctx, knownCandidateIds: ["cand_1"] })).toEqual({ ok: true });
+  });
+
+  it("rejects a link to a candidate that was not", () => {
+    const out = { clusters: [{ sourceResultIds: ["src_a"], suggestedExistingCandidateId: "cand_invented" }] };
+    expect(validateAgainstSources(out, { ...ctx, knownCandidateIds: ["cand_1"] }).ok).toBe(false);
+  });
+
+  it("rejects any candidate link when none were supplied", () => {
+    const out = { clusters: [{ sourceResultIds: ["src_a"], suggestedExistingCandidateId: "cand_1" }] };
+    expect(validateAgainstSources(out, ctx).ok).toBe(false);
+  });
+
+  it("allows a null link", () => {
+    const out = { clusters: [{ sourceResultIds: ["src_a"], suggestedExistingCandidateId: null }] };
+    expect(validateAgainstSources(out, ctx)).toEqual({ ok: true });
+  });
+});
