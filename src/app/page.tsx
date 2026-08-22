@@ -2,7 +2,7 @@ import Link from "next/link";
 import { LabelLegend } from "@/components/ui/editorial/label-legend";
 import { ThemeToggle } from "@/components/ui/editorial/theme-toggle";
 import { routes } from "@/lib/routes";
-import { BEATS_ARRAY } from "@/lib/source-labels";
+import { BEAT_TEXT } from "@/lib/source-labels";
 
 const SCOPE_LABEL_CLASS = "text-xs font-medium uppercase tracking-wide text-muted";
 
@@ -27,7 +27,7 @@ export default function Home() {
         <div>
           <h2 className={SCOPE_LABEL_CLASS}>Beats</h2>
           <ul className="mt-1 space-y-1">
-            {BEATS_ARRAY.map((beat) => <li key={beat}>{beat}</li>)}
+            {Object.values(BEAT_TEXT).map((beat) => <li key={beat}>{beat}</li>)}
           </ul>
         </div>
         <div>
