@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { api, internal } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { scanDoc } from "../fixtures/factories";
 import { asUser, setup } from "./helpers";
 
@@ -71,5 +72,61 @@ describe("searchRuns.reserve", () => {
     const { scanId } = await ownedScan(t);
     await t.run((ctx) => ctx.db.patch(scanId, { cancelRequestedAt: 1 }));
     expect(await t.mutation(internal.searchRuns.reserve, { scanId, spec: spec("x") })).toEqual({ rejected: "scan_not_active" });
+  });
+
+  it("persists candidateId on the stored run", async () => {
+    const t = setup();
+    const { scanId, ownerId } = await ownedScan(t);
+    const candidateId = await t.run((ctx) =>
+      ctx.db.insert("candidates", {
+        ownerId, fingerprint: "fp-1", currentTitle: "t", reportingQuestion: "q",
+        beat: "housing", status: "eligible", primaryLabel: "Worth a look", disposition: "new",
+        latestEvidenceVersion: 1, independentCategoryCount: 1, coverageOriginalCount: 1,
+        coveragePassStatus: "complete", firstSeenAt: 1, lastSeenAt: 1, updatedAt: 1,
+      }),
+    );
+    const r = await t.mutation(internal.searchRuns.reserve, { scanId, spec: { ...spec("cand-01"), candidateId } });
+    expect(r).toMatchObject({ reused: false });
+    const run = await t.run((ctx) => ctx.db.get((r as { runId: Id<"searchRuns"> }).runId));
+    expect(run?.candidateId).toBe(candidateId);
+  });
+});
+
+describe("searchRuns run transitions are idempotent", () => {
+  async function reservedRun(t: ReturnType<typeof setup>) {
+    const { scanId } = await ownedScan(t);
+    const r = await t.mutation(internal.searchRuns.reserve, { scanId, spec: spec("news-housing-en-01") });
+    return { scanId, runId: (r as { runId: Id<"searchRuns"> }).runId };
+  }
+
+  it("calling complete twice increments searchesSucceeded exactly once", async () => {
+    const t = setup();
+    const { scanId, runId } = await reservedRun(t);
+    await t.mutation(internal.searchRuns.complete, { runId, resultCount: 3, durationMs: 100 });
+    await t.mutation(internal.searchRuns.complete, { runId, resultCount: 3, durationMs: 100 });
+    const scan = await t.run((ctx) => ctx.db.get(scanId));
+    expect(scan?.searchesSucceeded).toBe(1);
+  });
+
+  it("calling fail after complete does not decrement or double-count", async () => {
+    const t = setup();
+    const { scanId, runId } = await reservedRun(t);
+    await t.mutation(internal.searchRuns.complete, { runId, resultCount: 3, durationMs: 100 });
+    await t.mutation(internal.searchRuns.fail, { runId, errorCode: "E", errorMessage: "late failure", durationMs: 50 });
+    const scan = await t.run((ctx) => ctx.db.get(scanId));
+    expect(scan?.searchesSucceeded).toBe(1);
+    expect(scan?.searchesFailed).toBe(0);
+    const run = await t.run((ctx) => ctx.db.get(runId));
+    expect(run?.status).toBe("succeeded");
+  });
+
+  it("markRunning on an already-succeeded run is a no-op", async () => {
+    const t = setup();
+    const { runId } = await reservedRun(t);
+    await t.mutation(internal.searchRuns.complete, { runId, resultCount: 3, durationMs: 100 });
+    await t.mutation(internal.searchRuns.markRunning, { runId, parameters: { gl: "us" } });
+    const run = await t.run((ctx) => ctx.db.get(runId));
+    expect(run?.status).toBe("succeeded");
+    expect(run?.attemptCount).toBe(0);
   });
 });

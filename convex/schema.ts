@@ -56,10 +56,12 @@ export default defineSchema({
     errorMessage: v.optional(v.string()),
     reservedAt: v.number(),
     completedAt: v.optional(v.number()),
+    candidateId: v.optional(v.id("candidates")),
   })
     .index("by_scan_purpose", ["scanId", "purpose"])
     .index("by_scan_status", ["scanId", "status"])
-    .index("by_idempotency_key", ["idempotencyKey"]),
+    .index("by_idempotency_key", ["idempotencyKey"])
+    .index("by_candidate", ["candidateId"]),
 
   sourceResults: defineTable({
     scanId: v.id("scans"),

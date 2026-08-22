@@ -89,7 +89,7 @@ export const reserve = internalMutation({
       purpose: spec.purpose, engine: spec.engine, query: spec.query,
       parameters: {}, language: spec.language,
       status: "reserved", attemptCount: 0, resultCount: 0, durationMs: 0,
-      reservedAt: Date.now(),
+      reservedAt: Date.now(), candidateId: spec.candidateId,
     });
     return { runId, reused: false };
   },
@@ -101,6 +101,8 @@ export const markRunning = internalMutation({
   handler: async (ctx, { runId, parameters }) => {
     const run = await ctx.db.get(runId);
     if (!run) return null;
+    // Idempotent: a run already running or terminal is left untouched (Ruling 8).
+    if (run.status !== "reserved" && run.status !== "running") return null;
     // The API key is appended inside the client and is never part of `parameters`.
     await ctx.db.patch(runId, { status: "running", attemptCount: run.attemptCount + 1, parameters });
     return null;
@@ -113,6 +115,8 @@ export const complete = internalMutation({
   handler: async (ctx, { runId, resultCount, durationMs, rawStorageId }) => {
     const run = await ctx.db.get(runId);
     if (!run) return null;
+    // Idempotent: a run already succeeded or failed does not touch scan counters again (Ruling 8).
+    if (run.status !== "reserved" && run.status !== "running") return null;
     await ctx.db.patch(runId, { status: "succeeded", resultCount, durationMs, rawStorageId, completedAt: Date.now() });
     const scan = await ctx.db.get(run.scanId);
     if (scan) await ctx.db.patch(run.scanId, { searchesSucceeded: scan.searchesSucceeded + 1 });
@@ -126,6 +130,8 @@ export const fail = internalMutation({
   handler: async (ctx, { runId, errorCode, errorMessage, durationMs }) => {
     const run = await ctx.db.get(runId);
     if (!run) return null;
+    // Idempotent: a run already succeeded or failed does not touch scan counters again (Ruling 8).
+    if (run.status !== "reserved" && run.status !== "running") return null;
     await ctx.db.patch(runId, { status: "failed", errorCode, errorMessage, durationMs, completedAt: Date.now() });
     const scan = await ctx.db.get(run.scanId);
     if (scan) await ctx.db.patch(run.scanId, { searchesFailed: scan.searchesFailed + 1 });
