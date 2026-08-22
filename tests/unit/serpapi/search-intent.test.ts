@@ -57,4 +57,81 @@ describe("validateSearchIntent", () => {
     const r = validateSearchIntent({ templateId: "corroborate-entity-01", purpose: "corroboration", reason: "x", entityTerms: [] }, ctx);
     expect(r).toEqual({ ok: false, reason: "empty_query" });
   });
+
+  it("rejects a filetype: search operator smuggled through entity terms", () => {
+    const r = validateSearchIntent(
+      { templateId: "corroborate-entity-01", purpose: "corroboration", reason: "x", entityTerms: ["filetype:pdf"] },
+      ctx,
+    );
+    expect(r).toEqual({ ok: false, reason: "raw_parameters" });
+  });
+
+  it("rejects a cache: search operator smuggled through entity terms", () => {
+    const r = validateSearchIntent(
+      { templateId: "corroborate-entity-01", purpose: "corroboration", reason: "x", entityTerms: ["cache:x.com"] },
+      ctx,
+    );
+    expect(r).toEqual({ ok: false, reason: "raw_parameters" });
+  });
+
+  it("rejects site: written with a fullwidth colon as an unapproved domain", () => {
+    const r = validateSearchIntent(
+      { templateId: "corroborate-entity-01", purpose: "corroboration", reason: "x", entityTerms: ["site：example.com"] },
+      ctx,
+    );
+    expect(r).toEqual({ ok: false, reason: "unapproved_domain" });
+  });
+
+  it("rejects site: with a zero-width space hidden inside it as an unapproved domain", () => {
+    const r = validateSearchIntent(
+      { templateId: "corroborate-entity-01", purpose: "corroboration", reason: "x", entityTerms: ["si​te:example.com"] },
+      ctx,
+    );
+    expect(r).toEqual({ ok: false, reason: "unapproved_domain" });
+  });
+
+  it("rejects a percent-encoded parameter smuggled through entity terms", () => {
+    const r = validateSearchIntent(
+      { templateId: "corroborate-entity-01", purpose: "corroboration", reason: "x", entityTerms: ["%26cmd"] },
+      ctx,
+    );
+    expect(r).toEqual({ ok: false, reason: "raw_parameters" });
+  });
+
+  it("rejects more than 8 entity terms as unfocused", () => {
+    const r = validateSearchIntent(
+      {
+        templateId: "corroborate-entity-01",
+        purpose: "corroboration",
+        reason: "x",
+        entityTerms: ["a", "b", "c", "d", "e", "f", "g", "h", "i"],
+      },
+      ctx,
+    );
+    expect(r).toEqual({ ok: false, reason: "raw_parameters" });
+  });
+
+  it("accepts a plain entity term", () => {
+    const r = validateSearchIntent(
+      { templateId: "corroborate-entity-01", purpose: "corroboration", reason: "x", entityTerms: ["Bronzeville"] },
+      ctx,
+    );
+    expect(r.ok).toBe(true);
+  });
+
+  it("accepts an entity term with a period and abbreviation", () => {
+    const r = validateSearchIntent(
+      { templateId: "corroborate-entity-01", purpose: "corroboration", reason: "x", entityTerms: ["N. 6th St."] },
+      ctx,
+    );
+    expect(r.ok).toBe(true);
+  });
+
+  it("accepts a Spanish entity term with an accented character", () => {
+    const r = validateSearchIntent(
+      { templateId: "corroborate-entity-01", purpose: "corroboration", reason: "x", entityTerms: ["zonificación"] },
+      ctx,
+    );
+    expect(r.ok).toBe(true);
+  });
 });

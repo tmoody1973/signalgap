@@ -147,11 +147,6 @@ const templates: QueryTemplate[] = [
   },
 ];
 
-const byId = new Map(templates.map((t) => [t.id, t]));
-export type TemplateId = string;
-export const getTemplate = (id: TemplateId): QueryTemplate | undefined => byId.get(id);
-export const renderQuery = (t: QueryTemplate, args: { now: number; terms: string[] }) => t.build(args);
-
 export const DISCOVERY_TEMPLATE_IDS = [
   "trend-milwaukee-01",
   "news-housing-en-01", "news-transport-en-01", "news-culture-en-01",
@@ -162,3 +157,17 @@ export const DISCOVERY_TEMPLATE_IDS = [
 ] as const;
 
 export const COVERAGE_TEMPLATE_IDS = ["coverage-general-01", "coverage-community-01"] as const;
+
+export const SUPPLEMENTAL_TEMPLATE_IDS = ["corroborate-entity-01", "official-record-entity-01"] as const;
+
+// Frozen union of every id a model may ask for — `getTemplate` still takes a plain
+// `string` at the boundary since a model-supplied id is untrusted input; the byId
+// lookup itself is the narrowing (a hit can only be one of these ids).
+export type TemplateId =
+  | (typeof DISCOVERY_TEMPLATE_IDS)[number]
+  | (typeof COVERAGE_TEMPLATE_IDS)[number]
+  | (typeof SUPPLEMENTAL_TEMPLATE_IDS)[number];
+
+const byId = new Map(templates.map((t) => [t.id, t]));
+export const getTemplate = (id: string): QueryTemplate | undefined => byId.get(id);
+export const renderQuery = (t: QueryTemplate, args: { now: number; terms: string[] }) => t.build(args);

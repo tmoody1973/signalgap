@@ -73,4 +73,15 @@ describe("query catalog", () => {
       expect(t.timeWindow).toBe(id === "trend-milwaukee-01" ? "current" : "7d");
     }
   });
+
+  it("official-record-entity-01 searches every official domain for a corroboration entity over 30 days", () => {
+    const t = getTemplate("official-record-entity-01")!;
+    expect(t.engine).toBe("google");
+    expect(t.purposes).toContain("corroboration");
+    expect(t.requiresTerms).toBe(true);
+    expect(t.timeWindow).toBe("30d");
+    const q = render("official-record-entity-01");
+    for (const domain of OFFICIAL_DOMAINS) expect(q).toContain(`site:${domain}`);
+    expect(q).toContain('"Bronzeville apartments"');
+  });
 });
