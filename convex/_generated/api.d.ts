@@ -8,6 +8,8 @@
  * @module
  */
 
+import type * as ai_pricing from "../ai/pricing.js";
+import type * as ai_provider from "../ai/provider.js";
 import type * as config_beats from "../config/beats.js";
 import type * as config_coverageOutlets from "../config/coverageOutlets.js";
 import type * as config_officialDomains from "../config/officialDomains.js";
@@ -30,6 +32,7 @@ import type * as integrations_serpapi_normalize_shared from "../integrations/ser
 import type * as integrations_serpapi_queryCatalog from "../integrations/serpapi/queryCatalog.js";
 import type * as lib_auth from "../lib/auth.js";
 import type * as lib_validators from "../lib/validators.js";
+import type * as modelRuns from "../modelRuns.js";
 import type * as scans from "../scans.js";
 import type * as searchRuns from "../searchRuns.js";
 import type * as sourceResults from "../sourceResults.js";
@@ -43,6 +46,8 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  "ai/pricing": typeof ai_pricing;
+  "ai/provider": typeof ai_provider;
   "config/beats": typeof config_beats;
   "config/coverageOutlets": typeof config_coverageOutlets;
   "config/officialDomains": typeof config_officialDomains;
@@ -65,6 +70,7 @@ declare const fullApi: ApiFromModules<{
   "integrations/serpapi/queryCatalog": typeof integrations_serpapi_queryCatalog;
   "lib/auth": typeof lib_auth;
   "lib/validators": typeof lib_validators;
+  modelRuns: typeof modelRuns;
   scans: typeof scans;
   searchRuns: typeof searchRuns;
   sourceResults: typeof sourceResults;
