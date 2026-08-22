@@ -945,8 +945,8 @@ git commit -m "feat(serpapi): atomic budget reservation with idempotent search r
 
 | `spec.engine` | SerpApi `engine` | Parameters built from the spec |
 | --- | --- | --- |
-| `google` | `google` | `q`, `location`, `gl=us`, `hl`, `num=10`, and `tbs=qdr:w` for `7d` / `qdr:m` for `30d` |
-| `google_news` | `google_news` | `q`, `gl=us`, `hl`, and the news time filter for the window |
+| `google` | `google` | `q`, `location`, `gl=us`, `hl`, and `tbs=qdr:w` for `7d` / `qdr:m` for `30d`. **No `num`** — serpapi.com/search-api documents `start` for pagination but no `num`; the spec's "up to 10 results without pagination" is met by the default page size plus never sending `start`. |
+| `google_news` | `google_news` | `q`, `gl=us`, `hl` — **and nothing else**. serpapi.com/google-news-api documents no `tbs` and no `location`. The time window is a `when:` operator **inside the query text**, rendered by the template (`7d` → `when:7d`, `30d` → `when:1m`) so that `searchRuns.query` equals what actually ran. `buildParams` must never mutate `spec.query`. |
 | `google_trends_trending_now` | `google_trends_trending_now` | `geo` from the rendered query (`US-WI`), `hl=en` — **not** `location` |
 | `google_events` | `google_events` | `q`, `location`, `gl=us`, `hl` |
 | `youtube` | `youtube` | `search_query`, `gl=us`, `hl` |
@@ -1458,6 +1458,36 @@ describe.skipIf(!live)("single bounded SerpApi search", () => {
   }, 90_000);
 });
 ```
+
+- [ ] **Step 3b: Prove the 120 cap under REAL concurrency (Ruling 7).** The 20-way test in Task 4 runs under `convex-test`, which takes a mutex per top-level transaction (`node_modules/convex-test/dist/index.js`) — the mutations never actually interleave, so that test catches ordering bugs but proves nothing about production. Checklist item 5 says "including under concurrency" and demo acceptance gate 5 says "Search count cannot exceed 120 under concurrency"; neither is satisfied until this step passes. Write `tests/live/reserve-concurrency.test.ts`, gated on `LIVE_TESTS === "1"`:
+
+```ts
+import { ConvexHttpClient } from "convex/browser";
+import { describe, expect, it } from "vitest";
+import { internal } from "../../convex/_generated/api";
+
+const live = process.env.LIVE_TESTS === "1" && !!process.env.NEXT_PUBLIC_CONVEX_URL;
+
+describe.skipIf(!live)("reserve holds the cap under real concurrency", () => {
+  it("grants exactly the remaining slots when 20 callers race", async () => {
+    const client = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+    // Seed a scan at 115/120 through an internal test-only mutation, then race.
+    const scanId = await client.mutation(internal.testing.seedScanAtReservation, { reserved: 115 });
+    const specs = Array.from({ length: 20 }, (_, i) => ({
+      templateId: "corroborate-entity-01", engine: "google" as const, purpose: "corroboration" as const,
+      query: `race ${i}`, location: "Milwaukee, Wisconsin, United States" as const,
+      language: "en" as const, timeWindow: "7d" as const,
+    }));
+    const results = await Promise.all(specs.map((spec) => client.mutation(internal.searchRuns.reserve, { scanId, spec })));
+    expect(results.filter((r) => "runId" in r)).toHaveLength(5);
+    const scan = await client.query(internal.testing.readScanCounters, { scanId });
+    expect(scan.searchesReserved).toBe(120);
+    await client.mutation(internal.testing.deleteScanById, { scanId });
+  }, 120_000);
+});
+```
+
+This makes **zero SerpApi calls** — it only exercises Convex mutations. Add the three tiny internal test-only helpers it needs to `convex/testing.ts` (`seedScanAtReservation`, `readScanCounters`, `deleteScanById`), all `internalMutation`/`internalQuery` so no browser can reach them. Run it against the dev deployment and paste the output. If it grants anything other than exactly 5, that is a **Critical** finding — stop and report it rather than adjusting the assertion.
 
 - [ ] **Step 4: Verify**
 
