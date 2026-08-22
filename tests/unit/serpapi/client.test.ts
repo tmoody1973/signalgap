@@ -22,6 +22,11 @@ describe("buildParams", () => {
     expect(p.geo).toBe("US-WI");
     expect(p.location).toBeUndefined();
   });
+  it("maps google_maps to ll coordinates, not location", () => {
+    const p = buildParams(spec({ engine: "google_maps", query: "Milwaukee Neighborhood News Service" }));
+    expect(p.ll).toBe("@43.0389,-87.9065,12z");
+    expect(p.location).toBeUndefined();
+  });
   it("maps youtube to search_query", () => {
     expect(buildParams(spec({ engine: "youtube", query: "milwaukee common council" })).search_query).toBe("milwaukee common council");
   });

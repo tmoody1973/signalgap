@@ -120,7 +120,11 @@ const RESULT_ARRAYS: Record<SearchSpec["engine"], { key: string; normalize: (spe
 export function normalizeResponse(spec: SearchSpec, json: unknown): { results: SourceResultInput[]; skipped: number } {
   const body = json && typeof json === "object" ? (json as Entry) : {};
   const { key, normalize } = RESULT_ARRAYS[spec.engine];
-  const entries = body[key];
+  // google_maps returns a local_results array for a broad query but a single
+  // place_results object when the query resolves to one exact business — treat
+  // that as a one-item list rather than silently dropping the hit.
+  const singlePlace = spec.engine === "google_maps" && !Array.isArray(body[key]) && body.place_results;
+  const entries = singlePlace ? [body.place_results] : body[key];
 
   const results: SourceResultInput[] = [];
   let skipped = 0;

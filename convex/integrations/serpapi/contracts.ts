@@ -5,6 +5,7 @@ export type SearchPurpose = "discovery" | "corroboration" | "coverage" | "enrich
 export type TimeWindow = "7d" | "30d" | "current";
 export type SearchLanguage = "en" | "es";
 export const MILWAUKEE_LOCATION = "Milwaukee, Wisconsin, United States" as const;
+export const MILWAUKEE_LL = "@43.0389,-87.9065,12z" as const;
 
 export type SearchSpec = {
   templateId: string;

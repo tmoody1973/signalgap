@@ -1,4 +1,4 @@
-import type { SearchSpec } from "./contracts";
+import { MILWAUKEE_LL, type SearchSpec } from "./contracts";
 
 const ENDPOINT = "https://serpapi.com/search.json";
 const TIMEOUT_MS = 60_000;
@@ -16,7 +16,9 @@ export function buildParams(spec: SearchSpec): Record<string, string> {
     case "youtube":
       return { ...base, search_query: spec.query, gl: "us" };
     case "google_maps":
-      return { ...base, q: spec.query, location: spec.location, type: "search" };
+      // serpapi.com/google-maps-api: location needs a z/m param to pair with; the
+      // documented shape is ll=@lat,lng,zoom instead.
+      return { ...base, q: spec.query, ll: MILWAUKEE_LL, type: "search" };
     case "google_events":
       return { ...base, q: spec.query, location: spec.location, gl: "us" };
     case "google_news":

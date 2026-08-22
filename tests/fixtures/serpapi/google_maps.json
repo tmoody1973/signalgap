@@ -1,32 +1,160 @@
 {
-  "_handwritten": true,
-  "_note": "Live capture for a 'Milwaukee Neighborhood News Service' google_maps query returned SerpApi HTTP 400 (1 of the 8 authorized calls); not retried further to stay within budget. Hand-written from SerpApi's documented Google Maps API local_results shape. Must be replaced with a live capture during item 10's live scan.",
-  "local_results": [
-    {
-      "position": 1,
-      "title": "Milwaukee Neighborhood News Service",
-      "place_id": "ChIJ_examplePlaceId1",
-      "data_id": "0x0:0x1",
-      "gps_coordinates": { "latitude": 43.0389, "longitude": -87.9065 },
-      "rating": 4.4,
-      "reviews": 12,
-      "type": "News service",
-      "types": ["News service", "Nonprofit organization"],
-      "address": "161 W Wisconsin Ave, Milwaukee, WI 53203",
-      "phone": "(414) 227-3122",
-      "website": "https://milwaukeenns.org",
-      "description": "Nonprofit community news organization covering Milwaukee neighborhoods."
+  "search_parameters": {
+    "engine": "google_maps",
+    "type": "search",
+    "q": "Milwaukee Neighborhood News Service",
+    "ll": "@43.0389,-87.9065,12z",
+    "google_domain": "google.com",
+    "hl": "en"
+  },
+  "search_information": {
+    "local_results_state": "Showing results for type: \"place\" instead of type: \"search\"",
+    "query_displayed": "Milwaukee Neighborhood News Service"
+  },
+  "place_results": {
+    "title": "Milwaukee Neighborhood News Service",
+    "place_id": "ChIJ4-CEwVwZBYgRTVjVUC1R7G8",
+    "data_id": "0x8805195cc184e0e3:0x6fec512d50d5584d",
+    "data_cid": "8064910287785252941",
+    "reviews_link": "https://serpapi.com/search.json?data_id=0x8805195cc184e0e3%3A0x6fec512d50d5584d&engine=google_maps_reviews&hl=en",
+    "photos_link": "https://serpapi.com/search.json?data_id=0x8805195cc184e0e3%3A0x6fec512d50d5584d&engine=google_maps_photos&hl=en",
+    "gps_coordinates": {
+      "latitude": 43.038343999999995,
+      "longitude": -87.9268333
     },
-    {
-      "position": 2,
-      "title": "Milwaukee Neighborhood News Service Archive Room",
-      "place_id": "ChIJ_examplePlaceId2",
-      "data_id": "0x0:0x2",
-      "gps_coordinates": { "latitude": 43.039, "longitude": -87.907 },
-      "type": "Library",
-      "types": ["Library"],
-      "address": "161 W Wisconsin Ave, Milwaukee, WI 53203"
-    },
-    { "position": 3, "rating": 4.0 }
-  ]
+    "place_id_search": "https://serpapi.com/search.json?engine=google_maps&google_domain=google.com&hl=en&place_id=ChIJ4-CEwVwZBYgRTVjVUC1R7G8",
+    "provider_id": "/g/11fp2dh_wj",
+    "thumbnail": "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=fZUjF93KritIjRWuaQTwqg&cb_client=search.gws-prod.gps&w=86&h=86&yaw=174.01428&pitch=0&thumbfov=100",
+    "serpapi_thumbnail": "https://serpapi.com/images/url/q0bSvXicHc1LCsIwFEDR3WRmPlq0CsGZII4URXAiaUyTV9ImNq-N7sZtuRs_kzs89_1yiDGtGEvYG4MjmBzhYXyaREVtCNYbFSFRHVo2CoZuaKtOgV9H1QW4yfpyajbL2a4H3DaH86D2x3y3RFdX7cF0KJNRvXbU5q_Yhxu1MZEsyzlxvzxVlmJRUC6KaUkioHaSk_-lDqMUnH8AnUA5_Q",
+    "unclaimed_listing": true,
+    "type": [
+      "News service"
+    ],
+    "type_ids": [
+      "news_service"
+    ],
+    "address": "Johnson Hall, 1131 W. Wisconsin Ave Diederich College of Communication Marquette University, Unit 430, Milwaukee, WI 53233",
+    "country": "United States",
+    "located_in": "Marquette University",
+    "website": "https://milwaukeenns.org/",
+    "phone": "(414) 604-6397",
+    "plus_code": "23QF+87 Milwaukee, Wisconsin",
+    "images": [
+      {
+        "title": "All",
+        "thumbnail": "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=fZUjF93KritIjRWuaQTwqg&cb_client=maps_sv.tactile.gps&w=224&h=298&yaw=174.01428&pitch=0&thumbfov=100",
+        "serpapi_thumbnail": "https://serpapi.com/images/url/3dxqFHicHc3RCoIwFADQv9lbm1tCGozeguipKIJeZK6pV6a7uaur3-mv-pug8wPn--mIMG6FiDQ5Rwu4hPByPq7Q8DaE1juDELkNg1ikoG4e6tGA36EZAzx0c7_2-3J9nIAO_fk2m9MlPVtm68p6cCPpwWCs4sLJWALveIuRJa1UzjqtyoK9TdJyk_NM5qpgCGQ7nbH_04RFyyz7ARcFOpQ"
+      },
+      {
+        "title": "Street View & 360°",
+        "thumbnail": "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=fZUjF93KritIjRWuaQTwqg&cb_client=maps_sv.tactile.gps&w=224&h=298&yaw=174.01428&pitch=0&thumbfov=100",
+        "serpapi_thumbnail": "https://serpapi.com/images/url/3dxqFHicHc3RCoIwFADQv9lbm1tCGozeguipKIJeZK6pV6a7uaur3-mv-pug8wPn--mIMG6FiDQ5Rwu4hPByPq7Q8DaE1juDELkNg1ikoG4e6tGA36EZAzx0c7_2-3J9nIAO_fk2m9MlPVtm68p6cCPpwWCs4sLJWALveIuRJa1UzjqtyoK9TdJyk_NM5qpgCGQ7nbH_04RFyyz7ARcFOpQ"
+      }
+    ],
+    "people_also_search_for": [
+      {
+        "search_term": "People also search for",
+        "local_results": [
+          {
+            "position": 1,
+            "title": "Milwaukee Community Journal",
+            "data_id": "0x0:0xdc9a15bb79c15fad",
+            "data_cid": "15896041729703370669",
+            "reviews_link": "https://serpapi.com/search.json?data_id=0x0%3A0xdc9a15bb79c15fad&engine=google_maps_reviews&hl=en",
+            "photos_link": "https://serpapi.com/search.json?data_id=0x0%3A0xdc9a15bb79c15fad&engine=google_maps_photos&hl=en",
+            "gps_coordinates": {
+              "latitude": 43.0833939,
+              "longitude": -87.9190993
+            },
+            "place_id_search": "https://serpapi.com/search.json?data=%214m5%213m4%211s0x0%3A0xdc9a15bb79c15fad%218m2%213d43.0833939%214d-87.9190993&engine=google_maps&google_domain=google.com&hl=en&type=place",
+            "rating": 4.5,
+            "reviews": 14,
+            "thumbnail": "https://www.google.com/maps/vt/data=6Xcnw-bricAoUMKU9D0mVMyLzZoYHDhnpyCovv9eSFKBiMmua-NPasQwcaYStR79ly6LJAhj3EArhbY7SLJAbz3nFusV0NUtjz1wI2hJNiF87FEqjGXhF6Q-dhsp4DhEbzH-LA-ij0EtRfAcozHhVGVt1eVPOKbI",
+            "type": [
+              "Newspaper publisher",
+              "Advertising service"
+            ]
+          },
+          {
+            "position": 2,
+            "title": "Now Community Newspapers",
+            "data_id": "0x0:0x660683aa330452cb",
+            "data_cid": "7351708208752513739",
+            "reviews_link": "https://serpapi.com/search.json?data_id=0x0%3A0x660683aa330452cb&engine=google_maps_reviews&hl=en",
+            "photos_link": "https://serpapi.com/search.json?data_id=0x0%3A0x660683aa330452cb&engine=google_maps_photos&hl=en",
+            "gps_coordinates": {
+              "latitude": 43.04128,
+              "longitude": -87.8996157
+            },
+            "place_id_search": "https://serpapi.com/search.json?data=%214m5%213m4%211s0x0%3A0x660683aa330452cb%218m2%213d43.04128%214d-87.8996157&engine=google_maps&google_domain=google.com&hl=en&type=place",
+            "rating": 0,
+            "reviews": 0,
+            "thumbnail": "https://www.google.com/maps/vt/data=feoVIncfGZTxYanyY6O7Um0Ak5UGzAfXE0cnczJz5c1neyAmnQ5dQzT0Ivt1az9STsT0cRLGP14GsbQcEswYRm90RlUraYRLwIFlyqVh1zBV5HYEzoSmv0fVao-xgBIPNumP7D4ft3yAy_84OcAD4URfMLGuzQhP",
+            "type": [
+              "Newspaper publisher"
+            ]
+          },
+          {
+            "position": 3,
+            "title": "Milwaukee Business Journal",
+            "data_id": "0x0:0xa59db8c8682280d3",
+            "data_cid": "11933897758481744083",
+            "reviews_link": "https://serpapi.com/search.json?data_id=0x0%3A0xa59db8c8682280d3&engine=google_maps_reviews&hl=en",
+            "photos_link": "https://serpapi.com/search.json?data_id=0x0%3A0xa59db8c8682280d3&engine=google_maps_photos&hl=en",
+            "gps_coordinates": {
+              "latitude": 43.0417956,
+              "longitude": -87.90578029999999
+            },
+            "place_id_search": "https://serpapi.com/search.json?data=%214m5%213m4%211s0x0%3A0xa59db8c8682280d3%218m2%213d43.0417956%214d-87.90578029999999&engine=google_maps&google_domain=google.com&hl=en&type=place",
+            "rating": 2.8,
+            "reviews": 5,
+            "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkRnSAFEnEcnJ2e0bp4oZHEteCUgqJE4KeEFevoCUPdcyrNxN0PszT2pOmTuVKsc_e24VT8obwVV4_XH2fljlN8G7-AYOhFiEkrSaJGRdQ81Sd2Xyrarj_0890TO1JtHGb6ucgD3Q=w195-h195-n-k-no",
+            "type": [
+              "Newspaper publisher"
+            ]
+          },
+          {
+            "position": 4,
+            "title": "Milwaukee Courier Newspaper",
+            "data_id": "0x0:0xf86a9ce462883c59",
+            "data_cid": "17900292173657029721",
+            "reviews_link": "https://serpapi.com/search.json?data_id=0x0%3A0xf86a9ce462883c59&engine=google_maps_reviews&hl=en",
+            "photos_link": "https://serpapi.com/search.json?data_id=0x0%3A0xf86a9ce462883c59&engine=google_maps_photos&hl=en",
+            "gps_coordinates": {
+              "latitude": 43.089332299999995,
+              "longitude": -87.93735579999999
+            },
+            "place_id_search": "https://serpapi.com/search.json?data=%214m5%213m4%211s0x0%3A0xf86a9ce462883c59%218m2%213d43.089332299999995%214d-87.93735579999999&engine=google_maps&google_domain=google.com&hl=en&type=place",
+            "rating": 4.5,
+            "reviews": 2,
+            "thumbnail": "https://www.google.com/maps/vt/data=S8Lw_sM0LmmL7b6AscXjh7E_TB6_6M_XdtNLwN7DpnofrKBK_WXa5kAq0ig8g7ghCWDF_LhVeCdy5Lp_hEvXQg3hX4TK8J0ZkJdKTS2kcQcTM8s2XlfR1gO_jYqbNWqb5bQzZwcKMLdv0r8NnLwoPAprhPTRAhkz",
+            "type": [
+              "Newspaper publisher"
+            ]
+          },
+          {
+            "position": 5,
+            "title": "Milwaukee Times Weekly Newspaper",
+            "data_id": "0x0:0x283e1eb1f41fdbec",
+            "data_cid": "2899788959726951404",
+            "reviews_link": "https://serpapi.com/search.json?data_id=0x0%3A0x283e1eb1f41fdbec&engine=google_maps_reviews&hl=en",
+            "photos_link": "https://serpapi.com/search.json?data_id=0x0%3A0x283e1eb1f41fdbec&engine=google_maps_photos&hl=en",
+            "gps_coordinates": {
+              "latitude": 43.0600612,
+              "longitude": -87.9139854
+            },
+            "place_id_search": "https://serpapi.com/search.json?data=%214m5%213m4%211s0x0%3A0x283e1eb1f41fdbec%218m2%213d43.0600612%214d-87.9139854&engine=google_maps&google_domain=google.com&hl=en&type=place",
+            "rating": 4,
+            "reviews": 4,
+            "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkriB7qDH78kTfyauK6bfBGlDXBm8w9ekxDiwJjYzQ3HAgQNqvgRmE_TtKoxstKQ2sM9tfavHP4aYWe_X_vIrnrDUGyjgfCD75fFv0YTiVji797taWHkIAHpZfe4ojWOcqaLkR8=w195-h195-n-k-no",
+            "type": [
+              "Newspaper publisher"
+            ]
+          }
+        ]
+      }
+    ],
+    "web_results_link": "https://www.google.com/search?q=local+guide+program&ibp=gwp;0,26,OjcKNSIxTWlsd2F1a2VlIE5laWdoYm9yaG9vZCBOZXdzIFNlcnZpY2UgTWlsd2F1a2VlLCBXSSgC&pcl=lp",
+    "serpapi_web_results_link": "https://serpapi.com/search.json?device=desktop&engine=google&google_domain=google.com&ibp=gwp%3B0%2C26%2COjcKNSIxTWlsd2F1a2VlIE5laWdoYm9yaG9vZCBOZXdzIFNlcnZpY2UgTWlsd2F1a2VlLCBXSSgC&q=local+guide+program"
+  }
 }
