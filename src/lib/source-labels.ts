@@ -59,3 +59,7 @@ export const LABEL_EXPLANATIONS: Record<ProductLabel, string> = {
   Outdated: "A reporting brief no longer reflects the current evidence set.",
   "Saved—not live": "Saved evidence from an earlier scan shown with its original timestamp.",
 };
+
+// ponytail: precompute arrays to avoid Object.values() allocation on every render
+export const PRODUCT_LABELS_ARRAY = Object.values(PRODUCT_LABELS);
+export const BEATS_ARRAY = Object.values(BEAT_TEXT);
