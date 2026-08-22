@@ -1,3 +1,5 @@
+import { contentHash } from "./canonical";
+
 export type SerpEngine = "google" | "google_news" | "google_trends_trending_now" | "google_events" | "youtube" | "google_maps";
 export type SearchPurpose = "discovery" | "corroboration" | "coverage" | "enrichment";
 export type TimeWindow = "7d" | "30d" | "current";
@@ -14,6 +16,9 @@ export type SearchSpec = {
   timeWindow: TimeWindow;
   candidateId?: string;
 };
+
+export const idempotencyKeyFor = (scanId: string, spec: SearchSpec) =>
+  `${scanId}:${spec.purpose}:${spec.templateId}:${contentHash([spec.query, spec.language, spec.timeWindow])}`;
 
 export type SourceFamily = "news" | "official" | "event" | "video" | "map" | "community_discussion" | "public_web" | "trend";
 
