@@ -37,11 +37,11 @@ The central claim, which every decision defends: **SerpApi gives it live eyes. A
 | 2. Design system + shell | MOO-728 | **Done** — Review Pause 1 approved by Tarik |
 | 3. Clerk–Convex auth + data model | MOO-729 | **Done** |
 | 4. Deterministic rules engine | MOO-730 | **Done** |
-| 5. SerpApi adapter | MOO-731 | **In progress** — Tasks 1–7 of the plan complete, Task 8 remaining |
+| 5. SerpApi adapter | MOO-731 | **Done** — all 8 plan tasks complete, CI green (run 32604066171) |
 | 6. AI contracts | MOO-732 | Planned, not started |
 | 7–12 | MOO-733…738 | Not planned yet |
 
-Roughly 155 unit/integration tests plus 7 Playwright tests, all green. CI runs typecheck + lint + tests + build on every push.
+Roughly 159 unit/integration tests, 2 opt-in live tests, plus 7 Playwright tests, all green. CI runs typecheck + lint + tests + build on every push.
 
 ---
 
@@ -69,7 +69,7 @@ Clerk is fully set up: app created, a JWT template named `convex` exists, and a 
 
 **No `OPENAI_API_KEY`** — so the model challenger comparison in item 6 Task 14 is single-model unless Tarik adds one.
 
-**SerpApi: Starter plan, 1000 searches/month.** ~985 remaining. About 10 have been spent on fixture capture and diagnostics. A single live scan may use up to 120.
+**SerpApi: Starter plan, 1000 searches/month.** ~983 remaining. About 10 have been spent on fixture capture and diagnostics. A single live scan may use up to 120.
 
 **Gotchas that cost real time:**
 - `npx convex codegen` does **not** deploy. After adding or changing a Convex function that a CLI or e2e run will call, also run `npx convex dev --once`.
@@ -94,7 +94,7 @@ These are decisions taken on Tarik's behalf during execution. Each is in the led
 - **`searchesReserved` means authorized paid attempts** and never exceeds 120. Re-opening a failed run counts as a new authorized attempt: it increments `searchesReserved`, decrements `searchesFailed`, and is refused at the cap.
 
 **Evidence honesty**
-- **The 120-cap concurrency test does not yet prove anything.** `convex-test` takes a mutex per top-level transaction, so its 20-way test never actually interleaves. Item 5's "including under concurrency" acceptance and demo gate 5 are **not satisfied** until Task 8's real-deployment check passes. Do not claim otherwise.
+- **The 120 cap under concurrency is now proven** (2026-08-22, Task 8). `convex-test` takes a mutex per top-level transaction, so its 20-way test never interleaves and proves nothing about production. `tests/live/reserve-concurrency.test.ts` spawns 20 separate `npx convex run` processes against the real deployment: **granted=5, rejected=15, reserved=120, runs=5** from a scan seeded at 115. Zero SerpApi calls. Item 5's "including under concurrency" and demo gate 5 **are** satisfied. Note the plan's `ConvexHttpClient` sketch was impossible — internal functions need admin auth we do not have.
 - **Two of seven normalizer branches (Events, Maps at the time) were tested against hand-written fixtures.** Maps has since been re-captured live. Events remains hand-written because the engine returns nothing.
 
 ---
@@ -114,11 +114,12 @@ Each is written into the relevant Linear issue as well.
 
 ## 8. Immediate next steps
 
-1. **Finish item 5.** Plan `docs/superpowers/plans/2026-08-22-signalgap-search-and-ai.md`, Task 8:
-   - Cascade the e2e reset to delete `searchRuns` / `sourceResults` / stored blobs (otherwise `first-run.spec.ts` silently stops being clean now that those tables get written).
-   - **The real-deployment concurrency proof** (Step 3b in the plan) — 20 parallel `ConvexHttpClient` calls at the deployed `reserve` on a scan at 115, asserting exactly 5 granted and the counter landing on 120. Costs **zero** SerpApi calls. This is the evidence gap named above.
-   - One bounded live SerpApi smoke test — exactly **1** paid call.
-   Then push, confirm CI, post evidence on MOO-731, close it.
+1. **Close item 5.** Code is done and pushed (commit `2cf8d3d`, CI run 32604066171 green). Remaining: post the evidence on MOO-731 and move it to Done. Evidence to paste:
+   - cascade: `tests/integration/testing-reset-cascade.test.ts`, red-checked (removing the `ctx.storage.delete` line makes it fail).
+   - real concurrency: `granted=5 rejected=15 reserved=120 runs=5`, 20 independent `npx convex run` processes, scan seeded at 115. Zero SerpApi calls.
+   - live smoke: `query="Milwaukee (housing OR zoning OR development OR displacement OR neighborhood) when:7d" -> 50 normalized, 0 skipped, 126ms`.
+   - **Open question for Tarik:** that smoke returned **50** results from one `google_news` call, but the spec's Global Constraints say initial Google-family calls return "up to 10 results with no pagination". Not dangerous — same one paid call, no pagination requested — but the spec sentence and the code disagree. Recommend amending the spec line to "no pagination; engine default page size" rather than truncating and throwing away paid results.
+
 2. **Item 6** — Tasks 9–15 of the same plan. Task 14 makes real paid model calls across 15–20 evaluation packets; **price it and get Tarik's approval before running.**
 3. **Item 7** gets its own plan, written after items 5–6 land so its interfaces are real rather than predicted. It ends at **Review Pause 2**: one fixture lead traced from `Why this surfaced` through citations, coverage, score and generated brief. That plan was deliberately not written in advance — see the scope note at the top of the current plan.
 
