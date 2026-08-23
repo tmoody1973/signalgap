@@ -14,6 +14,10 @@ export const vCoverageStageOutcome = v.object({
   checked: v.number(),
   attempted: v.number(),
   skippedForBudget: v.number(),
+  // A candidate with no usable search terms was never a budget decision —
+  // telemetry that folded it into skippedForBudget would tell an operator the
+  // wrong story about why coverage came back thin.
+  skippedNoTerms: v.number(),
   canceled: v.boolean(),
 });
 export type CoverageStageOutcome = Infer<typeof vCoverageStageOutcome>;
@@ -40,7 +44,9 @@ export async function runCoverageStage(
   { scanId, candidateIds, now = Date.now() }: CoverageArgs,
   options: CoverageOptions = {},
 ): Promise<CoverageStageOutcome> {
-  const outcome: CoverageStageOutcome = { checked: 0, attempted: 0, skippedForBudget: 0, canceled: false };
+  const outcome: CoverageStageOutcome = {
+    checked: 0, attempted: 0, skippedForBudget: 0, skippedNoTerms: 0, canceled: false,
+  };
   let spent = 0;
 
   for (const candidateId of candidateIds) {
@@ -53,7 +59,7 @@ export async function runCoverageStage(
 
     const terms = await ctx.runQuery(internal.candidates.coverage.termsFor, { candidateId });
     if (terms.length === 0) {
-      outcome.skippedForBudget++;
+      outcome.skippedNoTerms++;
       continue;
     }
 
@@ -95,9 +101,14 @@ export async function runCoverageStage(
         allSucceeded = false;
         await ctx.runMutation(internal.candidates.coverage.recordPartition, { candidateId, group, status: "failed" });
         await ctx.runMutation(internal.scans.recordSearchOutcome, { scanId, succeeded: 0, failed: 1 });
+        // The real error, not a static stand-in: recordFailure dedupes by
+        // purpose+code, so a generic code here would let a second, different
+        // coverage failure (a rate limit after a timeout, say) go unreported.
+        const run = result.runId ? await ctx.runQuery(internal.searchRuns.getRun, { runId: result.runId }) : null;
         await ctx.runMutation(internal.scans.recordFailure, {
-          scanId, purpose: "coverage", code: "coverage_partition_failed",
-          message: `the ${group} coverage partition failed; no coverage gap can be claimed`,
+          scanId, purpose: "coverage",
+          code: run?.errorCode ?? "coverage_partition_failed",
+          message: run?.errorMessage ?? `the ${group} coverage partition failed; no coverage gap can be claimed`,
         });
       } else {
         // skipped: budget exhausted or the scan went inactive between checks.

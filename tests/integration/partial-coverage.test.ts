@@ -84,6 +84,93 @@ describe("coverage stage", () => {
     expect(memberships[0].addedBy).toBe("deterministic_rule");
   });
 
+  it("a story older than the 30-day window is not counted as coverage", async () => {
+    const t = setup();
+    const { scanId, candidateId } = await seedFormedCandidate(t);
+
+    const stale = {
+      search_metadata: { id: "z", status: "Success" },
+      organic_results: [{
+        position: 1, title: "Old Metcalfe Park story",
+        link: "https://www.jsonline.com/story/news/2023/08/17/metcalfe-park/",
+        snippet: "An old story.",
+        // 45 days before NOW (1_700_000_000_000 = 2023-11-14) — well outside
+        // COVERAGE_WINDOW_MS. Outside the window a story is a different story,
+        // not prior coverage of this development. Counting it would understate
+        // the gap the product exists to report.
+        date: "Oct 1, 2023",
+      }],
+    };
+    const fetchImpl = (async (input: RequestInfo | URL) => {
+      const q = new URL(String(input)).searchParams.get("q") ?? "";
+      const body = q.includes("jsonline.com") ? stale : emptyResults;
+      return new Response(JSON.stringify(body), { status: 200, headers: { "content-type": "application/json" } });
+    }) as unknown as typeof fetch;
+
+    await t.action(async (ctx) => runCoverageStage(ctx, { scanId, candidateIds: [candidateId], now: NOW }, { fetchImpl, sleep: async () => {} }));
+
+    const memberships = await t.run(async (ctx) =>
+      ctx.db.query("candidateSources").withIndex("by_candidate_role", (q) => q.eq("candidateId", candidateId).eq("role", "coverage")).collect());
+    expect(memberships).toHaveLength(0);
+  });
+
+  it("a result with no publish date is not counted as coverage", async () => {
+    const t = setup();
+    const { scanId, candidateId } = await seedFormedCandidate(t);
+
+    const undated = {
+      search_metadata: { id: "z", status: "Success" },
+      organic_results: [{
+        position: 1, title: "Undated Metcalfe Park story",
+        link: "https://www.jsonline.com/story/news/metcalfe-park/",
+        snippet: "No date on this one.",
+        // No `date` field at all: publishedAt comes back undefined. Absence of
+        // a date is not evidence the story falls inside the window — it must
+        // not silently count as coverage either.
+      }],
+    };
+    const fetchImpl = (async (input: RequestInfo | URL) => {
+      const q = new URL(String(input)).searchParams.get("q") ?? "";
+      const body = q.includes("jsonline.com") ? undated : emptyResults;
+      return new Response(JSON.stringify(body), { status: 200, headers: { "content-type": "application/json" } });
+    }) as unknown as typeof fetch;
+
+    await t.action(async (ctx) => runCoverageStage(ctx, { scanId, candidateIds: [candidateId], now: NOW }, { fetchImpl, sleep: async () => {} }));
+
+    const memberships = await t.run(async (ctx) =>
+      ctx.db.query("candidateSources").withIndex("by_candidate_role", (q) => q.eq("candidateId", candidateId).eq("role", "coverage")).collect());
+    expect(memberships).toHaveLength(0);
+  });
+
+  it("a story from an outlet outside the frozen catalog is not counted as coverage", async () => {
+    const t = setup();
+    const { scanId, candidateId } = await seedFormedCandidate(t);
+
+    const offCatalog = {
+      search_metadata: { id: "z", status: "Success" },
+      organic_results: [{
+        position: 1, title: "OnMilwaukee covers Metcalfe Park",
+        // A real, well-known Milwaukee outlet — just not one the frozen
+        // catalog names. The catalog IS the claim: an off-catalog hit must not
+        // silently widen what "coverage" means.
+        link: "https://onmilwaukee.com/articles/metcalfe-park",
+        snippet: "OnMilwaukee's own report.",
+        date: "Aug 17, 2026",
+      }],
+    };
+    const fetchImpl = (async (input: RequestInfo | URL) => {
+      const q = new URL(String(input)).searchParams.get("q") ?? "";
+      const body = q.includes("jsonline.com") ? offCatalog : emptyResults;
+      return new Response(JSON.stringify(body), { status: 200, headers: { "content-type": "application/json" } });
+    }) as unknown as typeof fetch;
+
+    await t.action(async (ctx) => runCoverageStage(ctx, { scanId, candidateIds: [candidateId], now: NOW }, { fetchImpl, sleep: async () => {} }));
+
+    const memberships = await t.run(async (ctx) =>
+      ctx.db.query("candidateSources").withIndex("by_candidate_role", (q) => q.eq("candidateId", candidateId).eq("role", "coverage")).collect());
+    expect(memberships).toHaveLength(0);
+  });
+
   it("stops before the next partition once cancellation is requested", async () => {
     const t = setup();
     const { scanId, candidateId } = await seedFormedCandidate(t);
@@ -111,9 +198,10 @@ describe("coverage stage", () => {
 
     const runs = await t.run(async (ctx) =>
       ctx.db.query("searchRuns").withIndex("by_scan_purpose", (q) => q.eq("scanId", scanId).eq("purpose", "coverage")).collect());
-    // SEARCH_BUDGET.coverage is 20, two per candidate: ten candidates, no more.
-    expect(runs.length).toBeLessThanOrEqual(20);
-    expect(outcome.checked).toBeLessThanOrEqual(10);
-    expect(outcome.skippedForBudget).toBeGreaterThan(0);
+    // SEARCH_BUDGET.coverage is 20, two per candidate: exactly ten candidates
+    // checked, exactly twenty reservations, and the remaining five skipped.
+    expect(runs.length).toBe(20);
+    expect(outcome.checked).toBe(10);
+    expect(outcome.skippedForBudget).toBe(5);
   });
 });
