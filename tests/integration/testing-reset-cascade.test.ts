@@ -85,13 +85,20 @@ describe("deleteScansForClerkUser cascade", () => {
     const candidate = (await t.run(async (ctx) => await ctx.db.get(candidateId))) as Doc<"candidates">;
 
     // Seeded as processing / Worth a look / no score. The engine set all three.
-    expect(candidate.status).toBe("eligible");
-    expect(candidate.scoreTotal).toBe(95);
-    expect(candidate.independentCategoryCount).toBe(2);
-    // The lead QUALIFIES, and still carries "Needs a recheck", because one of
-    // its enrichment links is dead. That is the spec: a dead enrichment link
-    // flags a lead, it does not kill it — and the flag outranks "Coverage gap".
-    expect(candidate.primaryLabel).toBe("Needs a recheck");
+    //
+    // The verdict on this REAL lead is EXCLUDED, and that is the interesting
+    // part. Three independent Milwaukee outlets covered the same plan
+    // commission vote — three independence groups — but all three are the same
+    // KIND of source, and the gate needs two independent categories. No
+    // official record naming this project was captured, so none is attached.
+    expect(candidate.status).toBe("excluded");
+    expect(candidate.independentCategoryCount).toBe(1);
+    // Excluded means no score at all. Not a zero.
+    expect(candidate.scoreTotal).toBeUndefined();
+    // Not "Unverified tip": there IS one confirming category, just not the two
+    // the gate needs. "Coverage gap" is impossible because the coverage check
+    // never ran. So it lands on the neutral label.
+    expect(candidate.primaryLabel).toBe("Worth a look");
   });
 
   it("returns 0 and touches nothing when the clerk user has never signed in", async () => {

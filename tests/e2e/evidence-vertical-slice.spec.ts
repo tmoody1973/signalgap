@@ -51,7 +51,7 @@ test.beforeEach(async ({ page }) => {
 test.describe("evidence vertical slice", () => {
   test("the lead leads with its reporting question", async ({ page }) => {
     await expect(page.getByRole("heading", { level: 1 }))
-      .toHaveText(/Who was notified before the Harambee rezoning reached the council\?/);
+      .toHaveText(/Metcalfe Park Liberation Hub/);
   });
 
   test("why this surfaced shows at least two kinds of source", async ({ page }) => {
@@ -59,24 +59,25 @@ test.describe("evidence vertical slice", () => {
     await expect(why).toBeVisible();
     // One entry per DISTINCT kind of source, not per source: the two news
     // stories collapse into one "Local reporting" row.
-    await expect(why.getByRole("listitem")).toHaveCount(3);
-    await expect(why.getByText("Official record")).toBeVisible();
+    // One entry per DISTINCT kind of source: three news outlets collapse into
+    // one "Local reporting" row, and the Reddit thread is the second row.
+    await expect(why.getByRole("listitem")).toHaveCount(2);
+    await expect(why.getByText("Local reporting")).toBeVisible();
     await expect(why.getByText("Does not count toward confirmation")).toBeVisible();
   });
 
-  test("the score shows all five components and they add up to the total", async ({ page }) => {
+  test("a lead that did not qualify shows NO score, and says why", async ({ page }) => {
+    // Three independent Milwaukee outlets, but all one kind of source. The gate
+    // needs two categories, so this real lead is excluded and carries no score.
     const score = page.getByRole("region", { name: "Score" });
-    await expect(score.locator("dt")).toHaveCount(5);
-    await expect(score.getByText("95 of 100, from five checks")).toBeVisible();
-
-    const points = await score.locator("dd.text-right").allInnerTexts();
-    const total = points.reduce((sum, text) => sum + Number(text.split("/")[0].trim()), 0);
-    expect(total).toBe(95);
+    await expect(score.getByText(/did not qualify, so it has no score/)).toBeVisible();
+    await expect(score.locator("dt")).toHaveCount(0);
   });
 
-  test("the score says a RULE set the Milwaukee connection, not the AI", async ({ page }) => {
-    await expect(page.getByText(/Milwaukee connection set by a rule/)).toBeVisible();
-    await expect(page.getByText(/city\.milwaukee\.gov/).first()).toBeVisible();
+  test("the judgment names who set the Milwaukee connection", async ({ page }) => {
+    // No official Milwaukee domain is cited here, so the deterministic path did
+    // not fire and the page says the AI suggested it — with the basis shown.
+    await expect(page.getByText(/Milwaukee connection set by an AI suggestion/)).toBeVisible();
   });
 
   test("every citation names the query that found it", async ({ page }) => {
@@ -88,10 +89,9 @@ test.describe("evidence vertical slice", () => {
   test("a source is traced to a search that could actually have returned it", async ({ page }) => {
     // The chain has to survive a sceptic. A site:city.milwaukee.gov search cannot
     // return a jsonline.com story, so each source carries its own real query.
-    const newsClaim = page.getByText("Residents say they learned of the proposal a week before the vote.").first();
-    await expect(newsClaim).toBeVisible();
+    await expect(page.getByText(/City Plan Commission approved the Metcalfe Park improvement district/).first()).toBeVisible();
     await expect(page.getByText(/Found by: Milwaukee \(housing OR zoning/).first()).toBeVisible();
-    await expect(page.getByText(/Found by: \(site:city\.milwaukee\.gov/).first()).toBeVisible();
+    await expect(page.getByText(/Found by: site:reddit\.com\/r\/milwaukee\/comments\//).first()).toBeVisible();
   });
 
   test("the brief says it is AI-drafted assistance, not a story", async ({ page }) => {
@@ -102,31 +102,28 @@ test.describe("evidence vertical slice", () => {
     await expect(page.getByText(/Nothing here has been independently confirmed yet/i).first()).toBeVisible();
   });
 
-  test("the Spanish original stays beside its AI translation", async ({ page }) => {
-    await expect(page.getByText("Los residentes dicen que se enteraron una semana antes de la votación")).toBeVisible();
-    await expect(page.getByText("AI translation").first()).toBeVisible();
+  test("the only stored excerpt is quoted verbatim from its source", async ({ page }) => {
+    // Only the Reddit result carried a snippet in the captured payload, so it is
+    // the only thing on the page that can be quoted.
+    await expect(page.getByText(/Known as the Metcalfe Park Liberation Hub, the two-phase development/)).toBeVisible();
   });
 
-  test("an unreachable citation stays visible and says so", async ({ page }) => {
-    await expect(page.getByText(/This link did not load when we checked/).first()).toBeVisible();
-    await expect(page.getByRole("region", { name: "Needs a recheck" })).toBeVisible();
-  });
-
-  test("the coverage section states plainly whether a gap may be claimed", async ({ page }) => {
+  test("coverage says UNKNOWN, not absent, because the check never ran", async ({ page }) => {
     const coverage = page.getByRole("region", { name: "Existing coverage" });
-    await expect(coverage.getByText(/The 30-day check completed/)).toBeVisible();
-    await expect(coverage.getByText(/can\b/).first()).toBeVisible();
+    await expect(coverage.getByText(/has not run yet/)).toBeVisible();
+    await expect(coverage.getByText(/cannot\b/)).toBeVisible();
   });
 
   test("the query log lists every search that produced a source", async ({ page }) => {
     const log = page.getByRole("region", { name: "Query log" });
-    await expect(log.getByRole("listitem")).toHaveCount(4);
+    // Two distinct searches captured these four sources.
+    await expect(log.getByRole("listitem")).toHaveCount(2);
     await expect(log.getByText(/site:reddit\.com\/r\/milwaukee\/comments\//)).toBeVisible();
-    await expect(log.getByText(/vivienda OR zonificación/)).toBeVisible();
+    await expect(log.getByText(/when:7d/)).toBeVisible();
   });
 
   test("status is readable without colour", async ({ page }) => {
-    await expect(page.getByText("Needs a recheck").first()).toBeVisible();
+    await expect(page.getByText("Worth a look").first()).toBeVisible();
   });
 
   test("no horizontal overflow at 375px", async ({ page }) => {
@@ -139,7 +136,7 @@ test.describe("evidence vertical slice", () => {
   });
 
   test("keyboard focus is visible on the first citation link", async ({ page }) => {
-    await page.getByRole("link").filter({ hasText: "Common Council agenda item 250412" }).first().focus();
+    await page.getByRole("link").filter({ hasText: "City Plan Commission approves Metcalfe Park" }).first().focus();
     const outline = await page.evaluate(() => {
       const el = document.activeElement as HTMLElement | null;
       return el ? getComputedStyle(el).outlineWidth : "0px";

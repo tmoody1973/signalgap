@@ -11,6 +11,17 @@ const BASIS_TEXT = {
  * would be exactly the black box this product exists to avoid.
  */
 export function ScoreBreakdown({ score, judgment }: { score: EvidenceView["score"]; judgment: EvidenceView["judgment"] }) {
+  const locality = judgment?.localityBand;
+
+  // Decision 004 asks that an editor can always answer "who decided this was a
+  // Milwaukee story?" — including on a lead that did not qualify, where there is
+  // no score to hang the answer off.
+  const basisLine = locality ? (
+    <p className="mt-3 text-xs text-muted">
+      Milwaukee connection set by <strong className="font-semibold text-ink">{BASIS_TEXT[locality.basis]}</strong>: {locality.reason}
+    </p>
+  ) : null;
+
   if (!score) {
     return (
       <section aria-labelledby="score-heading" className="border-t border-rule pt-5">
@@ -18,11 +29,10 @@ export function ScoreBreakdown({ score, judgment }: { score: EvidenceView["score
         <p className="mt-2 text-sm text-muted">
           This lead did not qualify, so it has no score. Leads are only scored once they pass every rule.
         </p>
+        {basisLine}
       </section>
     );
   }
-
-  const locality = judgment?.localityBand;
 
   return (
     <section aria-labelledby="score-heading" className="border-t border-rule pt-5">
@@ -44,11 +54,7 @@ export function ScoreBreakdown({ score, judgment }: { score: EvidenceView["score
         ))}
       </dl>
 
-      {locality && (
-        <p className="mt-3 text-xs text-muted">
-          Milwaukee connection set by <strong className="font-semibold text-ink">{BASIS_TEXT[locality.basis]}</strong>: {locality.reason}
-        </p>
-      )}
+      {basisLine}
     </section>
   );
 }

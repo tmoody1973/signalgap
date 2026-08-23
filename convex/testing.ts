@@ -191,53 +191,83 @@ export const raceReserve = internalAction({
 // e2e suite must not depend on a paid service, and what it tests is the
 // rendering, not the model.
 
+/**
+ * A REAL Milwaukee lead, taken from the captured SerpApi payloads in
+ * tests/fixtures/serpapi. Nothing here is invented: the titles, publishers,
+ * links and the Reddit excerpt are exactly as SerpApi returned them, and each
+ * `query` is the query that actually captured that payload (read from its own
+ * `search_parameters`).
+ *
+ * The story is the Metcalfe Park Liberation Hub clearing the City Plan
+ * Commission in August 2026. Three independent local outlets covered it and one
+ * r/milwaukee thread discussed it.
+ *
+ * No official record is included, because the captured official-domain payload
+ * contains none that names this project. Attaching a Legistar calendar entry
+ * that does not mention Metcalfe Park would be exactly the fabrication this
+ * product exists to refuse — and it is why the rules refuse this lead: three
+ * outlets are three groups but only ONE category, and the gate needs two.
+ */
 const SLICE_SOURCES = [
   {
-    family: "official" as const, engine: "google" as const, language: "en",
-    url: "https://city.milwaukee.gov/agenda/250412",
-    title: "Common Council agenda item 250412",
-    snippet: "Rezoning of the 3000 block of North Dr. Martin Luther King Jr. Drive.",
-    publisher: undefined as string | undefined, accessible: true,
-    templateId: "official-housing-01",
-    query: "(site:city.milwaukee.gov OR site:milwaukee.legistar.com OR site:county.milwaukee.gov OR site:milwaukee.granicus.com OR site:mps.milwaukee.k12.wi.us OR site:wisconsinpublicnotices.org OR site:ridemcts.com) (housing OR zoning OR development OR displacement OR neighborhood)",
+    family: "news" as const, engine: "google_news" as const, language: "en",
+    url: "https://www.jsonline.com/story/news/local/milwaukee/neighborhoods/2026/08/17/metcalfe-park-neighborhood-improvement-district-moves-ahead-to-common-council-vote/91340621007/",
+    title: "City Plan Commission approves Metcalfe Park improvement district",
+    snippet: "",
+    publisher: "Milwaukee Journal Sentinel" as string | undefined,
+    accessible: true,
+    templateId: "news-housing-en-01",
+    query: "Milwaukee (housing OR zoning OR development OR displacement OR neighborhood) when:7d",
+    claim: "The City Plan Commission approved the Metcalfe Park improvement district, which now moves to a Common Council vote.",
+    publishedAt: Date.UTC(2026, 7, 17, 21, 49),
   },
   {
     family: "news" as const, engine: "google_news" as const, language: "en",
-    url: "https://jsonline.com/story/harambee-rezoning",
-    title: "Neighbors question Harambee rezoning timeline",
-    snippet: "Residents say they learned of the proposal a week before the vote.",
-    publisher: "Milwaukee Journal Sentinel", accessible: true,
+    url: "https://urbanmilwaukee.com/2026/08/18/city-commission-approves-metcalfe-park-development/",
+    title: "City Commission Approves Metcalfe Park Development",
+    snippet: "",
+    publisher: "Urban Milwaukee",
+    accessible: true,
     templateId: "news-housing-en-01",
     query: "Milwaukee (housing OR zoning OR development OR displacement OR neighborhood) when:7d",
+    claim: "A city commission approved the Metcalfe Park development.",
+    publishedAt: Date.UTC(2026, 7, 18, 16, 57),
   },
   {
-    family: "news" as const, engine: "google" as const, language: "es",
-    url: "https://elconquistador.example/rezonificacion-harambee",
-    title: "Vecinos cuestionan la rezonificación de Harambee",
-    snippet: "Los residentes dicen que se enteraron una semana antes de la votación.",
-    publisher: "El Conquistador", accessible: true,
-    templateId: "search-housing-es-01",
-    query: "Milwaukee (vivienda OR zonificación OR desarrollo OR vecindario OR desalojo)",
+    family: "news" as const, engine: "google_news" as const, language: "en",
+    url: "https://www.bizjournals.com/milwaukee/news/2026/08/18/metcalfe-park-hub-first-approval.html",
+    title: "Metcalfe Park project with cafe, laundromat and affordable units wins plan commission vote",
+    snippet: "",
+    publisher: "The Business Journals",
+    accessible: true,
+    templateId: "news-housing-en-01",
+    query: "Milwaukee (housing OR zoning OR development OR displacement OR neighborhood) when:7d",
+    claim: "The project is described as including a cafe, a laundromat and affordable units.",
+    publishedAt: Date.UTC(2026, 7, 18, 11, 31),
   },
   {
     family: "community_discussion" as const, engine: "google" as const, language: "en",
-    url: "https://reddit.com/r/milwaukee/comments/abc123/harambee_rezoning",
-    title: "Anyone know what is happening with the Harambee rezoning?",
-    snippet: "Saw surveyors on MLK yesterday. Nobody I know got a notice.",
-    publisher: undefined, accessible: false,
+    url: "https://www.reddit.com/r/milwaukee/comments/1vtame2/city_commission_approves_metcalfe_park/",
+    title: "City Commission Approves Metcalfe Park Development ...",
+    snippet: "Known as the Metcalfe Park Liberation Hub, the two-phase development would become a community hub with a wide range of functions.",
+    publisher: undefined,
+    accessible: true,
     templateId: "reddit-housing-01",
-    query: 'site:reddit.com/r/milwaukee/comments/ (development OR zoning OR apartment OR demolished OR opening OR closing OR "what happened")',
+    query: 'site:reddit.com/r/milwaukee/comments/ (development OR zoning OR apartment OR demolished OR opening OR closing OR "what happened") after:2026-08-15',
+    claim: "Residents discussed the Metcalfe Park Liberation Hub as a two-phase community hub.",
+    // The captured Reddit result carried no date, so none is shown. An invented
+    // one would move the freshness score.
+    publishedAt: undefined as number | undefined,
   },
 ];
 
-const SLICE_FINGERPRINT = "fixture-harambee-rezoning";
+const SLICE_FINGERPRINT = "fixture-metcalfe-park-hub";
 
 export const seedSliceFixture = internalMutation({
   args: { clerkUserId: v.string() },
   returns: v.object({ scanId: v.id("scans"), candidateId: v.id("candidates") }),
   handler: async (ctx, { clerkUserId }): Promise<{ scanId: Id<"scans">; candidateId: Id<"candidates"> }> => {
     const now = Date.now();
-    const day = 86_400_000;
 
     const existingUser = await ctx.db
       .query("users")
@@ -265,22 +295,25 @@ export const seedSliceFixture = internalMutation({
       rulesetVersion: RULESET_VERSION, queryCatalogVersion: QUERY_CATALOG_VERSION,
       status: "completed", stage: "briefs", startedAt: now - 60_000, completedAt: now,
       searchBudgetLimit: SEARCH_BUDGET.hardCap,
-      searchesReserved: 1, searchesSucceeded: 1, searchesFailed: 0,
-      eligibleCount: 1, excludedCount: 0, processingCount: 0,
+      searchesReserved: 2, searchesSucceeded: 2, searchesFailed: 0,
+      eligibleCount: 0, excludedCount: 1, processingCount: 0,
       failureSummaries: [], isSavedDemo: false,
     });
 
     const candidateId = await ctx.db.insert("candidates", {
       ownerId, fingerprint: SLICE_FINGERPRINT,
-      currentTitle: "Harambee rezoning heads to a council vote",
-      reportingQuestion: "Who was notified before the Harambee rezoning reached the council?",
+      currentTitle: "Metcalfe Park Liberation Hub clears the plan commission",
+      reportingQuestion: "Who is behind the Metcalfe Park Liberation Hub, and what did the city promise it?",
       beat: "housing", status: "processing", primaryLabel: "Worth a look", disposition: "new",
       latestEvidenceVersion: 0, independentCategoryCount: 0, coverageOriginalCount: 0,
-      // Complete with zero reports: the coverage-gap path, and the one the demo shows.
-      coveragePassStatus: "complete",
+      // The coverage check has not run for this fixture, so a coverage gap can
+      // never be claimed here. Item 8's workflow is what runs it.
+      coveragePassStatus: "pending",
       firstSeenAt: now, lastSeenAt: now, updatedAt: now,
       judgment: {
-        localityBand: { value: "direct_city", basis: "deterministic", reason: "an official Milwaukee source is cited: city.milwaukee.gov" },
+        // No official Milwaukee domain is cited, so the deterministic path does
+        // not fire and the model's own suggestion stands — with its basis on it.
+        localityBand: { value: "direct_city", basis: "ai_suggested", reason: "suggested by the model from the supplied sources" },
         relevanceBand: { value: "policy_service_change", basis: "ai_suggested", reason: "suggested by the model from the supplied sources" },
         beat: { value: "housing", basis: "ai_suggested", reason: "suggested by the model from the supplied sources" },
         isSpeculative: { value: false, basis: "ai_suggested", reason: "flagged by the model" },
@@ -290,34 +323,40 @@ export const seedSliceFixture = internalMutation({
       },
     });
 
+    // One search run per DISTINCT query, which is what actually happened: a
+    // single google_news search returned all three news results, and a single
+    // r/milwaukee search returned the thread. Splitting them per source would
+    // overstate how many paid calls the scan made.
+    const runByQuery = new Map<string, Id<"searchRuns">>();
     const sourceIds: Id<"sourceResults">[] = [];
+
     for (const [i, source] of SLICE_SOURCES.entries()) {
-      // One search run per source, carrying the template that could ACTUALLY
-      // have found it. Sharing one run would put a jsonline.com story under a
-      // site:city.milwaukee.gov query — a trace that cannot be true, on the one
-      // page whose whole job is being traceable.
-      const searchRunId = await ctx.db.insert("searchRuns", {
-        scanId, ownerId,
-        idempotencyKey: `${scanId}:discovery:${source.templateId}:fixture`,
-        templateId: source.templateId, queryCatalogVersion: QUERY_CATALOG_VERSION,
-        purpose: "discovery", engine: source.engine,
-        query: source.query,
-        parameters: { gl: "us", hl: source.language },
-        language: source.language === "es" ? "es" : "en",
-        status: "succeeded", attemptCount: 1, resultCount: 10, durationMs: 640 + i * 90,
-        reservedAt: now - 50_000 + i * 500, completedAt: now - 49_000 + i * 500,
-      });
+      let searchRunId = runByQuery.get(source.query);
+      if (!searchRunId) {
+        searchRunId = await ctx.db.insert("searchRuns", {
+          scanId, ownerId,
+          idempotencyKey: `${scanId}:discovery:${source.templateId}:fixture`,
+          templateId: source.templateId, queryCatalogVersion: QUERY_CATALOG_VERSION,
+          purpose: "discovery", engine: source.engine,
+          query: source.query,
+          parameters: { gl: "us", hl: source.language },
+          language: "en",
+          status: "succeeded", attemptCount: 1, resultCount: 10, durationMs: 640 + i * 90,
+          reservedAt: now - 50_000 + i * 500, completedAt: now - 49_000 + i * 500,
+        });
+        runByQuery.set(source.query, searchRunId);
+      }
 
       const sourceResultId = await ctx.db.insert("sourceResults", {
         scanId, searchRunId, ownerId,
         canonicalKey: `${source.engine}:${source.url}`, canonicalUrl: source.url, originalUrl: source.url,
         engine: source.engine, sourceFamily: source.family,
-        sourceType: source.family === "official" ? "primary" : source.family === "community_discussion" ? "discussion" : "unknown",
+        sourceType: source.family === "community_discussion" ? "discussion" : "unknown",
         title: source.title, snippet: source.snippet, publisher: source.publisher,
         originalLanguage: source.language,
-        translatedTitle: source.language === "es" ? "Neighbors question the Harambee rezoning" : undefined,
-        translatedSnippet: source.language === "es" ? "Residents say they found out a week before the vote." : undefined,
-        publishedAt: now - day, discoveredAt: now, position: i + 1,
+        translatedTitle: undefined,
+        translatedSnippet: undefined,
+        publishedAt: source.publishedAt, discoveredAt: now, position: i + 1,
         isAccessible: source.accessible, contentHash: `fixture-${i}`,
       });
       await ctx.db.insert("candidateSources", {
@@ -327,8 +366,7 @@ export const seedSliceFixture = internalMutation({
         // "Needs a recheck" without excluding the lead.
         role: source.family === "community_discussion" ? "enrichment" : i === 0 ? "initiating" : "corroborating",
         independenceGroup: `host:${new URL(source.url).hostname.replace(/^www\./, "")}`,
-        signalCategory: source.family === "official" ? "official_record"
-          : source.family === "news" ? "original_news" : "community_discussion",
+        signalCategory: source.family === "news" ? "original_news" : "community_discussion",
         addedBy: "ai_suggestion",
       });
       sourceIds.push(sourceResultId);
@@ -343,27 +381,22 @@ export const seedSliceFixture = internalMutation({
       inputTokens: 2_100, outputTokens: 900, startedAt: now - 30_000, completedAt: now - 16_000,
     });
 
-    const evidence = [
-      { kind: "existing_coverage", claimText: "The rezoning is agenda item 250412.", ids: [sourceIds[0]],
-        excerpt: "Rezoning of the 3000 block of North Dr. Martin Luther King Jr. Drive." },
-      { kind: "unverified_signal", claimText: "Residents say they learned of the proposal a week before the vote.", ids: [sourceIds[1]],
-        excerpt: "Residents say they learned of the proposal a week before the vote." },
-      { kind: "unverified_signal", claimText: "Neighbors say they were notified a week before the vote.", ids: [sourceIds[2]],
-        original: "Los residentes dicen que se enteraron una semana antes de la votación.",
-        translated: "Residents say they found out a week before the vote." },
-      { kind: "potential_source", claimText: "A resident reports surveyors on MLK Drive.", ids: [sourceIds[3]],
-        excerpt: "Saw surveyors on MLK yesterday. Nobody I know got a notice." },
-    ] as Array<{ kind: string; claimText: string; ids: Id<"sourceResults">[]; excerpt?: string; original?: string; translated?: string }>;
+    // Claim text closely tracks each real headline; nothing is added to it. Only
+    // the Reddit source has a stored snippet, so it is the only exact excerpt.
+    const evidence = SLICE_SOURCES.map((source, i) => ({
+      kind: source.family === "community_discussion" ? "potential_source" : "unverified_signal",
+      claimText: source.claim,
+      ids: [sourceIds[i]],
+      excerpt: source.snippet.length > 0 ? source.snippet : undefined,
+    }));
 
     for (const item of evidence) {
       await ctx.db.insert("evidenceItems", {
         candidateId, scanId, ownerId, evidenceVersion: 1,
         kind: item.kind as never, claimText: item.claimText, sourceResultIds: item.ids,
-        exactExcerpt: item.excerpt, originalLanguageText: item.original, translatedText: item.translated,
+        exactExcerpt: item.excerpt,
         classificationBasis: "ai_suggested",
-        // The Reddit source is deliberately unreachable, so its item shows
-        // `Needs a recheck` on screen.
-        requiresReverification: item.ids.includes(sourceIds[3]),
+        requiresReverification: false,
         createdByModelRunId: modelRunId,
       });
     }
@@ -371,18 +404,22 @@ export const seedSliceFixture = internalMutation({
 
     await ctx.db.insert("briefVersions", {
       candidateId, scanId, ownerId, version: 1, modelRunId,
-      reportingQuestion: "Who was notified before the Harambee rezoning reached the council?",
-      whySurfaced: "An official agenda item and two independent local outlets describe the same rezoning.",
+      reportingQuestion: "Who is behind the Metcalfe Park Liberation Hub, and what did the city promise it?",
+      whySurfaced: "Three local outlets reported the same plan commission approval within two days.",
       // Empty sections carry OUR fixed sentences with no citations, exactly as
       // runGenerateBrief writes them.
       confirmedFacts: [{ text: EMPTY_SECTION_NOTES.confirmedFacts, sourceResultIds: [] }],
-      unverifiedClaims: [{ text: "Residents say they learned of the proposal a week before the vote.", sourceResultIds: [sourceIds[1]] }],
+      unverifiedClaims: [
+        { text: "The City Plan Commission approved the Metcalfe Park improvement district, which now moves to a Common Council vote.", sourceResultIds: [sourceIds[0]] },
+        { text: "The project is described as including a cafe, a laundromat and affordable units.", sourceResultIds: [sourceIds[2]] },
+      ],
       conflicts: [{ text: EMPTY_SECTION_NOTES.conflicts, sourceResultIds: [] }],
-      existingCoverage: [{ text: EMPTY_SECTION_NOTES.existingCoverageComplete, sourceResultIds: [] }],
-      potentialHumanSources: [{ text: "A resident who saw surveyors on MLK Drive.", sourceResultIds: [sourceIds[3]] }],
+      existingCoverage: [{ text: EMPTY_SECTION_NOTES.existingCoverageIncomplete, sourceResultIds: [] }],
+      potentialHumanSources: [{ text: "Residents discussing the hub in r/milwaukee.", sourceResultIds: [sourceIds[3]] }],
       interviewQuestions: [
-        "How much notice does the city owe residents before a rezoning vote?",
-        "Who signed off on the notification schedule for item 250412?",
+        "Who are the developers behind the Metcalfe Park Liberation Hub?",
+        "What city money or land is attached to the improvement district?",
+        "When does the Common Council take it up?",
       ],
       createdAt: now,
     });
