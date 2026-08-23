@@ -21,6 +21,10 @@ export default defineSchema({
     startedAt: v.optional(v.number()),
     completedAt: v.optional(v.number()),
     cancelRequestedAt: v.optional(v.number()),
+    // The durable workflow executing this scan. Optional because a scan row can
+    // exist for a moment before `start` returns, and because saved demo scans
+    // (item 10) are imported rows that no workflow ever ran.
+    workflowId: v.optional(v.string()),
     searchBudgetLimit: v.number(),
     searchesReserved: v.number(),
     searchesSucceeded: v.number(),

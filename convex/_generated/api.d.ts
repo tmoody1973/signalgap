@@ -50,12 +50,14 @@ import type * as integrations_serpapi_queryCatalog from "../integrations/serpapi
 import type * as lib_auth from "../lib/auth.js";
 import type * as lib_validators from "../lib/validators.js";
 import type * as modelRuns from "../modelRuns.js";
+import type * as scanWorkflow from "../scanWorkflow.js";
 import type * as scans from "../scans.js";
 import type * as searchRuns from "../searchRuns.js";
 import type * as slice from "../slice.js";
 import type * as sourceResults from "../sourceResults.js";
 import type * as testing from "../testing.js";
 import type * as users from "../users.js";
+import type * as workflow from "../workflow.js";
 
 import type {
   ApiFromModules,
@@ -106,12 +108,14 @@ declare const fullApi: ApiFromModules<{
   "lib/auth": typeof lib_auth;
   "lib/validators": typeof lib_validators;
   modelRuns: typeof modelRuns;
+  scanWorkflow: typeof scanWorkflow;
   scans: typeof scans;
   searchRuns: typeof searchRuns;
   slice: typeof slice;
   sourceResults: typeof sourceResults;
   testing: typeof testing;
   users: typeof users;
+  workflow: typeof workflow;
 }>;
 
 /**

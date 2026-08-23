@@ -1,7 +1,9 @@
+import { cancel as cancelWorkflow, getStatus, start, type WorkflowId } from "@convex-dev/workflow";
 import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
+import { components, internal } from "./_generated/api";
 import type { Doc } from "./_generated/dataModel";
-import { mutation, query } from "./_generated/server";
+import { internalMutation, mutation, query } from "./_generated/server";
 import { MARKET_KEY, QUERY_CATALOG_VERSION, RULESET_VERSION } from "./config/ruleset";
 import { SEARCH_BUDGET } from "./config/searchBudget";
 import { requireUser } from "./lib/auth";
@@ -43,7 +45,7 @@ export const startScan = mutation({
       const active = await ctx.db.query("scans").withIndex("by_owner_status", (q) => q.eq("ownerId", user._id).eq("status", status)).first();
       if (active) throw new Error("A scan is already running");
     }
-    return ctx.db.insert("scans", {
+    const scanId = await ctx.db.insert("scans", {
       ownerId: user._id,
       marketKey: MARKET_KEY,
       rulesetVersion: RULESET_VERSION,
@@ -57,7 +59,13 @@ export const startScan = mutation({
       failureSummaries: [],
       isSavedDemo: false,
     });
-    // ponytail: workflow.start lands in the item-8 plan; queued rows are enough to test ownership now.
+
+    // Started INSIDE the same transaction as the insert. Either both happen or
+    // neither does, so there is no window where a queued scan exists with
+    // nothing executing it.
+    const workflowId = await start(ctx, internal.scanWorkflow.runScan, { scanId });
+    await ctx.db.patch(scanId, { workflowId });
+    return scanId;
   },
 });
 
@@ -91,11 +99,29 @@ export const cancel = mutation({
     const user = await requireUser(ctx);
     const scan = await ctx.db.get(scanId);
     if (!scan || scan.ownerId !== user._id) throw new Error("Scan not found");
-    if (scan.status !== "queued" && scan.status !== "running") return null;
-    const now = Date.now();
-    await ctx.db.patch(scanId, scan.status === "queued"
-      ? { cancelRequestedAt: now, status: "canceled", completedAt: now }
-      : { cancelRequestedAt: now });
+    if (scan.status === "completed" || scan.status === "partial" || scan.status === "canceled") return null;
+
+    // The flag is what every step checks before spending money. Cancelling the
+    // workflow stops future steps; it cannot abort an HTTP request already in
+    // flight, and the spec is explicit that we do not pretend otherwise.
+    await ctx.db.patch(scanId, { cancelRequestedAt: Date.now() });
+    if (scan.workflowId) {
+      const workflowId = scan.workflowId as WorkflowId;
+      // The component's cancel throws if the workflow already finished
+      // (success, failure, or a prior cancel) — there is nothing left to
+      // stop, so that is not an error for the caller.
+      const status = await getStatus(ctx, components.workflow, workflowId);
+      if (status.type === "inProgress") await cancelWorkflow(ctx, components.workflow, workflowId);
+    }
+    return null;
+  },
+});
+
+export const attachWorkflow = internalMutation({
+  args: { scanId: v.id("scans"), workflowId: v.string() },
+  returns: v.null(),
+  handler: async (ctx, { scanId, workflowId }) => {
+    await ctx.db.patch(scanId, { workflowId });
     return null;
   },
 });
