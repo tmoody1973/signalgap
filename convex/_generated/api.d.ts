@@ -38,6 +38,7 @@ import type * as editorial_scoring from "../editorial/scoring.js";
 import type * as editorial_searchIntent from "../editorial/searchIntent.js";
 import type * as editorial_status from "../editorial/status.js";
 import type * as editorial_types from "../editorial/types.js";
+import type * as evidence from "../evidence.js";
 import type * as integrations_serpapi_canonical from "../integrations/serpapi/canonical.js";
 import type * as integrations_serpapi_client from "../integrations/serpapi/client.js";
 import type * as integrations_serpapi_contracts from "../integrations/serpapi/contracts.js";
@@ -93,6 +94,7 @@ declare const fullApi: ApiFromModules<{
   "editorial/searchIntent": typeof editorial_searchIntent;
   "editorial/status": typeof editorial_status;
   "editorial/types": typeof editorial_types;
+  evidence: typeof evidence;
   "integrations/serpapi/canonical": typeof integrations_serpapi_canonical;
   "integrations/serpapi/client": typeof integrations_serpapi_client;
   "integrations/serpapi/contracts": typeof integrations_serpapi_contracts;
