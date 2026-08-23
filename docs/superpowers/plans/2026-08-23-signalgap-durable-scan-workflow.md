@@ -182,7 +182,7 @@ queued → canceled
 | `convex/workflow.ts` | The single `WorkflowManager` instance. Nothing else. |
 | `convex/scanWorkflow.ts` | The durable orchestrator. Calls steps, holds no business logic. |
 | `convex/stages/discovery.ts` | Stage 1 — render and execute the 13 fixed discovery searches. |
-| `convex/stages/evidence.ts` | Stage 2 — analyze, cluster, form, prefilter, classify, snapshot. |
+| `convex/stages/evidence.ts` | Stage 2 — analyze, cluster, form, snapshot; plus `selectForCoverage`. **Created in Task 8**, which is where `runCandidateFormation` already exists to call. |
 | `convex/stages/coverage.ts` | Stage 3 — two-partition coverage searches per candidate; attach coverage sources. |
 | `convex/stages/enrichment.ts` | Corroboration and conditional enrichment, both via `planFollowUp`. |
 | `convex/stages/finalize.ts` | Stage 4 — briefs for eligible candidates, then hand back counts. |
@@ -782,6 +782,12 @@ git commit -m "feat(scan): stage, failure and terminal-state transitions (MOO-73
 
 **Interfaces:**
 - Consumes: `DISCOVERY_TEMPLATE_IDS`, `getTemplate`, `renderQuery` (`convex/integrations/serpapi/queryCatalog.ts`); `MILWAUKEE_LOCATION`, `SearchSpec` (`convex/integrations/serpapi/contracts.ts`); `runExecuteSearch` (`convex/integrations/serpapi/executeSearch.ts`); `internal.scans.getForWorkflow`, `internal.scans.recordSearchOutcome`, `internal.scans.recordFailure` (Task 2).
+- **Also produces the shared test fixtures**, in `tests/integration/helpers.ts`, because Tasks 6, 7, 8 and 10 all need them and three drifting copies of one fixture is exactly what went wrong in item 7:
+  ```ts
+  export async function seedUser(t: TestConvex<typeof schema>, clerkUserId = "owner"): Promise<Id<"users">>;
+  export function fakeFetch(byQueryNeedle?: Record<string, unknown>): typeof fetch;
+  ```
+  Move `seedUser` and `fakeFetch` there as part of this task and import them in `tests/integration/scan-workflow.test.ts`. Do **not** define them locally.
 - Produces:
   - `export function discoverySpecs(now: number): SearchSpec[]` — pure, exactly 13 specs.
   - `export async function runDiscoveryStage(ctx, { scanId, now? }, options?): Promise<DiscoveryOutcome>` where
@@ -1358,7 +1364,6 @@ git commit -m "feat(editorial): prefilter decides which candidates get paid cove
 
 **Files:**
 - Modify: `convex/slice.ts`
-- Create: `convex/stages/evidence.ts`
 - Test: `tests/integration/evidence-brief-vertical-slice.test.ts` (must keep passing **unchanged**)
 - Test: `tests/integration/scan-workflow.test.ts` (append)
 
@@ -1667,7 +1672,8 @@ git commit -m "refactor(slice): split formation from finalization so coverage ru
 - Create: `tests/integration/partial-coverage.test.ts`
 
 **Interfaces:**
-- Consumes: `COVERAGE_TEMPLATE_IDS`, `getTemplate`, `renderQuery`; `COVERAGE_OUTLETS`, `REQUIRED_COVERAGE_GROUPS`, `outletGroupForDomain` (`convex/config/coverageOutlets.ts`); `COVERAGE_WINDOW_MS` (`convex/config/ruleset.ts`); `runExecuteSearch`; `prefilterCandidate`, `orderForCoverage` (Task 4); `internal.scans.getForWorkflow`.
+- Consumes: `COVERAGE_TEMPLATE_IDS`, `getTemplate`, `renderQuery`; `COVERAGE_OUTLETS`, `REQUIRED_COVERAGE_GROUPS`, `outletGroupForDomain` (`convex/config/coverageOutlets.ts`); `COVERAGE_WINDOW_MS` (`convex/config/ruleset.ts`); `runExecuteSearch`; `internal.scans.getForWorkflow`.
+- **Does NOT consume the prefilter.** This stage receives an already-ordered `candidateIds` list and executes. Deciding *who* gets the twenty reservations happens once, in Task 8's `selectForCoverage`. Two orderings could disagree; one cannot.
 - Produces:
   ```ts
   export type CoverageStageOutcome = {
@@ -1822,7 +1828,19 @@ describe("coverage stage", () => {
 });
 ```
 
-Write `seedManyFormedCandidates` in the same file by looping the single-candidate seeder with distinct fingerprints.
+**Put `seedFormedCandidate` in `tests/integration/helpers.ts`, not in this file.** Tasks 7 and 8 both need it, and a fixture copied into three files drifts — that is the item 7 lesson. Build it from the item 7 test's existing seeder (`tests/integration/evidence-brief-vertical-slice.test.ts`), which already creates a scan, a search run, the four `SLICE_SOURCES` rows and a scripted model. Its signature:
+
+```ts
+export async function seedFormedCandidate(
+  t: TestConvex<typeof schema>,
+): Promise<{ scanId: Id<"scans">; candidateId: Id<"candidates">; model: GenerateFn }>;
+
+export async function seedManyFormedCandidates(
+  t: TestConvex<typeof schema>, count: number,
+): Promise<{ scanId: Id<"scans">; candidateIds: Id<"candidates">[] }>;
+```
+
+`seedManyFormedCandidates` loops the single-candidate seeder with distinct fingerprints. Also export `seedSliceScan` from helpers if Task 5 defined it locally — same reason.
 
 - [ ] **Step 2: Run the test to verify it fails**
 
@@ -2591,7 +2609,7 @@ describe("cancellation", () => {
 });
 ```
 
-Copy `seedUser` and `fakeFetch` into this file from `tests/integration/scan-workflow.test.ts`, or lift both into `tests/integration/helpers.ts` and import them in both places. Lifting is better; do that.
+Import `seedUser` and `fakeFetch` from `tests/integration/helpers.ts` — Task 3 put them there. Do not copy them.
 
 - [ ] **Step 3: Run both to verify they fail**
 
