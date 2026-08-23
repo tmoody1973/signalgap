@@ -53,13 +53,13 @@ describe("formFromCluster", () => {
       scanId, cluster: cluster([officialId, newsId]), beat: "housing", workingTitle: "Harambee rezoning",
     });
 
-    expect("candidateId" in result).toBe(true);
-    if (!("candidateId" in result)) return;
-    expect(result.created).toBe(true);
-    expect(result.sourceCount).toBe(2);
+    const candidateId = "candidateId" in result ? result.candidateId : undefined;
+    if (!candidateId) throw new Error("formFromCluster rejected the cluster");
+    expect("created" in result && result.created).toBe(true);
+    expect("sourceCount" in result && result.sourceCount).toBe(2);
 
     const { candidate, memberships, appearances } = await t.run(async (ctx) => ({
-      candidate: (await ctx.db.get(result.candidateId)) as Doc<"candidates">,
+      candidate: (await ctx.db.get(candidateId)) as Doc<"candidates">,
       memberships: await ctx.db.query("candidateSources").collect(),
       appearances: await ctx.db.query("candidateAppearances").collect(),
     }));
