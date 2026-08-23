@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { api } from "../../convex/_generated/api";
+import { api, internal } from "../../convex/_generated/api";
 import { asUser, setup } from "./helpers";
 
 const NOW = 1_700_000_000_000;
@@ -52,5 +52,123 @@ describe("scan workflow", () => {
     const scanId = await asUser(t, "owner").mutation(api.scans.startScan, {});
     await expect(asUser(t, "stranger").mutation(api.scans.cancel, { scanId }))
       .rejects.toThrow();
+  });
+});
+
+describe("scan state transitions", () => {
+  it("setStage moves queued to running the first time and records the stage", async () => {
+    const t = setup();
+    await seedUser(t);
+    const scanId = await asUser(t, "owner").mutation(api.scans.startScan, {});
+
+    await t.mutation(internal.scans.setStage, { scanId, stage: "coverage" });
+    const scan = await t.run(async (ctx) => ctx.db.get(scanId));
+    expect(scan?.status).toBe("running");
+    expect(scan?.stage).toBe("coverage");
+  });
+
+  it("recordFailure appends once per purpose+code, not once per occurrence", async () => {
+    const t = setup();
+    await seedUser(t);
+    const scanId = await asUser(t, "owner").mutation(api.scans.startScan, {});
+
+    for (let i = 0; i < 3; i++) {
+      await t.mutation(internal.scans.recordFailure, {
+        scanId, purpose: "coverage", code: "http_429", message: "rate limited",
+      });
+    }
+    await t.mutation(internal.scans.recordFailure, {
+      scanId, purpose: "discovery", code: "http_429", message: "rate limited",
+    });
+
+    const scan = await t.run(async (ctx) => ctx.db.get(scanId));
+    // Three rate-limited coverage calls are ONE thing an editor needs told,
+    // not three. A different purpose is a different thing.
+    expect(scan?.failureSummaries).toHaveLength(2);
+    expect(scan?.failureSummaries.map((f) => f.purpose).sort()).toEqual(["coverage", "discovery"]);
+  });
+
+  it("finalize with no failures completes the scan", async () => {
+    const t = setup();
+    await seedUser(t);
+    const scanId = await asUser(t, "owner").mutation(api.scans.startScan, {});
+    await t.mutation(internal.scans.setStage, { scanId, stage: "briefs" });
+
+    const { status } = await t.mutation(internal.scans.finalize, { scanId });
+    expect(status).toBe("completed");
+    const scan = await t.run(async (ctx) => ctx.db.get(scanId));
+    expect(scan?.completedAt).toEqual(expect.any(Number));
+  });
+
+  it("finalize with named failures ends partial, not completed", async () => {
+    const t = setup();
+    await seedUser(t);
+    const scanId = await asUser(t, "owner").mutation(api.scans.startScan, {});
+    await t.mutation(internal.scans.recordFailure, {
+      scanId, purpose: "coverage", code: "http_500", message: "upstream error",
+    });
+
+    const { status } = await t.mutation(internal.scans.finalize, { scanId });
+    expect(status).toBe("partial");
+  });
+
+  it("finalize NEVER turns a cancelled scan into a completed one", async () => {
+    const t = setup();
+    await seedUser(t);
+    const scanId = await asUser(t, "owner").mutation(api.scans.startScan, {});
+    await asUser(t, "owner").mutation(api.scans.cancel, { scanId });
+
+    const { status } = await t.mutation(internal.scans.finalize, { scanId });
+    expect(status).toBe("canceled");
+  });
+
+  it("finalize is safe to call twice and does not move a terminal scan", async () => {
+    const t = setup();
+    await seedUser(t);
+    const scanId = await asUser(t, "owner").mutation(api.scans.startScan, {});
+
+    const first = await t.mutation(internal.scans.finalize, { scanId });
+    const firstCompletedAt = (await t.run(async (ctx) => ctx.db.get(scanId)))?.completedAt;
+    await t.mutation(internal.scans.recordFailure, {
+      scanId, purpose: "coverage", code: "late", message: "arrived after finalize",
+    });
+    const second = await t.mutation(internal.scans.finalize, { scanId });
+
+    expect(first.status).toBe("completed");
+    // A late failure cannot rewrite history. The scan already ended.
+    expect(second.status).toBe("completed");
+    expect((await t.run(async (ctx) => ctx.db.get(scanId)))?.completedAt).toBe(firstCompletedAt);
+  });
+
+  it("recordSearchOutcome accumulates and never decrements failures", async () => {
+    const t = setup();
+    await seedUser(t);
+    const scanId = await asUser(t, "owner").mutation(api.scans.startScan, {});
+
+    await t.mutation(internal.scans.recordSearchOutcome, { scanId, succeeded: 3, failed: 1 });
+    await t.mutation(internal.scans.recordSearchOutcome, { scanId, succeeded: 2, failed: 0 });
+
+    const scan = await t.run(async (ctx) => ctx.db.get(scanId));
+    expect(scan?.searchesSucceeded).toBe(5);
+    // searchesFailed is a cumulative count of failed ATTEMPTS, not a live gauge
+    // of currently-failed rows. A retry reuses the row, so decrementing would
+    // make succeeded + failed + in-flight == reserved impossible to hold.
+    expect(scan?.searchesFailed).toBe(1);
+  });
+
+  it("cancelling leaves the scan terminal, so the owner can start another one", async () => {
+    const t = setup();
+    await seedUser(t);
+    const scanId = await asUser(t, "owner").mutation(api.scans.startScan, {});
+    await asUser(t, "owner").mutation(api.scans.cancel, { scanId });
+
+    const scan = await t.run(async (ctx) => ctx.db.get(scanId));
+    // Cancelling the workflow means the workflow will never reach its own
+    // finalize. If cancel does not finalize, this scan sits queued forever and
+    // startScan's duplicate guard locks the owner out permanently.
+    expect(scan?.status).toBe("canceled");
+    expect(scan?.completedAt).toEqual(expect.any(Number));
+
+    await expect(asUser(t, "owner").mutation(api.scans.startScan, {})).resolves.toEqual(expect.any(String));
   });
 });

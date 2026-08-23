@@ -49,7 +49,7 @@ describe("scans ownership", () => {
     await expect(alice.mutation(api.scans.startScan, {})).rejects.toThrow(/already running/);
   });
 
-  it("cancel records cancelRequestedAt; the workflow is what moves status to canceled", async () => {
+  it("cancel records cancelRequestedAt and finalizes the scan itself", async () => {
     const t = setup();
     const alice = asUser(t, "alice");
     await alice.mutation(api.users.ensureCurrent, {});
@@ -57,9 +57,10 @@ describe("scans ownership", () => {
     await alice.mutation(api.scans.cancel, { scanId });
     const scan = await alice.query(api.scans.get, { scanId });
     // cancelRequestedAt is the flag every step checks before spending money.
-    // Flipping `status` to "canceled" is the workflow's job once it notices
-    // the flag (item 8, Tasks 3-8) — cancel() itself only requests it.
-    expect(scan?.status).toBe("queued");
+    // cancel() also finalizes the scan itself: cancelling the workflow means
+    // the workflow's own finalize step will never run, so leaving this scan
+    // non-terminal would lock the owner out of starting another one.
+    expect(scan?.status).toBe("canceled");
     expect(scan?.cancelRequestedAt).toBeTypeOf("number");
   });
 });
