@@ -150,6 +150,8 @@ export const recordFailure = internalMutation({
   handler: async (ctx, { scanId, purpose, code, message }) => {
     const scan = await ctx.db.get(scanId);
     if (!scan) return null;
+    // A terminal scan is a snapshot; a snapshot that keeps changing is not one.
+    if (scan.status !== "queued" && scan.status !== "running") return null;
     // Deduplicated by purpose+code: twenty rate-limited coverage calls are one
     // thing an editor needs told, not twenty.
     if (scan.failureSummaries.some((f) => f.purpose === purpose && f.code === code)) return null;
@@ -166,6 +168,8 @@ export const recordSearchOutcome = internalMutation({
   handler: async (ctx, { scanId, succeeded, failed }) => {
     const scan = await ctx.db.get(scanId);
     if (!scan) return null;
+    // A terminal scan is a snapshot; a snapshot that keeps changing is not one.
+    if (scan.status !== "queued" && scan.status !== "running") return null;
     await ctx.db.patch(scanId, {
       searchesSucceeded: scan.searchesSucceeded + succeeded,
       searchesFailed: scan.searchesFailed + failed,
@@ -183,6 +187,8 @@ export const setCandidateCounts = internalMutation({
   handler: async (ctx, { scanId, eligibleCount, excludedCount, processingCount }) => {
     const scan = await ctx.db.get(scanId);
     if (!scan) return null;
+    // A terminal scan is a snapshot; a snapshot that keeps changing is not one.
+    if (scan.status !== "queued" && scan.status !== "running") return null;
     await ctx.db.patch(scanId, { eligibleCount, excludedCount, processingCount });
     return null;
   },

@@ -171,4 +171,28 @@ describe("scan state transitions", () => {
 
     await expect(asUser(t, "owner").mutation(api.scans.startScan, {})).resolves.toEqual(expect.any(String));
   });
+
+  it("a terminal scan's summary is frozen — late writes cannot change it", async () => {
+    const t = setup();
+    await seedUser(t);
+    const scanId = await asUser(t, "owner").mutation(api.scans.startScan, {});
+    await t.mutation(internal.scans.recordSearchOutcome, { scanId, succeeded: 4, failed: 0 });
+    await t.mutation(internal.scans.finalize, { scanId });
+
+    const atFinalize = await t.run(async (ctx) => ctx.db.get(scanId));
+
+    // A search that was already in flight when the scan ended reports back here.
+    await t.mutation(internal.scans.recordSearchOutcome, { scanId, succeeded: 1, failed: 1 });
+    await t.mutation(internal.scans.recordFailure, { scanId, purpose: "coverage", code: "late", message: "arrived after the scan ended" });
+    await t.mutation(internal.scans.setCandidateCounts, { scanId, eligibleCount: 9, excludedCount: 9, processingCount: 9 });
+
+    const after = await t.run(async (ctx) => ctx.db.get(scanId));
+    // Without the guard, a failure appended after finalize would leave a scan
+    // reading "completed" with a failure under it and no Incomplete scan label.
+    expect(after!.failureSummaries).toEqual(atFinalize!.failureSummaries);
+    expect(after!.searchesSucceeded).toBe(atFinalize!.searchesSucceeded);
+    expect(after!.searchesFailed).toBe(atFinalize!.searchesFailed);
+    expect(after!.eligibleCount).toBe(atFinalize!.eligibleCount);
+    expect(after!.status).toBe("completed");
+  });
 });
