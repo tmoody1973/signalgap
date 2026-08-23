@@ -34,6 +34,7 @@ import type * as editorial_coverage from "../editorial/coverage.js";
 import type * as editorial_eligibility from "../editorial/eligibility.js";
 import type * as editorial_independence from "../editorial/independence.js";
 import type * as editorial_judgment from "../editorial/judgment.js";
+import type * as editorial_prefilter from "../editorial/prefilter.js";
 import type * as editorial_scoring from "../editorial/scoring.js";
 import type * as editorial_searchIntent from "../editorial/searchIntent.js";
 import type * as editorial_status from "../editorial/status.js";
@@ -93,6 +94,7 @@ declare const fullApi: ApiFromModules<{
   "editorial/eligibility": typeof editorial_eligibility;
   "editorial/independence": typeof editorial_independence;
   "editorial/judgment": typeof editorial_judgment;
+  "editorial/prefilter": typeof editorial_prefilter;
   "editorial/scoring": typeof editorial_scoring;
   "editorial/searchIntent": typeof editorial_searchIntent;
   "editorial/status": typeof editorial_status;

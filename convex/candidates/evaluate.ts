@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { internalMutation } from "../_generated/server";
+import { internalMutation, internalQuery } from "../_generated/server";
 import { COVERAGE_WINDOW_MS } from "../config/ruleset";
 import { evaluateCandidate } from "../editorial/status";
 import type { CandidateInput, CoverageInput, EngineSource, LocalityBand, RelevanceBand } from "../editorial/types";
@@ -133,5 +133,14 @@ export const evaluate = internalMutation({
       scoreTotal: verdict.score?.total ?? null,
       reasons: verdict.reasons,
     };
+  },
+});
+
+export const getEvidenceVersion = internalQuery({
+  args: { candidateId: v.id("candidates") },
+  returns: v.union(v.null(), v.object({ latestEvidenceVersion: v.number() })),
+  handler: async (ctx, { candidateId }) => {
+    const candidate = await ctx.db.get(candidateId);
+    return candidate ? { latestEvidenceVersion: candidate.latestEvidenceVersion } : null;
   },
 });

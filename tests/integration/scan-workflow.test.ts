@@ -1,8 +1,9 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { api, internal } from "../../convex/_generated/api";
 import { discoverySpecs, runDiscoveryStage } from "../../convex/stages/discovery";
 import { DISCOVERY_TEMPLATE_IDS } from "../../convex/integrations/serpapi/queryCatalog";
-import { asUser, fakeFetch, seedUser, setup } from "./helpers";
+import { runCandidateFinalization, runCandidateFormation } from "../../convex/slice";
+import { asUser, fakeFetch, seedSliceScan, seedUser, setup } from "./helpers";
 
 const NOW = 1_700_000_000_000;
 
@@ -286,5 +287,48 @@ describe("discovery stage", () => {
     expect((await t.run(async (ctx) => ctx.db.get(scanId)))?.searchesReserved).toBe(afterFirst);
     expect(second.skipped).toBe(13);
     expect(second.executed).toBe(0);
+  });
+});
+
+describe("slice split at the coverage boundary", () => {
+  beforeEach(() => {
+    process.env.AI_PRIMARY_MODEL = "claude-sonnet-5";
+    process.env.AI_FALLBACK_ENABLED = "false";
+  });
+
+  it("formation stops before evaluation, so coverage can run in between", async () => {
+    const t = setup();
+    const { scanId, sourceIds, model } = await seedSliceScan(t);
+
+    const formed = await t.action(async (ctx) => runCandidateFormation(ctx, { scanId, sourceResultIds: sourceIds }, model));
+    if (!formed.ok) throw new Error(formed.reason);
+
+    expect(formed.candidates.length).toBeGreaterThan(0);
+    const candidate = await t.run(async (ctx) => ctx.db.get(formed.candidates[0].candidateId));
+    // Formation writes membership, judgment and the snapshot. It writes NO
+    // verdict — status stays at its insert value until the rules run.
+    expect(candidate?.status).toBe("processing");
+    expect(candidate?.scoreTotal).toBeUndefined();
+    expect(candidate?.exclusionReasons).toBeUndefined();
+  });
+
+  it("finalization writes the verdict and then the brief, in that order", async () => {
+    const t = setup();
+    const { scanId, sourceIds, model } = await seedSliceScan(t);
+    const formed = await t.action(async (ctx) => runCandidateFormation(ctx, { scanId, sourceResultIds: sourceIds }, model));
+    if (!formed.ok) throw new Error(formed.reason);
+
+    const outcome = await t.action(async (ctx) =>
+      runCandidateFinalization(ctx, { scanId, candidateId: formed.candidates[0].candidateId, now: NOW }, model),
+    );
+
+    expect(outcome.status).toMatch(/eligible|excluded/);
+    const candidate = await t.run(async (ctx) => ctx.db.get(formed.candidates[0].candidateId));
+    expect(candidate?.status).toBe(outcome.status);
+    // The brief is generated against a settled verdict, never a provisional one.
+    if (outcome.briefId) {
+      const brief = await t.run(async (ctx) => ctx.db.get(outcome.briefId!));
+      expect(brief?.version).toBe(1);
+    }
   });
 });
