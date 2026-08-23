@@ -87,14 +87,20 @@ export const formFromCluster = internalMutation({
         .unique();
       if (alreadyMember) continue;
 
+      const signalCategory = signalCategoryFor(source.sourceFamily);
       await ctx.db.insert("candidateSources", {
         candidateId,
         scanId,
         sourceResultId: source._id,
         // Structural, not a judgment: the first source is what started the lead.
-        role: index === 0 ? "initiating" : "corroborating",
+        // Community discussion is the one exception — spec.md:541, r/milwaukee
+        // results "never count as corroboration". Filing one as corroborating
+        // would both inflate independence and let a dead Reddit link exclude an
+        // otherwise sound lead, so it enters as enrichment instead.
+        role: signalCategory === "community_discussion" ? "enrichment"
+          : index === 0 ? "initiating" : "corroborating",
         independenceGroup: defaultIndependenceGroup(source.canonicalUrl, source.publisher ?? null),
-        signalCategory: signalCategoryFor(source.sourceFamily),
+        signalCategory,
         addedBy: "ai_suggestion",
       });
     }

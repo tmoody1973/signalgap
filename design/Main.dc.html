@@ -1,0 +1,307 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Inter:wght@400;500;600&display=swap">
+  <style>
+    .sg {
+      --bg: #faf7f2; --raised: #ffffff; --ink: #1f1d1a; --muted: #5c5751;
+      --rule: #e2dcd2; --accent: #b8741a; --accent-fg: #ffffff; --focus: #b8741a;
+      --neutral: #5c5751; --caution: #8a5a00; --conflict: #9b2c2c; --positive: #2f6b3a;
+      --ai-tint: #f4efe6;
+    }
+    .sg.dark {
+      --bg: #1c1b19; --raised: #26241f; --ink: #f3efe8; --muted: #b4ada3;
+      --rule: #3a3731; --accent: #e0a04a; --accent-fg: #1c1b19; --focus: #e0a04a;
+      --neutral: #b4ada3; --caution: #e0b26a; --conflict: #f08a8a; --positive: #8ccf9a;
+      --ai-tint: #2e2b25;
+    }
+    body { margin: 0; }
+    .sg { font-family: Inter, system-ui, sans-serif; background: var(--bg); color: var(--ink); }
+    .ed { font-family: Newsreader, Georgia, serif; }
+    a { color: var(--accent); text-underline-offset: 2px; }
+    a:hover { color: var(--ink); }
+    h1, h2, h3, p, ol, ul, dl, dd, dt, figure, blockquote { margin: 0; }
+    ol, ul { padding: 0; list-style: none; }
+  </style>
+</helmet>
+
+<div class="sg {{themeClass}}" style="min-height: 100%; padding: 0 0 64px">
+
+  <!-- app header: copied from src/components/shell/app-header.tsx -->
+  <div style="border-bottom: 1px solid var(--rule)">
+    <div style="max-width: 1152px; margin: 0 auto; padding: 8px 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px">
+      <div style="display: flex; align-items: center; gap: 16px">
+        <span class="ed" style="font-size: 18px">SignalGap</span>
+        <span style="font-size: 12px; color: var(--muted)">Milwaukee workspace</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--muted)">
+        <span>Compare scans</span>
+        <span>Theme</span>
+        <span style="width: 24px; height: 24px; border-radius: 999px; border: 1px solid var(--rule); display: block"></span>
+      </div>
+    </div>
+  </div>
+
+  <div style="max-width: 768px; margin: 0 auto; padding: 32px 16px 0; display: flex; flex-direction: column; gap: 28px">
+
+    <!-- 1. question + disposition -->
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+        <span style="display: inline-flex; align-items: center; border: 1px solid var(--rule); border-radius: 3px; padding: 2px 6px; font-size: 12px; font-weight: 500; color: var(--positive)">Coverage gap</span>
+        <span style="font-size: 12px; color: var(--muted)">Housing and neighborhood development</span>
+        <span style="font-size: 12px; color: var(--muted)">·</span>
+        <span style="font-size: 12px; color: var(--muted)">Scan of 12 Aug, 9:04</span>
+      </div>
+      <h1 class="ed" style="font-size: 32px; line-height: 1.2; text-wrap: pretty">Who was notified before the Harambee rezoning reached the council?</h1>
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; font-size: 14px; color: var(--muted)">
+        <span><strong style="color: var(--ink); font-weight: 600">95</strong> of 100</span>
+        <span>4 sources</span>
+        <span>0 prior reports</span>
+        <span>New</span>
+      </div>
+      <div style="display: flex; gap: 8px; padding-top: 4px">
+        <span style="border: 1px solid var(--rule); background: var(--raised); border-radius: 5px; padding: 6px 14px; font-size: 14px; font-weight: 600">Assign</span>
+        <span style="border: 1px solid var(--rule); background: var(--raised); border-radius: 5px; padding: 6px 14px; font-size: 14px; font-weight: 600">Monitor</span>
+        <span style="border: 1px solid var(--rule); background: var(--raised); border-radius: 5px; padding: 6px 14px; font-size: 14px; font-weight: 600">Reject</span>
+      </div>
+    </div>
+
+    <!-- 2. score breakdown -->
+    <section style="border-top: 1px solid var(--rule); padding-top: 20px">
+      <div style="display: flex; align-items: baseline; gap: 10px">
+        <h2 class="ed" style="font-size: 20px">Score</h2>
+        <span style="font-size: 14px; color: var(--muted)">95 of 100, from five checks</span>
+      </div>
+      <dl style="margin-top: 12px; display: flex; flex-direction: column">
+        <div style="display: grid; grid-template-columns: 1fr auto; gap: 2px 16px; padding: 10px 0; border-bottom: 1px solid var(--rule)">
+          <dt style="font-size: 14px; font-weight: 500">Milwaukee evidence</dt>
+          <dd style="font-size: 14px; font-variant-numeric: tabular-nums; text-align: right">25 / 25</dd>
+          <dd style="grid-column: 1 / -1; font-size: 14px; color: var(--muted)">Sources document a direct City of Milwaukee action, address, institution, or impact.</dd>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr auto; gap: 2px 16px; padding: 10px 0; border-bottom: 1px solid var(--rule)">
+          <dt style="font-size: 14px; font-weight: 500">Independent sources</dt>
+          <dd style="font-size: 14px; font-variant-numeric: tabular-nums; text-align: right">15 / 20</dd>
+          <dd style="grid-column: 1 / -1; font-size: 14px; color: var(--muted)">Two independent source categories, including a primary record.</dd>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr auto; gap: 2px 16px; padding: 10px 0; border-bottom: 1px solid var(--rule)">
+          <dt style="font-size: 14px; font-weight: 500">Freshness</dt>
+          <dd style="font-size: 14px; font-variant-numeric: tabular-nums; text-align: right">15 / 15</dd>
+          <dd style="grid-column: 1 / -1; font-size: 14px; color: var(--muted)">Initiating signal within 48 hours with trend growth or repeated signals.</dd>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr auto; gap: 2px 16px; padding: 10px 0; border-bottom: 1px solid var(--rule)">
+          <dt style="font-size: 14px; font-weight: 500">Coverage scarcity</dt>
+          <dd style="font-size: 14px; font-variant-numeric: tabular-nums; text-align: right">25 / 25</dd>
+          <dd style="grid-column: 1 / -1; font-size: 14px; color: var(--muted)">No qualifying original local report found in the prior 30 days.</dd>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr auto; gap: 2px 16px; padding: 10px 0">
+          <dt style="font-size: 14px; font-weight: 500">Beat relevance</dt>
+          <dd style="font-size: 14px; font-variant-numeric: tabular-nums; text-align: right">15 / 15</dd>
+          <dd style="grid-column: 1 / -1; font-size: 14px; color: var(--muted)">Documented policy, service, access, resource, safety, or spending change.</dd>
+        </div>
+      </dl>
+      <p style="margin-top: 12px; font-size: 12px; color: var(--muted)">Milwaukee connection set by <strong style="font-weight: 600; color: var(--ink)">a rule</strong>, not the AI: an official Milwaukee source is cited, city.milwaukee.gov.</p>
+    </section>
+
+    <!-- 3. why this surfaced -->
+    <section style="border-top: 1px solid var(--rule); padding-top: 20px">
+      <h2 class="ed" style="font-size: 20px">Why this surfaced</h2>
+      <p style="margin-top: 4px; font-size: 14px; color: var(--muted)">Two different kinds of source describe the same story. One source is a tip. Two is a lead.</p>
+      <ol style="margin-top: 14px; display: flex; flex-direction: column; gap: 0">
+        <li style="display: grid; grid-template-columns: 132px 1fr; gap: 16px; padding: 12px 0; border-top: 1px solid var(--rule)">
+          <span style="font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted)">Official record</span>
+          <span>
+            <span style="display: block; font-size: 14px">Common Council agenda item 250412</span>
+            <span style="display: block; font-size: 12px; color: var(--muted)">city.milwaukee.gov · 11 Aug</span>
+          </span>
+        </li>
+        <li style="display: grid; grid-template-columns: 132px 1fr; gap: 16px; padding: 12px 0; border-top: 1px solid var(--rule)">
+          <span style="font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted)">Local reporting</span>
+          <span>
+            <span style="display: block; font-size: 14px">Neighbors question Harambee rezoning timeline</span>
+            <span style="display: block; font-size: 12px; color: var(--muted)">Milwaukee Journal Sentinel · 11 Aug</span>
+          </span>
+        </li>
+        <li style="display: grid; grid-template-columns: 132px 1fr; gap: 16px; padding: 12px 0; border-top: 1px solid var(--rule)">
+          <span style="font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted)">Local reporting</span>
+          <span>
+            <span style="display: block; font-size: 14px">Vecinos cuestionan la rezonificación de Harambee</span>
+            <span style="display: block; font-size: 12px; color: var(--muted)">El Conquistador · 11 Aug · Spanish</span>
+          </span>
+        </li>
+        <li style="display: grid; grid-template-columns: 132px 1fr; gap: 16px; padding: 12px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule)">
+          <span style="font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--caution)">Community discussion</span>
+          <span>
+            <span style="display: block; font-size: 14px">Anyone know what is happening with the Harambee rezoning?</span>
+            <span style="display: block; font-size: 12px; color: var(--muted)">r/milwaukee · does not count toward confirmation</span>
+          </span>
+        </li>
+      </ol>
+    </section>
+
+    <!-- 4. confirmed facts -->
+    <section style="border-top: 1px solid var(--rule); padding-top: 20px">
+      <h2 class="ed" style="font-size: 20px">Confirmed facts</h2>
+      <p style="margin-top: 8px; font-size: 14px; font-style: italic; color: var(--muted)">Nothing here has been independently confirmed yet. Treat every claim below as unverified.</p>
+    </section>
+
+    <!-- 5. unverified signals -->
+    <section style="border-top: 1px solid var(--rule); padding-top: 20px">
+      <h2 class="ed" style="font-size: 20px">Unverified signals</h2>
+
+      <article style="margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--rule)">
+        <p style="font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted)">Unverified</p>
+        <p style="margin-top: 4px; font-size: 14px">Residents say they learned of the proposal a week before the vote.</p>
+        <div style="margin-top: 10px; border-left: 2px solid var(--rule); padding-left: 14px">
+          <blockquote class="ed" style="font-size: 15px; font-style: italic">&ldquo;Residents say they learned of the proposal a week before the vote.&rdquo;</blockquote>
+          <p style="margin-top: 4px; font-size: 14px"><a href="#">Neighbors question Harambee rezoning timeline</a></p>
+          <p style="font-size: 12px; color: var(--muted)">Milwaukee Journal Sentinel · 11 Aug · secondary</p>
+          <p style="margin-top: 6px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; color: var(--muted)">Found by: Milwaukee (housing OR zoning) when:7d</p>
+        </div>
+      </article>
+
+      <article style="margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--rule)">
+        <p style="font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted)">Unverified</p>
+        <p style="margin-top: 4px; font-size: 14px">Neighbors say they were notified a week before the vote.</p>
+        <div style="margin-top: 8px; display: grid; grid-template-columns: 92px 1fr; gap: 4px 14px; font-size: 14px">
+          <span style="font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted)">Original</span>
+          <span>Los residentes dicen que se enteraron una semana antes de la votación.</span>
+          <span style="font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted)">AI translation</span>
+          <span style="color: var(--muted)">Residents say they found out a week before the vote.</span>
+        </div>
+        <div style="margin-top: 10px; border-left: 2px solid var(--rule); padding-left: 14px">
+          <p style="font-size: 14px"><a href="#">Vecinos cuestionan la rezonificación de Harambee</a></p>
+          <p style="font-size: 12px; color: var(--muted)">El Conquistador · 11 Aug · secondary</p>
+          <p style="margin-top: 6px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; color: var(--muted)">Found by: Milwaukee (vivienda OR zonificación) desarrollo</p>
+        </div>
+      </article>
+    </section>
+
+    <!-- 6. conflicts -->
+    <section style="border-top: 1px solid var(--rule); padding-top: 20px">
+      <h2 class="ed" style="font-size: 20px">Conflicting claims</h2>
+      <p style="margin-top: 8px; font-size: 14px; font-style: italic; color: var(--muted)">No conflicting reports were found among the cited sources.</p>
+    </section>
+
+    <!-- 7. needs a recheck -->
+    <section style="border-top: 1px solid var(--rule); padding-top: 20px">
+      <h2 class="ed" style="font-size: 20px">Needs a recheck</h2>
+      <article style="margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--rule)">
+        <p style="font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--caution)">Potential source · Needs a recheck</p>
+        <p style="margin-top: 4px; font-size: 14px">A resident reports surveyors on MLK Drive.</p>
+        <div style="margin-top: 10px; border-left: 2px solid var(--caution); padding-left: 14px">
+          <blockquote class="ed" style="font-size: 15px; font-style: italic">&ldquo;Saw surveyors on MLK yesterday. Nobody I know got a notice.&rdquo;</blockquote>
+          <p style="margin-top: 4px; font-size: 14px"><a href="#">Anyone know what is happening with the Harambee rezoning?</a></p>
+          <p style="font-size: 12px; color: var(--muted)">r/milwaukee · discussion</p>
+          <p style="margin-top: 6px; font-size: 12px; color: var(--caution)">This link did not load when we checked. It stays here, marked, rather than disappearing.</p>
+          <p style="margin-top: 6px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; color: var(--muted)">Found by: site:reddit.com/r/milwaukee/comments/ housing</p>
+        </div>
+      </article>
+    </section>
+
+    <!-- 8. coverage audit -->
+    <section style="border-top: 1px solid var(--rule); padding-top: 20px">
+      <h2 class="ed" style="font-size: 20px">Existing coverage</h2>
+      <p style="margin-top: 8px; font-size: 14px">The 30-day check completed. 0 original reports found.</p>
+      <div style="margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px">
+        <div style="border: 1px solid var(--rule); border-radius: 5px; padding: 12px">
+          <p style="font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted)">General outlets</p>
+          <p style="margin-top: 4px; font-size: 14px; color: var(--positive)">Checked · nothing found</p>
+        </div>
+        <div style="border: 1px solid var(--rule); border-radius: 5px; padding: 12px">
+          <p style="font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted)">Community outlets</p>
+          <p style="margin-top: 4px; font-size: 14px; color: var(--positive)">Checked · nothing found</p>
+        </div>
+      </div>
+      <p style="margin-top: 12px; font-size: 14px; color: var(--muted)">Both halves finished, so this lead <strong style="color: var(--ink); font-weight: 600">can</strong> be called a coverage gap.</p>
+    </section>
+
+    <!-- 9. potential human sources -->
+    <section style="border-top: 1px solid var(--rule); padding-top: 20px">
+      <h2 class="ed" style="font-size: 20px">Potential human sources</h2>
+      <ul style="margin-top: 12px; display: flex; flex-direction: column; gap: 10px">
+        <li style="font-size: 14px">A resident who saw surveyors on MLK Drive. <span style="color: var(--muted)">(1 source)</span></li>
+      </ul>
+    </section>
+
+    <!-- 10. reporting brief -->
+    <section style="border-top: 1px solid var(--rule); padding-top: 20px">
+      <h2 class="ed" style="font-size: 20px">Reporting brief</h2>
+      <div style="margin-top: 12px; background: var(--ai-tint); border: 1px solid var(--rule); border-radius: 5px; padding: 18px 20px">
+        <p style="font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--caution); font-weight: 500">AI-drafted editorial assistance · not a publishable story · version 1</p>
+        <p class="ed" style="margin-top: 10px; font-size: 22px; line-height: 1.3; text-wrap: pretty">Who was notified before the Harambee rezoning reached the council?</p>
+        <p style="margin-top: 8px; font-size: 14px">An official agenda item and two independent local outlets describe the same rezoning.</p>
+
+        <h3 style="margin-top: 18px; font-size: 14px; font-weight: 600">Confirmed facts</h3>
+        <p style="margin-top: 4px; font-size: 14px; font-style: italic; color: var(--muted)">Nothing here has been independently confirmed yet. Treat every claim below as unverified.</p>
+
+        <h3 style="margin-top: 16px; font-size: 14px; font-weight: 600">Unverified or conflicting claims</h3>
+        <ul style="margin-top: 4px; display: flex; flex-direction: column; gap: 6px">
+          <li style="font-size: 14px">Residents say they learned of the proposal a week before the vote. <span style="color: var(--muted); font-size: 12px">(1 source)</span></li>
+        </ul>
+
+        <h3 style="margin-top: 16px; font-size: 14px; font-weight: 600">Existing coverage</h3>
+        <p style="margin-top: 4px; font-size: 14px; font-style: italic; color: var(--muted)">The 30-day coverage check completed and found no prior local reporting.</p>
+
+        <h3 style="margin-top: 16px; font-size: 14px; font-weight: 600">Potential human sources</h3>
+        <ul style="margin-top: 4px; display: flex; flex-direction: column; gap: 6px">
+          <li style="font-size: 14px">A resident who saw surveyors on MLK Drive. <span style="color: var(--muted); font-size: 12px">(1 source)</span></li>
+        </ul>
+
+        <h3 style="margin-top: 16px; font-size: 14px; font-weight: 600">Suggested interview questions</h3>
+        <ol style="margin-top: 4px; display: flex; flex-direction: column; gap: 6px; counter-reset: q">
+          <li style="font-size: 14px">1. How much notice does the city owe residents before a rezoning vote?</li>
+          <li style="font-size: 14px">2. Who signed off on the notification schedule for item 250412?</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 11. query log -->
+    <section style="border-top: 1px solid var(--rule); padding-top: 20px">
+      <h2 class="ed" style="font-size: 20px">Query log</h2>
+      <p style="margin-top: 4px; font-size: 14px; color: var(--muted)">Every search that produced a source above. You can run any of these yourself.</p>
+      <ul style="margin-top: 12px; display: flex; flex-direction: column; gap: 12px">
+        <li>
+          <p style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px">site:city.milwaukee.gov &quot;Harambee rezoning&quot;</p>
+          <p style="font-size: 12px; color: var(--muted)">google · discovery · succeeded · 4 results · 812ms</p>
+        </li>
+        <li>
+          <p style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px">Milwaukee (housing OR zoning) when:7d</p>
+          <p style="font-size: 12px; color: var(--muted)">google_news · discovery · succeeded · 50 results · 126ms</p>
+        </li>
+        <li>
+          <p style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px">site:reddit.com/r/milwaukee/comments/ housing</p>
+          <p style="font-size: 12px; color: var(--muted)">google · discovery · succeeded · 10 results · 640ms</p>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 12. brief versions -->
+    <section style="border-top: 1px solid var(--rule); padding-top: 20px">
+      <h2 class="ed" style="font-size: 20px">Brief versions</h2>
+      <ul style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px">
+        <li style="display: flex; justify-content: space-between; gap: 16px; font-size: 14px">
+          <span>Version 1 · claude-sonnet-5</span>
+          <span style="color: var(--muted)">12 Aug, 9:06 · current</span>
+        </li>
+      </ul>
+    </section>
+
+  </div>
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light","section":"Theme"},"$preview":{"width":1000,"height":2900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { themeClass: (this.props.theme ?? 'light') === 'dark' ? 'dark' : '' };
+  }
+}
+</script>
+</body>
+</html>

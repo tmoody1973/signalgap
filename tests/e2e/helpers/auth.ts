@@ -12,3 +12,15 @@ export async function signIn(page: Page) {
   await page.goto("/workspace");
   await page.waitForSelector("text=No scans yet");
 }
+
+/**
+ * Signs in without waiting for the empty-workspace state. `signIn` waits for
+ * "No scans yet", which is right for the first-run spec and wrong for any spec
+ * that seeds a scan first.
+ */
+export async function signInOnly(page: Page) {
+  const email = process.env.E2E_CLERK_EMAIL;
+  if (!email) throw new Error("Set E2E_CLERK_EMAIL");
+  await page.goto("/");
+  await clerk.signIn({ page, emailAddress: email });
+}

@@ -5,11 +5,13 @@ import type { MutationCtx } from "./_generated/server";
 import { internalAction, internalMutation, internalQuery } from "./_generated/server";
 import { MARKET_KEY, QUERY_CATALOG_VERSION, RULESET_VERSION } from "./config/ruleset";
 import { SEARCH_BUDGET } from "./config/searchBudget";
+import { EMPTY_SECTION_NOTES } from "./ai/generateBrief";
 import { MILWAUKEE_LOCATION } from "./integrations/serpapi/contracts";
 
-// Deleting a scan must take its searches, its results and their archived raw
-// JSON with it. Orphans left behind make the e2e first-run assertions read a
-// dirty deployment as a clean one.
+// Deleting a scan must take everything the scan produced with it: its searches,
+// its results, their archived raw JSON, and — since item 7 — the candidates the
+// scan formed and everything hanging off them. Orphans left behind make the e2e
+// first-run assertions read a dirty deployment as a clean one.
 async function purgeScan(ctx: MutationCtx, scanId: Id<"scans">) {
   const runs = await ctx.db.query("searchRuns").withIndex("by_scan_purpose", (q) => q.eq("scanId", scanId)).collect();
   for (const run of runs) {
@@ -18,6 +20,55 @@ async function purgeScan(ctx: MutationCtx, scanId: Id<"scans">) {
   }
   const results = await ctx.db.query("sourceResults").withIndex("by_scan", (q) => q.eq("scanId", scanId)).collect();
   for (const result of results) await ctx.db.delete(result._id);
+
+  // Candidates are reached through this scan's appearances. A candidate that
+  // appeared in another scan too keeps that appearance and survives; one whose
+  // only appearance was here goes with it, along with its evidence and briefs.
+  const scan = await ctx.db.get(scanId);
+  const appearances = scan
+    ? await ctx.db
+        .query("candidateAppearances")
+        .withIndex("by_owner_scan", (q) => q.eq("ownerId", scan.ownerId).eq("scanId", scanId))
+        .collect()
+    : [];
+
+  for (const appearance of appearances) {
+    const candidateId = appearance.candidateId;
+    await ctx.db.delete(appearance._id);
+
+    const memberships = await ctx.db
+      .query("candidateSources")
+      .withIndex("by_candidate_scan", (q) => q.eq("candidateId", candidateId).eq("scanId", scanId))
+      .collect();
+    for (const membership of memberships) await ctx.db.delete(membership._id);
+
+    const stillAppears = await ctx.db
+      .query("candidateAppearances")
+      .withIndex("by_candidate_scan", (q) => q.eq("candidateId", candidateId))
+      .first();
+    if (stillAppears) continue;
+
+    const evidence = await ctx.db
+      .query("evidenceItems")
+      .withIndex("by_candidate_version", (q) => q.eq("candidateId", candidateId))
+      .collect();
+    for (const item of evidence) await ctx.db.delete(item._id);
+
+    const briefs = await ctx.db
+      .query("briefVersions")
+      .withIndex("by_candidate_version", (q) => q.eq("candidateId", candidateId))
+      .collect();
+    for (const brief of briefs) await ctx.db.delete(brief._id);
+
+    await ctx.db.delete(candidateId);
+  }
+
+  const modelRuns = await ctx.db
+    .query("modelRuns")
+    .withIndex("by_scan_operation", (q) => q.eq("scanId", scanId))
+    .collect();
+  for (const run of modelRuns) await ctx.db.delete(run._id);
+
   await ctx.db.delete(scanId);
 }
 
@@ -131,5 +182,207 @@ export const raceReserve = internalAction({
     } finally {
       await ctx.runMutation(internal.testing.deleteScanById, { scanId, userId });
     }
+  },
+});
+
+// --- One finished lead, for the e2e run and for looking at the page ----------
+// The same four Milwaukee sources the integration fixture uses, already
+// clustered, classified, snapshotted and briefed. It makes NO model call: the
+// e2e suite must not depend on a paid service, and what it tests is the
+// rendering, not the model.
+
+const SLICE_SOURCES = [
+  {
+    family: "official" as const, engine: "google" as const, language: "en",
+    url: "https://city.milwaukee.gov/agenda/250412",
+    title: "Common Council agenda item 250412",
+    snippet: "Rezoning of the 3000 block of North Dr. Martin Luther King Jr. Drive.",
+    publisher: undefined as string | undefined, accessible: true,
+  },
+  {
+    family: "news" as const, engine: "google_news" as const, language: "en",
+    url: "https://jsonline.com/story/harambee-rezoning",
+    title: "Neighbors question Harambee rezoning timeline",
+    snippet: "Residents say they learned of the proposal a week before the vote.",
+    publisher: "Milwaukee Journal Sentinel", accessible: true,
+  },
+  {
+    family: "news" as const, engine: "google" as const, language: "es",
+    url: "https://elconquistador.example/rezonificacion-harambee",
+    title: "Vecinos cuestionan la rezonificación de Harambee",
+    snippet: "Los residentes dicen que se enteraron una semana antes de la votación.",
+    publisher: "El Conquistador", accessible: true,
+  },
+  {
+    family: "community_discussion" as const, engine: "google" as const, language: "en",
+    url: "https://reddit.com/r/milwaukee/comments/abc123/harambee_rezoning",
+    title: "Anyone know what is happening with the Harambee rezoning?",
+    snippet: "Saw surveyors on MLK yesterday. Nobody I know got a notice.",
+    publisher: undefined, accessible: false,
+  },
+];
+
+const SLICE_QUERY = 'site:city.milwaukee.gov "Harambee rezoning"';
+const SLICE_FINGERPRINT = "fixture-harambee-rezoning";
+
+export const seedSliceFixture = internalMutation({
+  args: { clerkUserId: v.string() },
+  returns: v.object({ scanId: v.id("scans"), candidateId: v.id("candidates") }),
+  handler: async (ctx, { clerkUserId }): Promise<{ scanId: Id<"scans">; candidateId: Id<"candidates"> }> => {
+    const now = Date.now();
+    const day = 86_400_000;
+
+    const existingUser = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_user_id", (q) => q.eq("clerkUserId", clerkUserId))
+      .unique();
+    const ownerId = existingUser?._id
+      ?? (await ctx.db.insert("users", { clerkUserId, createdAt: now, updatedAt: now }));
+
+    // Re-seeding is idempotent: drop the previous fixture lead and its rows so a
+    // repeated e2e run reads a clean deployment, not a doubled one.
+    const prior = await ctx.db
+      .query("candidates")
+      .withIndex("by_owner_fingerprint", (q) => q.eq("ownerId", ownerId).eq("fingerprint", SLICE_FINGERPRINT))
+      .unique();
+    if (prior) {
+      for (const table of ["candidateSources", "candidateAppearances", "evidenceItems", "briefVersions"] as const) {
+        const rows = await ctx.db.query(table).collect();
+        for (const row of rows) if (row.candidateId === prior._id) await ctx.db.delete(row._id);
+      }
+      await ctx.db.delete(prior._id);
+    }
+
+    const scanId = await ctx.db.insert("scans", {
+      ownerId, marketKey: MARKET_KEY,
+      rulesetVersion: RULESET_VERSION, queryCatalogVersion: QUERY_CATALOG_VERSION,
+      status: "completed", stage: "briefs", startedAt: now - 60_000, completedAt: now,
+      searchBudgetLimit: SEARCH_BUDGET.hardCap,
+      searchesReserved: 1, searchesSucceeded: 1, searchesFailed: 0,
+      eligibleCount: 1, excludedCount: 0, processingCount: 0,
+      failureSummaries: [], isSavedDemo: false,
+    });
+
+    const searchRunId = await ctx.db.insert("searchRuns", {
+      scanId, ownerId, idempotencyKey: `${scanId}:discovery:official-housing-01:fixture`,
+      templateId: "official-housing-01", queryCatalogVersion: QUERY_CATALOG_VERSION,
+      purpose: "discovery", engine: "google",
+      query: SLICE_QUERY, parameters: { gl: "us", hl: "en" }, language: "en",
+      status: "succeeded", attemptCount: 1, resultCount: SLICE_SOURCES.length, durationMs: 812,
+      reservedAt: now - 50_000, completedAt: now - 49_000,
+    });
+
+    const candidateId = await ctx.db.insert("candidates", {
+      ownerId, fingerprint: SLICE_FINGERPRINT,
+      currentTitle: "Harambee rezoning heads to a council vote",
+      reportingQuestion: "Who was notified before the Harambee rezoning reached the council?",
+      beat: "housing", status: "processing", primaryLabel: "Worth a look", disposition: "new",
+      latestEvidenceVersion: 0, independentCategoryCount: 0, coverageOriginalCount: 0,
+      // Complete with zero reports: the coverage-gap path, and the one the demo shows.
+      coveragePassStatus: "complete",
+      firstSeenAt: now, lastSeenAt: now, updatedAt: now,
+      judgment: {
+        localityBand: { value: "direct_city", basis: "deterministic", reason: "an official Milwaukee source is cited: city.milwaukee.gov" },
+        relevanceBand: { value: "policy_service_change", basis: "ai_suggested", reason: "suggested by the model from the supplied sources" },
+        beat: { value: "housing", basis: "ai_suggested", reason: "suggested by the model from the supplied sources" },
+        isSpeculative: { value: false, basis: "ai_suggested", reason: "flagged by the model" },
+        isRoutineCrime: { value: false, basis: "ai_suggested", reason: "flagged by the model" },
+        isDuplicateOfCandidate: { value: false, basis: "ai_suggested", reason: "flagged by the model" },
+        hasMaterialConflict: { value: false, basis: "ai_suggested", reason: "flagged by the model" },
+      },
+    });
+
+    const sourceIds: Id<"sourceResults">[] = [];
+    for (const [i, source] of SLICE_SOURCES.entries()) {
+      const sourceResultId = await ctx.db.insert("sourceResults", {
+        scanId, searchRunId, ownerId,
+        canonicalKey: `${source.engine}:${source.url}`, canonicalUrl: source.url, originalUrl: source.url,
+        engine: source.engine, sourceFamily: source.family,
+        sourceType: source.family === "official" ? "primary" : source.family === "community_discussion" ? "discussion" : "unknown",
+        title: source.title, snippet: source.snippet, publisher: source.publisher,
+        originalLanguage: source.language,
+        translatedTitle: source.language === "es" ? "Neighbors question the Harambee rezoning" : undefined,
+        translatedSnippet: source.language === "es" ? "Residents say they found out a week before the vote." : undefined,
+        publishedAt: now - day, discoveredAt: now, position: i + 1,
+        isAccessible: source.accessible, contentHash: `fixture-${i}`,
+      });
+      await ctx.db.insert("candidateSources", {
+        candidateId, scanId, sourceResultId,
+        // Community discussion enters as enrichment, never corroboration
+        // (spec.md:541), which is why an unreachable Reddit link shows
+        // "Needs a recheck" without excluding the lead.
+        role: source.family === "community_discussion" ? "enrichment" : i === 0 ? "initiating" : "corroborating",
+        independenceGroup: `host:${new URL(source.url).hostname.replace(/^www\./, "")}`,
+        signalCategory: source.family === "official" ? "official_record"
+          : source.family === "news" ? "original_news" : "community_discussion",
+        addedBy: "ai_suggestion",
+      });
+      sourceIds.push(sourceResultId);
+    }
+
+    const modelRunId = await ctx.db.insert("modelRuns", {
+      scanId, candidateId, ownerId, operation: "classifyEvidence",
+      idempotencyKey: `${scanId}:${candidateId}:classifyEvidence:fixture:1:2:claude-sonnet-5`,
+      provider: "anthropic", modelId: "claude-sonnet-5",
+      promptVersion: "2", schemaVersion: "1", inputSnapshotHash: "fixture",
+      status: "succeeded", attempt: 1, durationMs: 14_200,
+      inputTokens: 2_100, outputTokens: 900, startedAt: now - 30_000, completedAt: now - 16_000,
+    });
+
+    const evidence = [
+      { kind: "existing_coverage", claimText: "The rezoning is agenda item 250412.", ids: [sourceIds[0]],
+        excerpt: "Rezoning of the 3000 block of North Dr. Martin Luther King Jr. Drive." },
+      { kind: "unverified_signal", claimText: "Residents say they learned of the proposal a week before the vote.", ids: [sourceIds[1]],
+        excerpt: "Residents say they learned of the proposal a week before the vote." },
+      { kind: "unverified_signal", claimText: "Neighbors say they were notified a week before the vote.", ids: [sourceIds[2]],
+        original: "Los residentes dicen que se enteraron una semana antes de la votación.",
+        translated: "Residents say they found out a week before the vote." },
+      { kind: "potential_source", claimText: "A resident reports surveyors on MLK Drive.", ids: [sourceIds[3]],
+        excerpt: "Saw surveyors on MLK yesterday. Nobody I know got a notice." },
+    ] as Array<{ kind: string; claimText: string; ids: Id<"sourceResults">[]; excerpt?: string; original?: string; translated?: string }>;
+
+    for (const item of evidence) {
+      await ctx.db.insert("evidenceItems", {
+        candidateId, scanId, ownerId, evidenceVersion: 1,
+        kind: item.kind as never, claimText: item.claimText, sourceResultIds: item.ids,
+        exactExcerpt: item.excerpt, originalLanguageText: item.original, translatedText: item.translated,
+        classificationBasis: "ai_suggested",
+        // The Reddit source is deliberately unreachable, so its item shows
+        // `Needs a recheck` on screen.
+        requiresReverification: item.ids.includes(sourceIds[3]),
+        createdByModelRunId: modelRunId,
+      });
+    }
+    await ctx.db.patch(candidateId, { latestEvidenceVersion: 1 });
+
+    await ctx.db.insert("briefVersions", {
+      candidateId, scanId, ownerId, version: 1, modelRunId,
+      reportingQuestion: "Who was notified before the Harambee rezoning reached the council?",
+      whySurfaced: "An official agenda item and two independent local outlets describe the same rezoning.",
+      // Empty sections carry OUR fixed sentences with no citations, exactly as
+      // runGenerateBrief writes them.
+      confirmedFacts: [{ text: EMPTY_SECTION_NOTES.confirmedFacts, sourceResultIds: [] }],
+      unverifiedClaims: [{ text: "Residents say they learned of the proposal a week before the vote.", sourceResultIds: [sourceIds[1]] }],
+      conflicts: [{ text: EMPTY_SECTION_NOTES.conflicts, sourceResultIds: [] }],
+      existingCoverage: [{ text: EMPTY_SECTION_NOTES.existingCoverageComplete, sourceResultIds: [] }],
+      potentialHumanSources: [{ text: "A resident who saw surveyors on MLK Drive.", sourceResultIds: [sourceIds[3]] }],
+      interviewQuestions: [
+        "How much notice does the city owe residents before a rezoning vote?",
+        "Who signed off on the notification schedule for item 250412?",
+      ],
+      createdAt: now,
+    });
+    await ctx.db.patch(candidateId, { latestBriefVersion: 1 });
+
+    await ctx.db.insert("candidateAppearances", {
+      candidateId, scanId, ownerId,
+      statusAtScan: "processing", labelAtScan: "Worth a look", dispositionAtScan: "new", rank: 1,
+    });
+
+    // The verdict on screen is the rules engine's. Nothing above wrote status,
+    // primaryLabel or scoreTotal.
+    await ctx.runMutation(internal.candidates.evaluate.evaluate, { scanId, candidateId, now });
+
+    return { scanId, candidateId };
   },
 });

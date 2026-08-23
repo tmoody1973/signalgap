@@ -1,0 +1,38 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html", "x": 0, "y": 0, "w": 1000, "h": 2900, "title": "Evidence view — single column" },
+    { "file": "SplitRail.dc.html", "x": 1120, "y": 0, "w": 1360, "h": 1120, "title": "Direction B — brief pinned beside" },
+    { "file": "WhySurfaced.dc.html", "x": 1120, "y": 1300, "w": 1260, "h": 760, "title": "Why this surfaced — three treatments" }
+  ],
+  "annotations": [
+    {
+      "id": "brief",
+      "x": 0,
+      "y": -190,
+      "w": 460,
+      "text": "SignalGap evidence view.\n\nBuilt from the real tokens in src/styles/theme.css and the real fixture lead. Every number is what the rules engine actually computes for it: 95/100, Coverage gap, 2 independent categories.\n\nLeft: the deliverable. Right: one layout alternative, and three ways to show the demo's central moment.\n\nPick a layout and a Why-this-surfaced treatment, then I build it."
+    },
+    {
+      "id": "tradeoff-main",
+      "x": 0,
+      "y": 2960,
+      "w": 420,
+      "text": "Single column, 768px of reading width.\n\nWhy: it matches the shell already approved, it reads top to bottom in the spec's order, and it works on a phone with no rework.\n\nCost: the brief sits ~2000px below the evidence it summarises, so checking a brief claim against a source means scrolling."
+    },
+    {
+      "id": "tradeoff-split",
+      "x": 1120,
+      "y": 1180,
+      "w": 420,
+      "text": "Direction B: the brief stays on screen while you scroll the evidence.\n\nWhy: the demo move is checking a brief claim against its source. Here they are side by side.\n\nCost: needs ~1280px. On a phone it collapses back to Direction A anyway, so it is a second layout to build and keep working, not a replacement."
+    },
+    {
+      "id": "why-note",
+      "x": 1120,
+      "y": 2120,
+      "w": 420,
+      "text": "Only one of these three ships. A is what the plan currently describes. B and C are here because this is the moment the whole product is arguing for, and a numbered list may be underselling it."
+    }
+  ],
+  "launch": { "view": "canvas" }
+}

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { internal } from "../../convex/_generated/api";
+import type { Doc } from "../../convex/_generated/dataModel";
 import { scanDoc, searchRunDoc } from "../fixtures/factories";
 import { setup } from "./helpers";
 
@@ -31,6 +32,66 @@ describe("deleteScansForClerkUser cascade", () => {
       expect(await ctx.db.query("sourceResults").collect()).toHaveLength(0);
       expect(await ctx.storage.getUrl(storageId)).toBeNull();
     });
+  });
+
+  it("takes the candidate, its membership, evidence and brief with the scan", async () => {
+    const t = setup();
+    const seeded = await t.mutation(internal.testing.seedSliceFixture, { clerkUserId: "cascade-slice" });
+    expect(seeded.candidateId).toBeTruthy();
+
+    const before = await t.run(async (ctx) => ({
+      candidates: (await ctx.db.query("candidates").collect()).length,
+      evidence: (await ctx.db.query("evidenceItems").collect()).length,
+      briefs: (await ctx.db.query("briefVersions").collect()).length,
+      memberships: (await ctx.db.query("candidateSources").collect()).length,
+      modelRuns: (await ctx.db.query("modelRuns").collect()).length,
+    }));
+    expect(before).toEqual({ candidates: 1, evidence: 4, briefs: 1, memberships: 4, modelRuns: 1 });
+
+    await t.mutation(internal.testing.deleteScansForClerkUser, { clerkUserId: "cascade-slice" });
+
+    const after = await t.run(async (ctx) => ({
+      scans: (await ctx.db.query("scans").collect()).length,
+      candidates: (await ctx.db.query("candidates").collect()).length,
+      evidence: (await ctx.db.query("evidenceItems").collect()).length,
+      briefs: (await ctx.db.query("briefVersions").collect()).length,
+      memberships: (await ctx.db.query("candidateSources").collect()).length,
+      appearances: (await ctx.db.query("candidateAppearances").collect()).length,
+      modelRuns: (await ctx.db.query("modelRuns").collect()).length,
+      sources: (await ctx.db.query("sourceResults").collect()).length,
+    }));
+    expect(after).toEqual({
+      scans: 0, candidates: 0, evidence: 0, briefs: 0,
+      memberships: 0, appearances: 0, modelRuns: 0, sources: 0,
+    });
+  });
+
+  it("re-seeding the fixture replaces the lead instead of doubling it", async () => {
+    const t = setup();
+    await t.mutation(internal.testing.seedSliceFixture, { clerkUserId: "cascade-slice" });
+    await t.mutation(internal.testing.seedSliceFixture, { clerkUserId: "cascade-slice" });
+
+    const counts = await t.run(async (ctx) => ({
+      candidates: (await ctx.db.query("candidates").collect()).length,
+      evidence: (await ctx.db.query("evidenceItems").collect()).length,
+      briefs: (await ctx.db.query("briefVersions").collect()).length,
+    }));
+    expect(counts).toEqual({ candidates: 1, evidence: 4, briefs: 1 });
+  });
+
+  it("gives the seeded lead a verdict the RULES computed, not one we typed", async () => {
+    const t = setup();
+    const { candidateId } = await t.mutation(internal.testing.seedSliceFixture, { clerkUserId: "cascade-slice" });
+    const candidate = (await t.run(async (ctx) => await ctx.db.get(candidateId))) as Doc<"candidates">;
+
+    // Seeded as processing / Worth a look / no score. The engine set all three.
+    expect(candidate.status).toBe("eligible");
+    expect(candidate.scoreTotal).toBe(95);
+    expect(candidate.independentCategoryCount).toBe(2);
+    // The lead QUALIFIES, and still carries "Needs a recheck", because one of
+    // its enrichment links is dead. That is the spec: a dead enrichment link
+    // flags a lead, it does not kill it — and the flag outranks "Coverage gap".
+    expect(candidate.primaryLabel).toBe("Needs a recheck");
   });
 
   it("returns 0 and touches nothing when the clerk user has never signed in", async () => {

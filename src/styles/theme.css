@@ -12,6 +12,7 @@
   --color-accent: var(--accent);
   --color-accent-fg: var(--accent-fg);
   --color-focus: var(--focus);
+  --color-ai-tint: var(--ai-tint);
 }
 
 :root {
@@ -27,6 +28,9 @@
   --status-caution: #8a5a00;
   --status-conflict: #9b2c2c;
   --status-positive: #2f6b3a;
+  /* AI-drafted prose sits on its own ground so it can never be mistaken for
+     sourced evidence. Warm enough to belong, distinct enough to notice. */
+  --ai-tint: #f4efe6;
 }
 
 .dark {
@@ -42,6 +46,7 @@
   --status-caution: #e0b26a;
   --status-conflict: #f08a8a;
   --status-positive: #8ccf9a;
+  --ai-tint: #2e2b25;
 }
 
 :focus-visible {

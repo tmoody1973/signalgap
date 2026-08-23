@@ -23,6 +23,20 @@ const SCORE_LABELS = {
   relevance: "Beat relevance",
 } as const;
 
+// A deliberate reading order, not index order: the primary record leads because
+// it is the strongest thing we have, and community discussion goes last because
+// it never counts toward confirmation.
+const CATEGORY_RANK = {
+  official_record: 0,
+  original_news: 1,
+  event: 2,
+  video: 3,
+  public_web: 4,
+  map: 5,
+  trend: 6,
+  community_discussion: 7,
+} as const;
+
 const CATEGORY_LABELS = {
   official_record: "Official record",
   original_news: "Local reporting",
@@ -205,6 +219,7 @@ export const forCandidate = query({
     const whySurfaced = [...new Map(
       [...sourceById.values()]
         .filter((s) => s.role !== "coverage")
+        .sort((a, b) => CATEGORY_RANK[a.signalCategory] - CATEGORY_RANK[b.signalCategory])
         .map((s) => [s.signalCategory, {
           category: s.signalCategory,
           label: CATEGORY_LABELS[s.signalCategory],

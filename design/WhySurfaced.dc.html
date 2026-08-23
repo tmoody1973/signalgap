@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Inter:wght@400;500;600&display=swap">
+  <style>
+    .sg {
+      --bg: #faf7f2; --raised: #ffffff; --ink: #1f1d1a; --muted: #5c5751;
+      --rule: #e2dcd2; --accent: #b8741a; --caution: #8a5a00; --positive: #2f6b3a;
+      font-family: Inter, system-ui, sans-serif; background: var(--bg); color: var(--ink);
+    }
+    body { margin: 0; }
+    .ed { font-family: Newsreader, Georgia, serif; }
+    h1, h2, h3, p, ol, ul { margin: 0; }
+    ol, ul { padding: 0; list-style: none; }
+    .cap { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  </style>
+</helmet>
+
+<div class="sg" style="min-height: 100%; padding: 32px 32px 40px">
+
+  <div style="max-width: 1180px; margin: 0 auto">
+    <h1 class="ed" style="font-size: 26px">Why this surfaced &mdash; three ways to show the same four sources</h1>
+    <p style="margin-top: 6px; font-size: 14px; color: var(--muted); max-width: 62ch">This is the demo moment: several independent kinds of source landing on one story. All three carry the same facts. They differ in what a reader notices first.</p>
+
+    <div style="margin-top: 28px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; align-items: start">
+
+      <!-- A: the ledger -->
+      <div>
+        <p class="cap">Treatment A &mdash; ledger</p>
+        <p style="margin-top: 4px; font-size: 13px; color: var(--muted)">Kind on the left, source on the right. Reads like a record.</p>
+        <ol style="margin-top: 14px">
+          <li style="display: grid; grid-template-columns: 108px 1fr; gap: 10px; padding: 10px 0; border-top: 1px solid var(--rule)">
+            <span class="cap">Official record</span>
+            <span style="font-size: 13px">Common Council agenda item 250412</span>
+          </li>
+          <li style="display: grid; grid-template-columns: 108px 1fr; gap: 10px; padding: 10px 0; border-top: 1px solid var(--rule)">
+            <span class="cap">Local reporting</span>
+            <span style="font-size: 13px">Neighbors question Harambee rezoning timeline</span>
+          </li>
+          <li style="display: grid; grid-template-columns: 108px 1fr; gap: 10px; padding: 10px 0; border-top: 1px solid var(--rule)">
+            <span class="cap">Local reporting</span>
+            <span style="font-size: 13px">Vecinos cuestionan la rezonificaci&oacute;n de Harambee</span>
+          </li>
+          <li style="display: grid; grid-template-columns: 108px 1fr; gap: 10px; padding: 10px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule)">
+            <span class="cap" style="color: var(--caution)">Community</span>
+            <span style="font-size: 13px">r/milwaukee thread</span>
+          </li>
+        </ol>
+        <p style="margin-top: 12px; font-size: 12px; color: var(--muted)">Calm and dense. The convergence is stated, not felt.</p>
+      </div>
+
+      <!-- B: the converge rail -->
+      <div>
+        <p class="cap">Treatment B &mdash; converging rail</p>
+        <p style="margin-top: 4px; font-size: 13px; color: var(--muted)">Sources feed a spine that ends in the question.</p>
+        <div style="margin-top: 14px; display: grid; grid-template-columns: 14px 1fr; gap: 0 14px">
+          <div style="grid-row: 1 / 5; width: 2px; margin-left: 6px; background: var(--rule)"></div>
+
+          <div style="padding: 0 0 16px">
+            <span class="cap">Official record</span>
+            <p style="font-size: 13px">Common Council agenda item 250412</p>
+          </div>
+          <div style="padding: 0 0 16px">
+            <span class="cap">Local reporting</span>
+            <p style="font-size: 13px">Neighbors question Harambee rezoning timeline</p>
+          </div>
+          <div style="padding: 0 0 16px">
+            <span class="cap">Local reporting &middot; Spanish</span>
+            <p style="font-size: 13px">Vecinos cuestionan la rezonificaci&oacute;n de Harambee</p>
+          </div>
+          <div style="padding: 0 0 4px">
+            <span class="cap" style="color: var(--caution)">Community &middot; not confirmation</span>
+            <p style="font-size: 13px">r/milwaukee thread</p>
+          </div>
+
+          <div style="grid-column: 1 / -1; margin-top: 14px; border-top: 2px solid var(--accent); padding-top: 12px">
+            <p class="ed" style="font-size: 17px; line-height: 1.35">Two independent kinds of source describe the same rezoning.</p>
+          </div>
+        </div>
+        <p style="margin-top: 12px; font-size: 12px; color: var(--muted)">The spine does the arguing. Costs vertical space.</p>
+      </div>
+
+      <!-- C: the count -->
+      <div>
+        <p class="cap">Treatment C &mdash; the count first</p>
+        <p style="margin-top: 4px; font-size: 13px; color: var(--muted)">Leads with the number that decides eligibility.</p>
+        <div style="margin-top: 14px; border: 1px solid var(--rule); border-radius: 5px; padding: 18px">
+          <p class="ed" style="font-size: 40px; line-height: 1">2</p>
+          <p style="margin-top: 2px; font-size: 13px">independent kinds of source, including one primary record</p>
+          <p style="margin-top: 8px; font-size: 12px; color: var(--muted)">Two is the bar. One would be a tip.</p>
+          <ul style="margin-top: 14px; display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--rule); padding-top: 12px">
+            <li style="font-size: 13px"><span class="cap" style="display: block">Official record</span>Common Council agenda 250412</li>
+            <li style="font-size: 13px"><span class="cap" style="display: block">Local reporting &times; 2</span>Journal Sentinel, El Conquistador</li>
+          </ul>
+          <p style="margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--rule); font-size: 12px; color: var(--caution)">1 community post, held outside the count</p>
+        </div>
+        <p style="margin-top: 12px; font-size: 12px; color: var(--muted)">Fastest to grasp. Risks reading as a score, which it is not.</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":1260,"height":760}}'>
+class Component extends DCLogic {}
+</script>
+</body>
+</html>
