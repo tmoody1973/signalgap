@@ -1,14 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { api, internal } from "../../convex/_generated/api";
-import { asUser, setup } from "./helpers";
+import { discoverySpecs, runDiscoveryStage } from "../../convex/stages/discovery";
+import { DISCOVERY_TEMPLATE_IDS } from "../../convex/integrations/serpapi/queryCatalog";
+import { asUser, fakeFetch, seedUser, setup } from "./helpers";
 
 const NOW = 1_700_000_000_000;
-
-async function seedUser(t: ReturnType<typeof setup>) {
-  return t.run(async (ctx) =>
-    ctx.db.insert("users", { clerkUserId: "owner", createdAt: NOW, updatedAt: NOW }),
-  );
-}
 
 describe("scan workflow", () => {
   it("startScan records the workflow it started", async () => {
@@ -194,5 +190,101 @@ describe("scan state transitions", () => {
     expect(after!.searchesFailed).toBe(atFinalize!.searchesFailed);
     expect(after!.eligibleCount).toBe(atFinalize!.eligibleCount);
     expect(after!.status).toBe("completed");
+  });
+});
+
+describe("discovery stage", () => {
+  it("renders exactly the 13 frozen templates, once each", () => {
+    const specs = discoverySpecs(NOW);
+    expect(specs).toHaveLength(13);
+    expect(specs.map((s) => s.templateId).sort()).toEqual([...DISCOVERY_TEMPLATE_IDS].sort());
+    // Decision 005: Google Events is enrichment now, and must not reappear here.
+    expect(specs.some((s) => s.engine === "google_events")).toBe(false);
+    for (const spec of specs) {
+      expect(spec.purpose).toBe("discovery");
+      expect(spec.query.trim().length).toBeGreaterThan(0);
+    }
+  });
+
+  it("every rendered query is unique, so no two runs share an idempotency key", () => {
+    const queries = discoverySpecs(NOW).map((s) => `${s.templateId}|${s.query}`);
+    expect(new Set(queries).size).toBe(queries.length);
+  });
+
+  it("executes all 13 and reserves 13, not 16", async () => {
+    vi.stubEnv("SERPAPI_API_KEY", "test-key");
+    const t = setup();
+    await seedUser(t);
+    const scanId = await asUser(t, "owner").mutation(api.scans.startScan, {});
+
+    const outcome = await t.action(async (ctx) =>
+      runDiscoveryStage(ctx, { scanId, now: NOW }, { fetchImpl: fakeFetch(), sleep: async () => {} }),
+    );
+
+    expect(outcome.executed).toBe(13);
+    expect(outcome.canceled).toBe(false);
+    const scan = await t.run(async (ctx) => ctx.db.get(scanId));
+    // 16 is the budget CEILING. Spending 13 is the point of decision 005.
+    expect(scan?.searchesReserved).toBe(13);
+  });
+
+  it("stops before the next search once cancellation is requested", async () => {
+    vi.stubEnv("SERPAPI_API_KEY", "test-key");
+    const t = setup();
+    await seedUser(t);
+    const scanId = await asUser(t, "owner").mutation(api.scans.startScan, {});
+    await asUser(t, "owner").mutation(api.scans.cancel, { scanId });
+
+    const outcome = await t.action(async (ctx) =>
+      runDiscoveryStage(ctx, { scanId, now: NOW }, { fetchImpl: fakeFetch(), sleep: async () => {} }),
+    );
+
+    expect(outcome.canceled).toBe(true);
+    expect(outcome.executed).toBe(0);
+    const scan = await t.run(async (ctx) => ctx.db.get(scanId));
+    // Not one paid call after the editor said stop.
+    expect(scan?.searchesReserved).toBe(0);
+  });
+
+  it("a failing search is named on the scan and does not stop the other twelve", async () => {
+    vi.stubEnv("SERPAPI_API_KEY", "test-key");
+    const t = setup();
+    await seedUser(t);
+    const scanId = await asUser(t, "owner").mutation(api.scans.startScan, {});
+
+    const failOnSpanish = (async (input: RequestInfo | URL) => {
+      const q = new URL(String(input)).searchParams.get("q") ?? "";
+      if (q.includes("vivienda")) return new Response("upstream boom", { status: 500 });
+      return new Response(JSON.stringify({ search_metadata: { id: "x", status: "Success" }, organic_results: [] }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    }) as typeof fetch;
+
+    const outcome = await t.action(async (ctx) =>
+      runDiscoveryStage(ctx, { scanId, now: NOW }, { fetchImpl: failOnSpanish, sleep: async () => {} }),
+    );
+
+    expect(outcome.failed).toBeGreaterThanOrEqual(1);
+    expect(outcome.succeeded).toBeGreaterThanOrEqual(11);
+    const scan = await t.run(async (ctx) => ctx.db.get(scanId));
+    expect(scan?.failureSummaries.some((f) => f.purpose === "discovery")).toBe(true);
+  });
+
+  it("running the stage twice reuses completed runs and reserves nothing new", async () => {
+    vi.stubEnv("SERPAPI_API_KEY", "test-key");
+    const t = setup();
+    await seedUser(t);
+    const scanId = await asUser(t, "owner").mutation(api.scans.startScan, {});
+    const opts = { fetchImpl: fakeFetch(), sleep: async () => {} };
+
+    await t.action(async (ctx) => runDiscoveryStage(ctx, { scanId, now: NOW }, opts));
+    const afterFirst = (await t.run(async (ctx) => ctx.db.get(scanId)))?.searchesReserved;
+    const second = await t.action(async (ctx) => runDiscoveryStage(ctx, { scanId, now: NOW }, opts));
+
+    // Resuming a workflow after a restart must not re-buy searches we own.
+    expect((await t.run(async (ctx) => ctx.db.get(scanId)))?.searchesReserved).toBe(afterFirst);
+    expect(second.skipped).toBe(13);
+    expect(second.executed).toBe(0);
   });
 });

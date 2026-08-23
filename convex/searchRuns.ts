@@ -160,10 +160,16 @@ export const complete = internalMutation({
 // query — this internal action has no browser identity to satisfy requireUser.
 export const getRun = internalQuery({
   args: { runId: v.id("searchRuns") },
-  returns: v.union(v.null(), v.object({ status: V.vSearchRunStatus, resultCount: v.number(), reservedAt: v.number() })),
+  returns: v.union(v.null(), v.object({
+    status: V.vSearchRunStatus, resultCount: v.number(), reservedAt: v.number(),
+    errorCode: v.union(v.string(), v.null()), errorMessage: v.union(v.string(), v.null()),
+  })),
   handler: async (ctx, { runId }) => {
     const run = await ctx.db.get(runId);
-    return run ? { status: run.status, resultCount: run.resultCount, reservedAt: run.reservedAt } : null;
+    return run ? {
+      status: run.status, resultCount: run.resultCount, reservedAt: run.reservedAt,
+      errorCode: run.errorCode ?? null, errorMessage: run.errorMessage ?? null,
+    } : null;
   },
 });
 

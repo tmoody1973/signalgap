@@ -55,6 +55,7 @@ import type * as scans from "../scans.js";
 import type * as searchRuns from "../searchRuns.js";
 import type * as slice from "../slice.js";
 import type * as sourceResults from "../sourceResults.js";
+import type * as stages_discovery from "../stages/discovery.js";
 import type * as testing from "../testing.js";
 import type * as users from "../users.js";
 import type * as workflow from "../workflow.js";
@@ -113,6 +114,7 @@ declare const fullApi: ApiFromModules<{
   searchRuns: typeof searchRuns;
   slice: typeof slice;
   sourceResults: typeof sourceResults;
+  "stages/discovery": typeof stages_discovery;
   testing: typeof testing;
   users: typeof users;
   workflow: typeof workflow;

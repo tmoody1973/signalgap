@@ -1,6 +1,6 @@
 import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
-import { internalMutation, query } from "./_generated/server";
+import { internalMutation, internalQuery, query } from "./_generated/server";
 import { canonicalKey, contentHash, extractRedditPostId } from "./integrations/serpapi/canonical";
 import type { SourceFamily } from "./integrations/serpapi/contracts";
 import { requireUser } from "./lib/auth";
@@ -122,5 +122,29 @@ export const listForScan = query({
       isDone: result.isDone,
       continueCursor: result.continueCursor,
     };
+  },
+});
+
+/**
+ * Every source this scan ingested for one purpose, oldest first.
+ *
+ * Ordering matters: the next stage clusters these, and a stable order makes a
+ * replayed workflow produce the same clusters as the run it is resuming.
+ */
+export const idsForScan = internalQuery({
+  args: { scanId: v.id("scans"), purpose: V.vPurpose },
+  returns: v.array(v.id("sourceResults")),
+  handler: async (ctx, { scanId, purpose }) => {
+    const runs = await ctx.db
+      .query("searchRuns")
+      .withIndex("by_scan_purpose", (q) => q.eq("scanId", scanId).eq("purpose", purpose))
+      .collect();
+    const runIds = new Set(runs.map((r) => r._id as string));
+
+    const rows = await ctx.db
+      .query("sourceResults")
+      .withIndex("by_scan_canonical", (q) => q.eq("scanId", scanId))
+      .collect();
+    return rows.filter((r) => runIds.has(r.searchRunId as string)).map((r) => r._id);
   },
 });
