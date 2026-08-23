@@ -1,0 +1,73 @@
+{
+  "id": "analyze-news-03",
+  "operation": "analyzeResults",
+  "dimension": "claim-to-source validity, citation completeness, invalid-output rate",
+  "provenance": "captured google_news payload, Milwaukee housing, 7-day window",
+  "reviewStatus": "objective",
+  "reviewedBy": null,
+  "input": {
+    "sources": [
+      {
+        "sourceResultId": "news_10",
+        "title": "Sherman Phoenix remains a symbol of growth for Milwaukee business owners",
+        "snippet": "",
+        "publisher": "Wisconsin Watch",
+        "canonicalUrl": "https://wisconsinwatch.org/2026/08/milwaukee-sherman-phoenix-marketplace-business-owners-symbol-of-growth-park-unrest",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-22T11:00:00.000Z"
+      },
+      {
+        "sourceResultId": "news_11",
+        "title": "Op Ed: Lessons From Milwaukee’s Flooding",
+        "snippet": "",
+        "publisher": "Urban Milwaukee",
+        "canonicalUrl": "https://urbanmilwaukee.com/2026/08/20/op-ed-lessons-from-milwaukees-flooding",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-20T14:13:00.000Z"
+      },
+      {
+        "sourceResultId": "news_12",
+        "title": "Travis Landry builds communities by building people",
+        "snippet": "",
+        "publisher": "Milwaukee Neighborhood News Service",
+        "canonicalUrl": "https://milwaukeenns.org/2026/08/19/travis-landry-builds-communities-by-building-people",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-19T22:15:00.000Z"
+      },
+      {
+        "sourceResultId": "news_13",
+        "title": "Investments changed Milwaukee’s Sherman Park after 2016 uprising, but who benefited remains unclear",
+        "snippet": "",
+        "publisher": "Wisconsin Watch",
+        "canonicalUrl": "https://wisconsinwatch.org/2026/08/milwaukee-sherman-park-investments-uprising-change-improvements-residents-benefit",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-21T14:00:00.000Z"
+      },
+      {
+        "sourceResultId": "news_14",
+        "title": "Metcalfe Park Liberation Hub Site Plan",
+        "snippet": "",
+        "publisher": "Urban Milwaukee",
+        "canonicalUrl": "https://urbanmilwaukee.com/2026/08/18/city-commission-approves-metcalfe-park-development/nggallery/image/metcalfe-park-liberation-hub-site-plan-3",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-18T16:57:00.000Z"
+      }
+    ]
+  },
+  "expected": {
+    "everyItemCitesASuppliedId": [
+      "news_10",
+      "news_11",
+      "news_12",
+      "news_13",
+      "news_14"
+    ],
+    "noQuotationOutsideSuppliedText": true,
+    "itemCount": 5
+  }
+}

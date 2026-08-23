@@ -157,7 +157,7 @@ describe("generateBrief", () => {
 
     expect(outcome.ok).toBe(false);
     if (outcome.ok) return;
-    expect(outcome.errors.join(" ")).toMatch(/exactly match/);
+    expect(outcome.errors.join(" ")).toMatch(/word-for-word/);
   });
 
   it("writes OUR cautious sentence for an empty section rather than letting the model fill it", async () => {

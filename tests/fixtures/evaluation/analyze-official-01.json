@@ -1,0 +1,66 @@
+{
+  "id": "analyze-official-01",
+  "operation": "analyzeResults",
+  "dimension": "source-type suggestion on official records",
+  "provenance": "captured google organic payload restricted to official Milwaukee domains",
+  "reviewStatus": "unreviewed",
+  "reviewedBy": null,
+  "input": {
+    "sources": [
+      {
+        "sourceResultId": "official_0",
+        "title": "Homes MKE - City of Milwaukee",
+        "snippet": "The goals of Homes MKE are to: sell, renovate and reoccupy up to 150 vacant foreclosed City owned houses. prioritize the development of the houses (414) 708- ...",
+        "publisher": null,
+        "canonicalUrl": "https://city.milwaukee.gov/DCD/NIDC/Homes-MKE",
+        "originalLanguage": "en",
+        "sourceFamily": "official",
+        "publishedAt": null
+      },
+      {
+        "sourceResultId": "official_1",
+        "title": "City of Milwaukee - Calendar",
+        "snippet": "ZONING, NEIGHBORHOODS & DEVELOPMENT COMMITTEE. NEIGHBORHOOD IMPROVEMENT DEVELOPMENT CORPORATION ・ 526 E Concordia Ave ・ 1:00 PM Room 301-A, Third Floor, City ...",
+        "publisher": null,
+        "canonicalUrl": "https://milwaukee.legistar.com/",
+        "originalLanguage": "en",
+        "sourceFamily": "official",
+        "publishedAt": null
+      },
+      {
+        "sourceResultId": "official_2",
+        "title": "NID #9 Havenwoods",
+        "snippet": "NID #9 Havenwoods. Tuesday, August 18, 2026. 6:00 PM to 7:30 PM. Havenwoods Neighborhood Partnership, 6671 W. Mill Rd. Milwaukee, WI, 53218.",
+        "publisher": null,
+        "canonicalUrl": "https://city.milwaukee.gov/News-Events/calendar/City-Event?DataID=480266&Occurrence=2026-08-18T18%3A00%3A00",
+        "originalLanguage": "en",
+        "sourceFamily": "official",
+        "publishedAt": null
+      },
+      {
+        "sourceResultId": "official_3",
+        "title": "Home and Habitat Fest & Back to School Giveaway with ...",
+        "snippet": "Get free back-to-school giveaways, snacks and ice cream (while supplies last) and learn about resources to buy your first home or how to stay in a safe and ...",
+        "publisher": null,
+        "canonicalUrl": "https://city.milwaukee.gov/City-Events/ECO/Home-and-Habitat-Fest--Back-to-School-Giveaway-with-WHEDA.htm?Occurrence=2026-08-28T10%3A00%3A00",
+        "originalLanguage": "en",
+        "sourceFamily": "official",
+        "publishedAt": null
+      },
+      {
+        "sourceResultId": "official_4",
+        "title": "Live Landlord Training - City Event - Milwaukee.gov",
+        "snippet": "The classes are generally two, 2.5 hour sessions with an hour break in-between (6 hours total). Attendees get a free 100+ page comprehensive manual on a variety ...",
+        "publisher": null,
+        "canonicalUrl": "https://city.milwaukee.gov/News-Events/calendar/City-Event?DataID=477679&Occurrence=2026-08-18T12%3A15%3A00",
+        "originalLanguage": "en",
+        "sourceFamily": "official",
+        "publishedAt": null
+      }
+    ]
+  },
+  "expected": {
+    "sourceTypeSuggestionShouldBe": "primary",
+    "note": "a proposed expectation; not yet confirmed by a person"
+  }
+}

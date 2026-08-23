@@ -71,6 +71,52 @@ describe("validateAgainstSources — rule 2: a quotation matches a stored excerp
   });
 });
 
+describe("validateAgainstSources — a quotation is a verbatim run, not the whole field", () => {
+  it("accepts one true sentence quoted out of a longer stored snippet", () => {
+    const ctx2 = {
+      knownSourceIds: ["src_a"],
+      excerptsBySourceId: {
+        src_a: ["The goals of Homes MKE are to: sell, renovate and reoccupy up to 150 vacant houses. prioritize the development (414) 708- ..."],
+      },
+    };
+    const out = {
+      items: [{
+        sourceResultIds: ["src_a"],
+        exactExcerpt: "The goals of Homes MKE are to: sell, renovate and reoccupy up to 150 vacant houses.",
+      }],
+    };
+    expect(validateAgainstSources(out, ctx2)).toEqual({ ok: true });
+  });
+
+  it("rejects a paraphrase, however close", () => {
+    const out = { items: [{ sourceResultIds: ["src_a"], exactExcerpt: "The board voted nine to four to approve the rezoning." }] };
+    expect(validateAgainstSources(out, ctx).ok).toBe(false);
+  });
+
+  it("rejects a run too short to be a phrase, so a word cannot be cherry-picked", () => {
+    const out = { items: [{ sourceResultIds: ["src_a"], exactExcerpt: "approve" }] };
+    const result = validateAgainstSources(out, ctx);
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.errors.join(" ")).toMatch(/too short/);
+  });
+
+  it("rejects a run stitched together from two different sources", () => {
+    const out = {
+      items: [{
+        sourceResultIds: ["src_a", "src_b"],
+        exactExcerpt: "to approve the rezoning. Riders reported 40-minute waits",
+      }],
+    };
+    expect(validateAgainstSources(out, ctx).ok).toBe(false);
+  });
+
+  it("still rejects a verbatim run from a source this block did not cite", () => {
+    const out = { items: [{ sourceResultIds: ["src_a"], exactExcerpt: "Riders reported 40-minute waits on the 30X." }] };
+    expect(validateAgainstSources(out, ctx).ok).toBe(false);
+  });
+});
+
 describe("validateAgainstSources — rule 4: the model cannot promote a fact to confirmed", () => {
   const confirmedCtx = { ...ctx, confirmedSourceIds: ["src_a"] };
 

@@ -1,0 +1,30 @@
+{
+  "id": "cluster-syndicated-01",
+  "operation": "clusterSignals",
+  "dimension": "press-release and syndication detection",
+  "provenance": "one captured news result presented twice under different publishers, text unchanged",
+  "reviewStatus": "objective",
+  "reviewedBy": null,
+  "input": {
+    "signals": [
+      {
+        "sourceResultId": "syn_0",
+        "entityKeys": [],
+        "claimSummary": "Milwaukee Neighborhood News Service publishes in-depth retrospective on Sherman Park uprising — "
+      },
+      {
+        "sourceResultId": "syn_1",
+        "entityKeys": [],
+        "claimSummary": "Milwaukee Neighborhood News Service publishes in-depth retrospective on Sherman Park uprising — "
+      }
+    ],
+    "existingCandidates": []
+  },
+  "expected": {
+    "mustMergeIntoOneCluster": [
+      "syn_0",
+      "syn_1"
+    ],
+    "countsAsOneOriginalReport": true
+  }
+}

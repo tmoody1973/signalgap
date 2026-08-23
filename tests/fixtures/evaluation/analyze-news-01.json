@@ -1,0 +1,73 @@
+{
+  "id": "analyze-news-01",
+  "operation": "analyzeResults",
+  "dimension": "claim-to-source validity, citation completeness, invalid-output rate",
+  "provenance": "captured google_news payload, Milwaukee housing, 7-day window",
+  "reviewStatus": "objective",
+  "reviewedBy": null,
+  "input": {
+    "sources": [
+      {
+        "sourceResultId": "news_0",
+        "title": "Milwaukee Neighborhood News Service publishes in-depth retrospective on Sherman Park uprising",
+        "snippet": "",
+        "publisher": "Marquette Today",
+        "canonicalUrl": "https://today.marquette.edu/2026/08/milwaukee-neighborhood-news-service-publishes-in-depth-retrospective-on-sherman-park-uprising",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-20T16:42:03.000Z"
+      },
+      {
+        "sourceResultId": "news_1",
+        "title": "Leaders react to federal investigation into whether MPS considers race when disciplining students",
+        "snippet": "",
+        "publisher": "Milwaukee Neighborhood News Service",
+        "canonicalUrl": "https://milwaukeenns.org/2026/08/19/leaders-react-to-federal-investigation-into-whether-mps-considers-race-when-disciplining-students",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-19T22:30:00.000Z"
+      },
+      {
+        "sourceResultId": "news_2",
+        "title": "Milwaukee neighborhood conducts food audit walk to address grocery deserts",
+        "snippet": "",
+        "publisher": "Spectrum News",
+        "canonicalUrl": "https://spectrumnews1.com/wi/milwaukee/news/2026/08/19/milwaukee-audit-walk-food-deserts-grocery-stores",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-19T17:45:00.000Z"
+      },
+      {
+        "sourceResultId": "news_3",
+        "title": "10 years after uprising, stubborn challenges persist in Milwaukee’s Sherman Park neighborhood",
+        "snippet": "",
+        "publisher": "Wisconsin Watch",
+        "canonicalUrl": "https://wisconsinwatch.org/2026/08/milwaukee-sherman-park-neighborhood-10-years-after-uprising-challenges-poverty-housing",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-21T11:00:00.000Z"
+      },
+      {
+        "sourceResultId": "news_4",
+        "title": "Pope Leo Village brings affordable housing to Milwaukee's Harambee neighborhood",
+        "snippet": "",
+        "publisher": "WISN",
+        "canonicalUrl": "https://wisn.com/article/pope-leo-village-brings-affordable-housing-to-milwaukees-harambee-neighborhood/73496330",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-21T23:46:00.000Z"
+      }
+    ]
+  },
+  "expected": {
+    "everyItemCitesASuppliedId": [
+      "news_0",
+      "news_1",
+      "news_2",
+      "news_3",
+      "news_4"
+    ],
+    "noQuotationOutsideSuppliedText": true,
+    "itemCount": 5
+  }
+}

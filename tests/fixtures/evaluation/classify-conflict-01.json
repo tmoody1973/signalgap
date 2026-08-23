@@ -1,0 +1,39 @@
+{
+  "id": "classify-conflict-01",
+  "operation": "classifyEvidence",
+  "dimension": "conflict preservation",
+  "provenance": "constructed from two contradictory statements about one Milwaukee vote count",
+  "reviewStatus": "objective",
+  "reviewedBy": null,
+  "input": {
+    "candidateId": "cand_eval_conflict",
+    "sources": [
+      {
+        "sourceResultId": "conf_0",
+        "title": "Council approves rezoning 9-4",
+        "snippet": "The measure passed 9-4 on Tuesday.",
+        "publisher": "Outlet A",
+        "sourceFamily": "news",
+        "isAccessible": true
+      },
+      {
+        "sourceResultId": "conf_1",
+        "title": "Rezoning vote deadlocked",
+        "snippet": "The measure failed on a 7-7 tie Tuesday.",
+        "publisher": "Outlet B",
+        "sourceFamily": "news",
+        "isAccessible": true
+      }
+    ],
+    "claims": []
+  },
+  "expected": {
+    "bothClaimsMustSurvive": [
+      "conf_0",
+      "conf_1"
+    ],
+    "atLeastOneItemKind": "conflicting_claim",
+    "hasMaterialConflictShouldBeTrue": true,
+    "mustNotPickAWinner": true
+  }
+}

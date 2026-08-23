@@ -1,0 +1,39 @@
+{
+  "id": "brief-thin-01",
+  "operation": "generateBrief",
+  "dimension": "brief cautiousness when evidence is thin",
+  "provenance": "constructed candidate with one unverified source and nothing confirmed",
+  "reviewStatus": "unreviewed",
+  "reviewedBy": null,
+  "input": {
+    "candidateId": "cand_eval_thin",
+    "whySurfacedFacts": [
+      "A single local post mentions a bus route change."
+    ],
+    "confirmedEvidence": [],
+    "unverifiedEvidence": [
+      {
+        "text": "A rider says the 30X was rerouted.",
+        "sourceResultIds": [
+          "thin_0"
+        ]
+      }
+    ],
+    "conflictingEvidence": [],
+    "coverageEvidence": [],
+    "potentialSources": [],
+    "sourceMetadata": [
+      {
+        "sourceResultId": "thin_0",
+        "title": "30X rerouted?",
+        "publisher": null,
+        "canonicalUrl": "https://example.org/30x"
+      }
+    ]
+  },
+  "expected": {
+    "confirmedFactsMustBeEmpty": true,
+    "mustNotAssertTheReroute": true,
+    "note": "'cautious' is a judgment; the empty-section sentence is ours, but tone is not yet confirmed by a person"
+  }
+}

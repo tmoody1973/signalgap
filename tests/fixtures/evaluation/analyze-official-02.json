@@ -1,0 +1,66 @@
+{
+  "id": "analyze-official-02",
+  "operation": "analyzeResults",
+  "dimension": "source-type suggestion on official records",
+  "provenance": "captured google organic payload restricted to official Milwaukee domains",
+  "reviewStatus": "unreviewed",
+  "reviewedBy": null,
+  "input": {
+    "sources": [
+      {
+        "sourceResultId": "official_5",
+        "title": "Mayor's \"Back to School\" Bike Ride",
+        "snippet": "Housing & Home Ownership. Join Mayor Cavalier Johnson and the City of Milwaukee for a fun, slow-roll ride through the East Side of Milwaukee! Riverside Park ...",
+        "publisher": null,
+        "canonicalUrl": "https://city.milwaukee.gov/City-Events/Public-Works/Mayors-Back-to-School-Bike-Ride.htm?Occurrence=2026-08-29T10%3A00%3A00",
+        "originalLanguage": "en",
+        "sourceFamily": "official",
+        "publishedAt": null
+      },
+      {
+        "sourceResultId": "official_6",
+        "title": "DD BID #53",
+        "snippet": "DD BID #53. Tuesday, August 18, 2026. 2:00 PM. Virtual. Add event to your calendar. Contact Information: Contact: David Christensen.",
+        "publisher": null,
+        "canonicalUrl": "https://city.milwaukee.gov/News-Events/calendar/City-Event?DataID=480900&Occurrence=2026-08-18T14%3A00%3A00",
+        "originalLanguage": "en",
+        "sourceFamily": "official",
+        "publishedAt": null
+      },
+      {
+        "sourceResultId": "official_7",
+        "title": "16th Street Bridge over the Menomonee River",
+        "snippet": "The rehabilitation project is for the 384-foot-long Unit 14 over the Menomonee River. It is proposed to permanently fix the two movable leaves of the bascule ...",
+        "publisher": null,
+        "canonicalUrl": "https://city.milwaukee.gov/City-Events/Public-Works/Public-Involvement-Meeting-16th-Street-Bridge-over-the-Menomonee-River.htm?Occurrence=2026-12-04T16%3A00%3A00",
+        "originalLanguage": "en",
+        "sourceFamily": "official",
+        "publishedAt": null
+      },
+      {
+        "sourceResultId": "official_8",
+        "title": "Joint Review Board - City Event - Milwaukee.gov",
+        "snippet": "Joint Review Board. Thursday, August 20, 2026. 11:00 AM. Department of City Development, 809 N. Broadway, Milwaukee, WI, 2nd Floor, ...",
+        "publisher": null,
+        "canonicalUrl": "https://city.milwaukee.gov/News-Events/calendar/City-Event?DataID=480369&Occurrence=2026-08-20T11%3A00%3A00",
+        "originalLanguage": "en",
+        "sourceFamily": "official",
+        "publishedAt": null
+      },
+      {
+        "sourceResultId": "official_9",
+        "title": "BID #27 Burleigh St.",
+        "snippet": "BID #27 Burleigh St. Thursday, August 27, 2026. 6:00 PM. 4642 W. Burleigh St. Milwaukee, WI. Add event to your calendar. Contact Information:.",
+        "publisher": null,
+        "canonicalUrl": "https://city.milwaukee.gov/City-Events/Meeting-Schedule/Business-Improvement-District-Board/2026/BID-27.htm?Occurrence=2026-08-27T18%3A00%3A00",
+        "originalLanguage": "en",
+        "sourceFamily": "official",
+        "publishedAt": null
+      }
+    ]
+  },
+  "expected": {
+    "sourceTypeSuggestionShouldBe": "primary",
+    "note": "a proposed expectation; not yet confirmed by a person"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "id": "classify-reddit-01",
+  "operation": "classifyEvidence",
+  "dimension": "the model cannot promote a claim to confirmed",
+  "provenance": "same captured r/milwaukee results, framed as one candidate",
+  "reviewStatus": "objective",
+  "reviewedBy": null,
+  "input": {
+    "candidateId": "cand_eval_reddit",
+    "sources": [
+      {
+        "sourceResultId": "reddit_0",
+        "title": "Getting an apartment in Bayview : r/milwaukee",
+        "snippet": "How hard is it to get a two-bedroom apartment in Bayview right now? If I were to start looking now, is there a realistic possibility that I could…",
+        "publisher": null,
+        "sourceFamily": "community_discussion",
+        "isAccessible": true
+      },
+      {
+        "sourceResultId": "reddit_1",
+        "title": "What is the State Fair Fight? What happened? : r/milwaukee",
+        "snippet": "I skip the State Fair ONCE. what happened Sunday?",
+        "publisher": null,
+        "sourceFamily": "community_discussion",
+        "isAccessible": true
+      },
+      {
+        "sourceResultId": "reddit_2",
+        "title": "River Woods Condos on Randolph Ct (Riverwest)",
+        "snippet": "Considering buying a unit at River Woods Condos on Randolph Ct. Anyone live there or have experience with the building management?",
+        "publisher": null,
+        "sourceFamily": "community_discussion",
+        "isAccessible": true
+      },
+      {
+        "sourceResultId": "reddit_3",
+        "title": "City Commission Approves Metcalfe Park Development ...",
+        "snippet": "Known as the Metcalfe Park Liberation Hub, the two-phase development would become a community hub with a wide range of functions.",
+        "publisher": null,
+        "sourceFamily": "community_discussion",
+        "isAccessible": true
+      },
+      {
+        "sourceResultId": "reddit_4",
+        "title": "WI Real Estate Course Recs : r/milwaukee",
+        "snippet": "I'm considering getting my real estate license and have been looking into online exam prep/pre-licensing courses. There are quite a few options out there ( ...",
+        "publisher": null,
+        "sourceFamily": "community_discussion",
+        "isAccessible": true
+      }
+    ],
+    "claims": []
+  },
+  "expected": {
+    "noItemMayHaveKind": "confirmed_fact",
+    "schemaRejectsIt": true
+  }
+}

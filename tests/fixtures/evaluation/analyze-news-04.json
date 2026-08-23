@@ -1,0 +1,73 @@
+{
+  "id": "analyze-news-04",
+  "operation": "analyzeResults",
+  "dimension": "claim-to-source validity, citation completeness, invalid-output rate",
+  "provenance": "captured google_news payload, Milwaukee housing, 7-day window",
+  "reviewStatus": "objective",
+  "reviewedBy": null,
+  "input": {
+    "sources": [
+      {
+        "sourceResultId": "news_15",
+        "title": "‘We would like to see it get better': How three of Sherman Park's elders view their neighborhood",
+        "snippet": "",
+        "publisher": "Milwaukee Neighborhood News Service",
+        "canonicalUrl": "https://milwaukeenns.org/2026/08/17/the-environment-has-changed-tremendously-sherman-park-seniors-reflect-on-the-state-of-their-neighborhood",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-17T22:00:00.000Z"
+      },
+      {
+        "sourceResultId": "news_16",
+        "title": "Inside the NNS Newsroom: Why we remember when others move on",
+        "snippet": "",
+        "publisher": "Milwaukee Neighborhood News Service",
+        "canonicalUrl": "https://milwaukeenns.org/2026/08/21/inside-the-nns-newsroom-why-we-remember-when-others-move-on",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-21T21:57:29.000Z"
+      },
+      {
+        "sourceResultId": "news_17",
+        "title": "5 things to know and do the week of Aug. 17",
+        "snippet": "",
+        "publisher": "Milwaukee Neighborhood News Service",
+        "canonicalUrl": "https://milwaukeenns.org/2026/08/16/5-things-to-know-and-do-the-week-of-aug-17",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-16T21:00:00.000Z"
+      },
+      {
+        "sourceResultId": "news_18",
+        "title": "Flashback: Community members at the Sherman Phoenix remember unrest, recognize progress in 2019",
+        "snippet": "",
+        "publisher": "Milwaukee Neighborhood News Service",
+        "canonicalUrl": "https://milwaukeenns.org/2026/08/16/flashback-voices-of-sherman-park-community-members-at-the-sherman-phoenix-remember-unrest-recognize-progress-in-2019",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-16T16:45:55.000Z"
+      },
+      {
+        "sourceResultId": "news_19",
+        "title": "5 things to know and do the weekend of Aug. 21",
+        "snippet": "",
+        "publisher": "Milwaukee Neighborhood News Service",
+        "canonicalUrl": "https://milwaukeenns.org/2026/08/20/5-things-to-know-and-do-the-weekend-of-aug-21",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-20T20:00:00.000Z"
+      }
+    ]
+  },
+  "expected": {
+    "everyItemCitesASuppliedId": [
+      "news_15",
+      "news_16",
+      "news_17",
+      "news_18",
+      "news_19"
+    ],
+    "noQuotationOutsideSuppliedText": true,
+    "itemCount": 5
+  }
+}

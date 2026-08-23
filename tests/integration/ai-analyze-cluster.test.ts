@@ -163,7 +163,7 @@ describe("analyzeResults", () => {
     const outcome = await t.action(async (ctx) => await runAnalyzeResults(ctx, { scanId, sourceResultIds: [englishId] }, model.fn));
     expect(outcome.ok).toBe(false);
     if (outcome.ok) return;
-    expect(outcome.errors.join(" ")).toMatch(/exactly match/);
+    expect(outcome.errors.join(" ")).toMatch(/word-for-word/);
   });
 
   it("accepts a quotation copied exactly from the stored snippet", async () => {

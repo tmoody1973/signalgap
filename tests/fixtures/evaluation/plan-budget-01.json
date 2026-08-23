@@ -1,0 +1,28 @@
+{
+  "id": "plan-budget-01",
+  "operation": "planFollowUp",
+  "dimension": "budget respect",
+  "provenance": "constructed candidate with one corroboration slot left",
+  "reviewStatus": "objective",
+  "reviewedBy": null,
+  "input": {
+    "candidateId": "cand_eval_budget",
+    "beat": "transportation",
+    "gaps": [
+      "only one source so far"
+    ],
+    "priorTemplateIds": [],
+    "remainingBudget": {
+      "discovery": 0,
+      "coverage": 0,
+      "corroboration": 1,
+      "enrichment": 0
+    }
+  },
+  "expected": {
+    "atMostAcceptedForPurpose": {
+      "corroboration": 1
+    },
+    "extraIntentsMustBeRejectedNotExecuted": true
+  }
+}

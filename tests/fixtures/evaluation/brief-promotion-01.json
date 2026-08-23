@@ -1,0 +1,53 @@
+{
+  "id": "brief-promotion-01",
+  "operation": "generateBrief",
+  "dimension": "the model cannot promote a claim to confirmed",
+  "provenance": "constructed candidate where the only confirming source is an official record",
+  "reviewStatus": "objective",
+  "reviewedBy": null,
+  "input": {
+    "candidateId": "cand_eval_promo",
+    "whySurfacedFacts": [
+      "An agenda item and a neighbour complaint describe the same rezoning."
+    ],
+    "confirmedEvidence": [
+      {
+        "text": "The item is on the council agenda.",
+        "sourceResultIds": [
+          "promo_official"
+        ]
+      }
+    ],
+    "unverifiedEvidence": [
+      {
+        "text": "Neighbours say they were not notified.",
+        "sourceResultIds": [
+          "promo_news"
+        ]
+      }
+    ],
+    "conflictingEvidence": [],
+    "coverageEvidence": [],
+    "potentialSources": [],
+    "sourceMetadata": [
+      {
+        "sourceResultId": "promo_official",
+        "title": "Common Council agenda 250412",
+        "publisher": null,
+        "canonicalUrl": "https://city.milwaukee.gov/agenda"
+      },
+      {
+        "sourceResultId": "promo_news",
+        "title": "Neighbours question rezoning",
+        "publisher": "Outlet A",
+        "canonicalUrl": "https://example.org/story"
+      }
+    ]
+  },
+  "expected": {
+    "confirmedFactsMayOnlyCite": [
+      "promo_official"
+    ],
+    "citingPromoNewsUnderConfirmedIsAFailure": true
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "id": "analyze-news-02",
+  "operation": "analyzeResults",
+  "dimension": "claim-to-source validity, citation completeness, invalid-output rate",
+  "provenance": "captured google_news payload, Milwaukee housing, 7-day window",
+  "reviewStatus": "objective",
+  "reviewedBy": null,
+  "input": {
+    "sources": [
+      {
+        "sourceResultId": "news_5",
+        "title": "City Commission Approves Metcalfe Park Development",
+        "snippet": "",
+        "publisher": "Urban Milwaukee",
+        "canonicalUrl": "https://urbanmilwaukee.com/2026/08/18/city-commission-approves-metcalfe-park-development",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-18T16:57:00.000Z"
+      },
+      {
+        "sourceResultId": "news_6",
+        "title": "After Milwaukee veto, affordable housing bonds advance through different conduit",
+        "snippet": "",
+        "publisher": "Bond Buyer",
+        "canonicalUrl": "https://bondbuyer.com/news/conduit-change-advances-milwaukee-affordable-housing-bonds",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-19T12:00:00.000Z"
+      },
+      {
+        "sourceResultId": "news_7",
+        "title": "Opinion: Mr. Rogers keeps finding a new neighborhood",
+        "snippet": "",
+        "publisher": "WUWM",
+        "canonicalUrl": "https://wuwm.com/2026-08-22/opinion-mr-rogers-keeps-finding-a-new-neighborhood",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-22T12:00:00.000Z"
+      },
+      {
+        "sourceResultId": "news_8",
+        "title": "FHLBank Chicago and WHEDA Recognize Housing Counseling Grants Supporting Milwaukee-Area Homebuyers",
+        "snippet": "",
+        "publisher": "Yahoo Finance UK",
+        "canonicalUrl": "https://uk.finance.yahoo.com/news/fhlbank-chicago-wheda-recognize-housing-181600023.html",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-20T18:16:00.000Z"
+      },
+      {
+        "sourceResultId": "news_9",
+        "title": "The uprising in Sherman Park: 10 years later",
+        "snippet": "",
+        "publisher": "Milwaukee Neighborhood News Service",
+        "canonicalUrl": "https://milwaukeenns.org/the-uprising-in-sherman-park-10-years-later",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-18T12:32:42.000Z"
+      }
+    ]
+  },
+  "expected": {
+    "everyItemCitesASuppliedId": [
+      "news_5",
+      "news_6",
+      "news_7",
+      "news_8",
+      "news_9"
+    ],
+    "noQuotationOutsideSuppliedText": true,
+    "itemCount": 5
+  }
+}

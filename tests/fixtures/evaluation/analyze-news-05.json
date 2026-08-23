@@ -1,0 +1,73 @@
+{
+  "id": "analyze-news-05",
+  "operation": "analyzeResults",
+  "dimension": "claim-to-source validity, citation completeness, invalid-output rate",
+  "provenance": "captured google_news payload, Milwaukee housing, 7-day window",
+  "reviewStatus": "objective",
+  "reviewedBy": null,
+  "input": {
+    "sources": [
+      {
+        "sourceResultId": "news_20",
+        "title": "Kenosha moves to turn former McKinley school site into 28-home neighborhood",
+        "snippet": "",
+        "publisher": "The Business Journals",
+        "canonicalUrl": "https://bizjournals.com/milwaukee/news/2026/08/18/kenosha-mckinley-school-redevelopment.html",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-18T20:00:00.000Z"
+      },
+      {
+        "sourceResultId": "news_21",
+        "title": "Post From Community: Sixteenth Street Ranks Among Top 10% of Health Centers Nationwide",
+        "snippet": "",
+        "publisher": "Milwaukee Neighborhood News Service",
+        "canonicalUrl": "https://milwaukeenns.org/2026/08/20/post-from-community-sixteenth-street-ranks-among-top-10-of-health-centers-nationwide",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-21T02:23:25.000Z"
+      },
+      {
+        "sourceResultId": "news_22",
+        "title": "U.S. Department of Education investigates MPS for school disciplinary practices that consider race",
+        "snippet": "",
+        "publisher": "Milwaukee Neighborhood News Service",
+        "canonicalUrl": "https://milwaukeenns.org/2026/08/18/u-s-department-of-education-investigates-mps-for-school-disciplinary-practices-that-consider-race",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-19T00:02:33.000Z"
+      },
+      {
+        "sourceResultId": "news_23",
+        "title": "First-time homebuilders Tim and Mandy Vandeville want to disrupt the market",
+        "snippet": "",
+        "publisher": "The Business Journals",
+        "canonicalUrl": "https://bizjournals.com/milwaukee/news/2026/08/18/whitewater-stonehaven-development-vandeville.html",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-18T11:27:00.000Z"
+      },
+      {
+        "sourceResultId": "news_24",
+        "title": "Milwaukee art therapists find new ways to help residents deal with emotions",
+        "snippet": "",
+        "publisher": "OnMilwaukee",
+        "canonicalUrl": "https://onmilwaukee.com/articles/art-therapy-mental-health-milwaukee-nns",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-16T12:01:00.000Z"
+      }
+    ]
+  },
+  "expected": {
+    "everyItemCitesASuppliedId": [
+      "news_20",
+      "news_21",
+      "news_22",
+      "news_23",
+      "news_24"
+    ],
+    "noQuotationOutsideSuppliedText": true,
+    "itemCount": 5
+  }
+}

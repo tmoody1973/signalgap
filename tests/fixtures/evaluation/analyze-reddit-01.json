@@ -1,0 +1,66 @@
+{
+  "id": "analyze-reddit-01",
+  "operation": "analyzeResults",
+  "dimension": "discussion is never treated as confirmation",
+  "provenance": "captured google organic payload restricted to r/milwaukee comment permalinks",
+  "reviewStatus": "objective",
+  "reviewedBy": null,
+  "input": {
+    "sources": [
+      {
+        "sourceResultId": "reddit_0",
+        "title": "Getting an apartment in Bayview : r/milwaukee",
+        "snippet": "How hard is it to get a two-bedroom apartment in Bayview right now? If I were to start looking now, is there a realistic possibility that I could…",
+        "publisher": null,
+        "canonicalUrl": "https://reddit.com/r/milwaukee/comments/1vsaa36/getting_an_apartment_in_bayview",
+        "originalLanguage": "en",
+        "sourceFamily": "community_discussion",
+        "publishedAt": null
+      },
+      {
+        "sourceResultId": "reddit_1",
+        "title": "What is the State Fair Fight? What happened? : r/milwaukee",
+        "snippet": "I skip the State Fair ONCE. what happened Sunday?",
+        "publisher": null,
+        "canonicalUrl": "https://reddit.com/r/milwaukee/comments/1vrfx2c/what_is_the_state_fair_fight_what_happened",
+        "originalLanguage": "en",
+        "sourceFamily": "community_discussion",
+        "publishedAt": null
+      },
+      {
+        "sourceResultId": "reddit_2",
+        "title": "River Woods Condos on Randolph Ct (Riverwest)",
+        "snippet": "Considering buying a unit at River Woods Condos on Randolph Ct. Anyone live there or have experience with the building management?",
+        "publisher": null,
+        "canonicalUrl": "https://reddit.com/r/milwaukee/comments/1vrpng6/river_woods_condos_on_randolph_ct_riverwest",
+        "originalLanguage": "en",
+        "sourceFamily": "community_discussion",
+        "publishedAt": null
+      },
+      {
+        "sourceResultId": "reddit_3",
+        "title": "City Commission Approves Metcalfe Park Development ...",
+        "snippet": "Known as the Metcalfe Park Liberation Hub, the two-phase development would become a community hub with a wide range of functions.",
+        "publisher": null,
+        "canonicalUrl": "https://reddit.com/r/milwaukee/comments/1vtame2/city_commission_approves_metcalfe_park",
+        "originalLanguage": "en",
+        "sourceFamily": "community_discussion",
+        "publishedAt": null
+      },
+      {
+        "sourceResultId": "reddit_4",
+        "title": "WI Real Estate Course Recs : r/milwaukee",
+        "snippet": "I'm considering getting my real estate license and have been looking into online exam prep/pre-licensing courses. There are quite a few options out there ( ...",
+        "publisher": null,
+        "canonicalUrl": "https://reddit.com/r/milwaukee/comments/1vu15t7/wi_real_estate_course_recs",
+        "originalLanguage": "en",
+        "sourceFamily": "community_discussion",
+        "publishedAt": null
+      }
+    ]
+  },
+  "expected": {
+    "sourceTypeSuggestionShouldBe": "discussion",
+    "mayNeverBeConfirming": true
+  }
+}

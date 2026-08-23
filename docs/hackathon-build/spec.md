@@ -622,7 +622,7 @@ Input: normalized result IDs and stored result fields.
 
 Output: detected language, faithful English translation when needed, source-type suggestion, Milwaukee entities, organizations, streets, neighborhoods, agencies, dates, narrow claim candidates, potential human-source entities, and a source ID for every extracted item.
 
-Validation: every ID must occur in the input; translation never replaces original text; an output labeled as a quotation must exactly match a stored excerpt or be rejected.
+Validation: every ID must occur in the input; translation never replaces original text; an output labeled as a quotation must be a word-for-word run of at least 20 characters found inside a stored excerpt of one of its own cited sources, or be rejected. (Amended 2026-08-22, Tarik's call. The rule first demanded equality with the WHOLE stored field; measured against real model output, every rejection was a verbatim partial quote and nothing was ever invented, so the rule was rejecting honest quoting. The 20-character floor is what keeps a substring from becoming a cherry-picked word.)
 
 #### `clusterSignals`
 
@@ -666,7 +666,7 @@ Validation: citations use only supplied source IDs; confirmed sections accept on
 
 ### Structured output and source binding
 
-All operations use `generateObject`-style schema-constrained output through the AI SDK. Each source reference is an opaque application ID, not a URL invented by the model. Before persistence, `validateOutput.ts` recursively verifies source membership, expected evidence status, exact-excerpt equality, enum values, and length limits. Invalid output is stored as a failed model run, never partially merged.
+All operations use `generateObject`-style schema-constrained output through the AI SDK. Each source reference is an opaque application ID, not a URL invented by the model. Before persistence, `validateOutput.ts` recursively verifies source membership, expected evidence status, verbatim-excerpt containment, enum values, and length limits. Invalid output is stored as a failed model run, never partially merged.
 
 ### Bilingual discovery
 

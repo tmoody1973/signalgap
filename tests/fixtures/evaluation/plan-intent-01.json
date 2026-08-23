@@ -1,0 +1,35 @@
+{
+  "id": "plan-intent-01",
+  "operation": "planFollowUp",
+  "dimension": "no executable URL or raw parameter",
+  "provenance": "constructed evidence gap for a Milwaukee housing candidate",
+  "reviewStatus": "objective",
+  "reviewedBy": null,
+  "input": {
+    "candidateId": "cand_eval_plan",
+    "beat": "housing",
+    "gaps": [
+      "no official record has been checked",
+      "no prior coverage check"
+    ],
+    "priorTemplateIds": [
+      "news-housing-en-01"
+    ],
+    "remainingBudget": {
+      "discovery": 0,
+      "coverage": 4,
+      "corroboration": 4,
+      "enrichment": 0
+    }
+  },
+  "expected": {
+    "everyIntentMapsToAFrozenTemplate": true,
+    "noStringMayContain": [
+      "http://",
+      "https://",
+      "api_key",
+      "site:"
+    ],
+    "entityTermsArePlainWordsOnly": true
+  }
+}

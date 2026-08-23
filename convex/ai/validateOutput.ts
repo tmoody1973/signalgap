@@ -27,6 +27,20 @@ const IDS_FIELD = "sourceResultIds";
 const EXCERPT_FIELDS = ["exactExcerpt", "quotation"] as const;
 const CANDIDATE_ID_FIELDS = ["suggestedExistingCandidateId"] as const;
 
+/**
+ * A quotation must be a word-for-word run found inside a stored source. Equality
+ * with the WHOLE stored field was the first rule and it was wrong: it rejected a
+ * model quoting one true sentence out of a two-sentence snippet, which is what
+ * honest quoting looks like. Verified against real output — every rejection was a
+ * verbatim substring, nothing was ever invented.
+ *
+ * The floor is what keeps a substring from becoming a cherry-pick: 20 characters
+ * is a phrase, not a word lifted out of "did not approve". It does not make a
+ * misleading partial quote impossible, only hard — that is an accepted cost
+ * (Tarik's call, 2026-08-22), and the full source stays one click away.
+ */
+const MIN_QUOTATION_CHARS = 20;
+
 // translated field -> the original-language field that must accompany it.
 const TRANSLATION_PAIRS: Record<string, string> = {
   translatedText: "originalLanguageText",
@@ -93,9 +107,13 @@ export function validateAgainstSources(output: unknown, context: ValidationConte
         errors.push(`${path}.${field}: a quotation with no cited source`);
         continue;
       }
+      if (quoted.length < MIN_QUOTATION_CHARS) {
+        errors.push(`${path}.${field}: too short to be a quotation (under ${MIN_QUOTATION_CHARS} characters)`);
+        continue;
+      }
       const allowed = effectiveCited.flatMap((id) => context.excerptsBySourceId[id] ?? []);
-      if (!allowed.some((stored) => stored === quoted)) {
-        errors.push(`${path}.${field}: does not exactly match any stored excerpt of its cited sources`);
+      if (!allowed.some((stored) => stored.includes(quoted))) {
+        errors.push(`${path}.${field}: is not a word-for-word run of text in any cited source`);
       }
     }
 

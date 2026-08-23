@@ -1,0 +1,73 @@
+{
+  "id": "analyze-news-06",
+  "operation": "analyzeResults",
+  "dimension": "claim-to-source validity, citation completeness, invalid-output rate",
+  "provenance": "captured google_news payload, Milwaukee housing, 7-day window",
+  "reviewStatus": "objective",
+  "reviewedBy": null,
+  "input": {
+    "sources": [
+      {
+        "sourceResultId": "news_25",
+        "title": "Banker plans 26-unit rental development on long-vacant Oak Creek site he eyed for years",
+        "snippet": "",
+        "publisher": "The Business Journals",
+        "canonicalUrl": "https://bizjournals.com/milwaukee/news/2026/08/21/townhomes-oak-creek.html",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-21T19:57:00.000Z"
+      },
+      {
+        "sourceResultId": "news_26",
+        "title": "Flashback: Unrest in Sherman Park: Three years later: Have police-community relations improved?",
+        "snippet": "",
+        "publisher": "Milwaukee Neighborhood News Service",
+        "canonicalUrl": "https://milwaukeenns.org/2026/08/17/flashback-unrest-in-sherman-park-three-years-later-have-police-community-relations-improved",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-17T21:21:19.000Z"
+      },
+      {
+        "sourceResultId": "news_27",
+        "title": "Metcalfe Park project with cafe, laundromat and affordable units wins plan commission vote",
+        "snippet": "",
+        "publisher": "The Business Journals",
+        "canonicalUrl": "https://bizjournals.com/milwaukee/news/2026/08/18/metcalfe-park-hub-first-approval.html",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-18T11:31:00.000Z"
+      },
+      {
+        "sourceResultId": "news_28",
+        "title": "15-home community planned in Delavan targets veterans, working families",
+        "snippet": "",
+        "publisher": "The Business Journals",
+        "canonicalUrl": "https://bizjournals.com/milwaukee/news/2026/08/20/delavan-john-tracy-cornerstone-crossing.html",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-20T19:59:00.000Z"
+      },
+      {
+        "sourceResultId": "news_29",
+        "title": "Three nonprofits receive $350,000 in grant funding to support homeowner education",
+        "snippet": "",
+        "publisher": "Milwaukee Journal Sentinel",
+        "canonicalUrl": "https://jsonline.com/story/news/local/milwaukee/neighborhoods/2026/08/20/local-homebuyer-education-agencies-receive-350000-in-grant-funding/91372992007",
+        "originalLanguage": "en",
+        "sourceFamily": "news",
+        "publishedAt": "2026-08-20T10:07:00.000Z"
+      }
+    ]
+  },
+  "expected": {
+    "everyItemCitesASuppliedId": [
+      "news_25",
+      "news_26",
+      "news_27",
+      "news_28",
+      "news_29"
+    ],
+    "noQuotationOutsideSuppliedText": true,
+    "itemCount": 5
+  }
+}

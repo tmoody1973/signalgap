@@ -1,0 +1,30 @@
+{
+  "id": "analyze-spanish-01",
+  "operation": "analyzeResults",
+  "dimension": "Spanish meaning preservation",
+  "provenance": "constructed Spanish-language Milwaukee housing item",
+  "reviewStatus": "unreviewed",
+  "reviewedBy": null,
+  "input": {
+    "sources": [
+      {
+        "sourceResultId": "es_0",
+        "title": "La ciudad aprueba la rezonificación de Harambee",
+        "snippet": "El consejo votó 9-4 el martes por la noche tras dos horas de comentarios públicos.",
+        "publisher": "El Conquistador",
+        "canonicalUrl": "https://example.org/rezonificacion",
+        "originalLanguage": "es",
+        "sourceFamily": "news",
+        "publishedAt": null
+      }
+    ]
+  },
+  "expected": {
+    "detectedLanguage": "es",
+    "originalMustBePreserved": true,
+    "referenceTranslationTitle": "The city approves the Harambee rezoning",
+    "referenceTranslationSnippet": "The council voted 9-4 on Tuesday night after two hours of public comment.",
+    "voteCountMustSurvive": "9-4",
+    "note": "reference translation drafted by the build script; NOT yet confirmed by a person"
+  }
+}
