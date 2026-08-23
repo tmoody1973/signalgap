@@ -19,6 +19,7 @@ import type * as ai_prompts from "../ai/prompts.js";
 import type * as ai_provider from "../ai/provider.js";
 import type * as ai_runOperation from "../ai/runOperation.js";
 import type * as ai_validateOutput from "../ai/validateOutput.js";
+import type * as candidates_evaluate from "../candidates/evaluate.js";
 import type * as candidates_fingerprint from "../candidates/fingerprint.js";
 import type * as candidates_form from "../candidates/form.js";
 import type * as candidates_judgment from "../candidates/judgment.js";
@@ -71,6 +72,7 @@ declare const fullApi: ApiFromModules<{
   "ai/provider": typeof ai_provider;
   "ai/runOperation": typeof ai_runOperation;
   "ai/validateOutput": typeof ai_validateOutput;
+  "candidates/evaluate": typeof candidates_evaluate;
   "candidates/fingerprint": typeof candidates_fingerprint;
   "candidates/form": typeof candidates_form;
   "candidates/judgment": typeof candidates_judgment;
