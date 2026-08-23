@@ -51,6 +51,7 @@ import type * as lib_validators from "../lib/validators.js";
 import type * as modelRuns from "../modelRuns.js";
 import type * as scans from "../scans.js";
 import type * as searchRuns from "../searchRuns.js";
+import type * as slice from "../slice.js";
 import type * as sourceResults from "../sourceResults.js";
 import type * as testing from "../testing.js";
 import type * as users from "../users.js";
@@ -105,6 +106,7 @@ declare const fullApi: ApiFromModules<{
   modelRuns: typeof modelRuns;
   scans: typeof scans;
   searchRuns: typeof searchRuns;
+  slice: typeof slice;
   sourceResults: typeof sourceResults;
   testing: typeof testing;
   users: typeof users;
