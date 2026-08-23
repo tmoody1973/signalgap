@@ -36,6 +36,7 @@ export const vProductLabel = v.union(
 );
 export const vDisposition = v.union(v.literal("new"), v.literal("rejected"), v.literal("monitoring"), v.literal("assigned"));
 export const vCoveragePassStatus = v.union(v.literal("pending"), v.literal("complete"), v.literal("failed"));
+export const vCoveragePartitionStatus = v.union(v.literal("pending"), v.literal("succeeded"), v.literal("failed"));
 export const vSourceRole = v.union(v.literal("initiating"), v.literal("corroborating"), v.literal("coverage"), v.literal("enrichment"), v.literal("potential_source"));
 export const vAddedBy = v.union(v.literal("ai_suggestion"), v.literal("deterministic_rule"), v.literal("editor"));
 export const vEvidenceKind = v.union(v.literal("confirmed_fact"), v.literal("unverified_signal"), v.literal("conflicting_claim"), v.literal("existing_coverage"), v.literal("potential_source"));

@@ -75,10 +75,13 @@ export const evaluate = internalMutation({
       }));
     }
 
-    const partition = candidate.coveragePassStatus === "complete" ? "succeeded"
+    // Real per-partition state when the coverage stage has run. The fallback
+    // maps an old row's single status onto both partitions so a candidate
+    // written before this field existed still evaluates the same way.
+    const fallback = candidate.coveragePassStatus === "complete" ? "succeeded"
       : candidate.coveragePassStatus === "failed" ? "failed" : "pending";
     const coverage: CoverageInput = {
-      partitions: { general: partition, community: partition },
+      partitions: candidate.coveragePartitions ?? { general: fallback, community: fallback },
       reports: coverageReports,
     };
 

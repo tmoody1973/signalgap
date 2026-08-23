@@ -120,6 +120,13 @@ export default defineSchema({
     independentCategoryCount: v.number(),
     coverageOriginalCount: v.number(),
     coveragePassStatus: V.vCoveragePassStatus,
+    // Per-partition, because "general succeeded, community failed" is a real
+    // outcome the spec names and a single collapsed status cannot express.
+    // A scan that checked only the big outlets must never claim a coverage gap.
+    coveragePartitions: v.optional(v.object({
+      general: V.vCoveragePartitionStatus,
+      community: V.vCoveragePartitionStatus,
+    })),
     // Why a candidate was excluded, in the engine's own words. Empty when it
     // qualified. Optional because rows written before evaluation have no verdict.
     exclusionReasons: v.optional(v.array(V.vExclusionReason)),

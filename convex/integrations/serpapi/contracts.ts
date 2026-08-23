@@ -1,3 +1,4 @@
+import type { Id } from "../../_generated/dataModel";
 import { contentHash } from "./canonical";
 
 export type SerpEngine = "google" | "google_news" | "google_trends_trending_now" | "google_events" | "youtube" | "google_maps";
@@ -15,7 +16,9 @@ export type SearchSpec = {
   location: typeof MILWAUKEE_LOCATION;
   language: SearchLanguage;
   timeWindow: TimeWindow;
-  candidateId?: string;
+  // Real once a SearchSpec exists: by then `validateSearchIntent` has already
+  // run and the id came from our own code, never from a model.
+  candidateId?: Id<"candidates">;
 };
 
 export const idempotencyKeyFor = (scanId: string, spec: SearchSpec) =>
@@ -41,11 +44,14 @@ export type SourceResultInput = {
 };
 
 // What a model is allowed to ask for. No URL, no engine parameters.
+// `candidateId` is NOT one of those things: `planFollowUpOutput` (ai/contracts.ts)
+// carries no such field, so a model never supplies one — the caller injects its
+// own trusted id. Typing it as an Id keeps that fact in the type system.
 export type SearchIntent = {
   templateId: string;
   purpose: SearchPurpose;
   reason: string;
-  candidateId?: string;
+  candidateId?: Id<"candidates">;
   /** Only substituted into a template's declared slots; never concatenated raw. */
   entityTerms?: string[];
 };

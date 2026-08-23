@@ -1,9 +1,11 @@
 import workflowTest from "@convex-dev/workflow/test";
 import type { TestConvex } from "convex-test";
 import { convexTest } from "convex-test";
+import { internal } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import type { GenerateFn } from "../../convex/ai/provider";
 import schema from "../../convex/schema";
+import { runCandidateFormation } from "../../convex/slice";
 import { scanDoc, searchRunDoc } from "../fixtures/factories";
 import { SLICE_SOURCES, sliceModelAnswers, type SliceSourceKey } from "../fixtures/slice";
 
@@ -99,4 +101,64 @@ export async function seedSliceScan(t: ReturnType<typeof setup>) {
     ids,
     model: sliceScriptedModel(sliceModelAnswers(ids)),
   };
+}
+
+/**
+ * One formed candidate with a real judgment, built by running item 7's
+ * formation half (`runCandidateFormation`) over `seedSliceScan`'s packet.
+ * Tasks 6, 7 and 8 all need one of these to run a later stage against.
+ */
+export async function seedFormedCandidate(
+  t: TestConvex<typeof schema>,
+): Promise<{ scanId: Id<"scans">; candidateId: Id<"candidates">; model: GenerateFn }> {
+  // runCandidateFormation routes through runAiOperation, which checks this env
+  // var even though `model` below replaces the real provider call — set it here
+  // so every caller of this fixture doesn't have to remember its own beforeEach.
+  process.env.AI_PRIMARY_MODEL = "claude-sonnet-5";
+  process.env.AI_FALLBACK_ENABLED = "false";
+  const { scanId, sourceIds, model } = await seedSliceScan(t);
+  const formed = await t.action(async (ctx) => runCandidateFormation(ctx, { scanId, sourceResultIds: sourceIds }, model));
+  if (!formed.ok || formed.candidates.length === 0 || !formed.candidates[0].readyForVerdict) {
+    throw new Error("seedFormedCandidate: formation did not produce a verdict-ready candidate");
+  }
+  return { scanId, candidateId: formed.candidates[0].candidateId, model };
+}
+
+/**
+ * `count` formed candidates in ONE scan, each its own single-source cluster
+ * with a distinct entity key so every one gets a distinct fingerprint.
+ *
+ * Skips the AI pipeline: nothing that consumes these candidates (the coverage
+ * stage) reads a judgment, only a title, so `formFromCluster` alone is enough
+ * and stays cheap even at the candidate counts the budget tests need.
+ */
+export async function seedManyFormedCandidates(
+  t: TestConvex<typeof schema>, count: number,
+): Promise<{ scanId: Id<"scans">; candidateIds: Id<"candidates">[] }> {
+  const { scanId } = await seedSliceScan(t);
+  const { ownerId, searchRunId } = await t.run(async (ctx) => {
+    const scan = (await ctx.db.get(scanId))!;
+    const run = (await ctx.db.query("searchRuns").withIndex("by_scan_purpose", (q) => q.eq("scanId", scanId)).first())!;
+    return { ownerId: scan.ownerId, searchRunId: run._id };
+  });
+
+  const candidateIds: Id<"candidates">[] = [];
+  for (let i = 0; i < count; i++) {
+    const sourceResultId = await t.run(async (ctx) => ctx.db.insert("sourceResults", {
+      scanId, searchRunId, ownerId,
+      canonicalKey: `many-${i}`, canonicalUrl: `https://jsonline.com/many-${i}`, originalUrl: `https://jsonline.com/many-${i}`,
+      engine: "google" as const, sourceFamily: "news" as const, sourceType: "unknown" as const,
+      title: `Story ${i}`, snippet: `s${i}`, originalLanguage: "en", discoveredAt: Date.now(),
+      isAccessible: true, contentHash: `h-many-${i}`,
+    }));
+    const formed = await t.mutation(internal.candidates.form.formFromCluster, {
+      scanId,
+      cluster: { sourceResultIds: [sourceResultId], similarityBasis: "distinct", entityKeys: [`entity-${i}`], suggestedExistingCandidateId: null },
+      beat: "housing" as const,
+      workingTitle: `Candidate ${i}`,
+    });
+    if ("rejected" in formed) continue;
+    candidateIds.push(formed.candidateId);
+  }
+  return { scanId, candidateIds };
 }

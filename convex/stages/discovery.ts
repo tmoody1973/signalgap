@@ -78,11 +78,7 @@ export async function runDiscoveryStage(
       break;
     }
 
-    // ponytail: SearchSpec.candidateId is a plain `string` (the model-facing
-    // boundary type in contracts.ts) while runExecuteSearch wants a branded
-    // `Id<"candidates">`. Discovery specs never set candidateId — they're the
-    // fixed opening set, not a follow-up on an entity — so the cast is safe here.
-    const result = await runExecuteSearch(ctx, { scanId, spec: spec as SearchSpec & { candidateId?: Id<"candidates"> } }, options);
+    const result = await runExecuteSearch(ctx, { scanId, spec }, options);
     if (result.status === "skipped") {
       outcome.skipped++;
       continue;
