@@ -96,9 +96,14 @@ export async function runEnrichmentStage(
         await ctx.runMutation(internal.scans.recordSearchOutcome, { scanId, succeeded: 1, failed: 0 });
       } else {
         await ctx.runMutation(internal.scans.recordSearchOutcome, { scanId, succeeded: 0, failed: 1 });
+        // The real error, not a static stand-in: recordFailure dedupes by
+        // purpose+code, so a generic code here would let a second, different
+        // enrichment failure (a rate limit after a timeout, say) go unreported.
+        const run = result.runId ? await ctx.runQuery(internal.searchRuns.getRun, { runId: result.runId }) : null;
         await ctx.runMutation(internal.scans.recordFailure, {
-          scanId, purpose: intent.spec.purpose, code: "search_failed",
-          message: `${intent.spec.templateId} failed`,
+          scanId, purpose: intent.spec.purpose,
+          code: run?.errorCode ?? "search_failed",
+          message: run?.errorMessage ?? `${intent.spec.templateId} failed`,
         });
       }
     }

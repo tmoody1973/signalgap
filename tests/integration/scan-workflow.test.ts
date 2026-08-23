@@ -3,6 +3,7 @@ import { api, internal } from "../../convex/_generated/api";
 import type { GenerateFn } from "../../convex/ai/provider";
 import { runEnrichmentStage } from "../../convex/stages/enrichment";
 import { discoverySpecs, runDiscoveryStage } from "../../convex/stages/discovery";
+import { SEARCH_BUDGET } from "../../convex/config/searchBudget";
 import { DISCOVERY_TEMPLATE_IDS } from "../../convex/integrations/serpapi/queryCatalog";
 import { runCandidateFinalization, runCandidateFormation, runSliceForScan } from "../../convex/slice";
 import { sliceModelAnswers } from "../fixtures/slice";
@@ -471,7 +472,7 @@ describe("enrichment stage", () => {
     expect(outcome.executed).toBe(0);
   });
 
-  it("passes the REAL remaining budget, so it cannot plan past the hard cap", async () => {
+  it("a scan with no budget left plans nothing at all", async () => {
     vi.stubEnv("SERPAPI_API_KEY", "test-key");
     const t = setup();
     const { scanId, candidateId } = await seedFormedCandidate(t);
@@ -487,6 +488,31 @@ describe("enrichment stage", () => {
     expect(outcome.executed).toBe(0);
     const scan = await t.run(async (ctx) => ctx.db.get(scanId));
     expect(scan?.searchesReserved).toBe(120);
+  });
+
+  it("passes the REAL remaining budget, so a model asking for three corroborations with one slot left gets at most one", async () => {
+    vi.stubEnv("SERPAPI_API_KEY", "test-key");
+    const t = setup();
+    const { scanId, candidateId } = await seedFormedCandidate(t);
+    // One slot left of the hard cap — well under the static corroboration
+    // allocation of 20. If the stage passed SEARCH_BUDGET.corroboration
+    // straight through instead of Math.min-ing it against scan.remaining, all
+    // three of these would be accepted.
+    await t.run(async (ctx) => ctx.db.patch(scanId, { searchesReserved: SEARCH_BUDGET.hardCap - 1 }));
+
+    const outcome = await t.action(async (ctx) => runEnrichmentStage(
+      ctx, { scanId, candidateIds: [candidateId], now: NOW },
+      { fetchImpl: fakeFetch(), sleep: async () => {} },
+      planningModel([
+        { templateId: "corroborate-entity-01", purpose: "corroboration", desiredSourceFamily: "news", reason: "first", entityTerms: ["Metcalfe Park"] },
+        { templateId: "official-record-entity-01", purpose: "corroboration", desiredSourceFamily: "official", reason: "second", entityTerms: ["Metcalfe Park"] },
+        { templateId: "corroborate-entity-01", purpose: "corroboration", desiredSourceFamily: "news", reason: "third", entityTerms: ["Sherman Park"] },
+      ]),
+    ));
+
+    expect(outcome.accepted).toBe(1);
+    expect(outcome.rejected).toBe(2);
+    expect(outcome.executed).toBeLessThanOrEqual(1);
   });
 
   it("stops before planning once cancellation is requested", async () => {
