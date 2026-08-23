@@ -1,7 +1,40 @@
 # SignalGap — session handoff
 
-**Last updated:** 2026-08-22, late afternoon CDT.
+**Last updated:** 2026-08-23, 09:15 CDT.
 **Purpose:** everything a fresh Claude session needs to pick this up without re-deriving it. Read this, then `docs/hackathon-build/spec.md`.
+
+---
+
+## 0. START HERE — the one thing blocking
+
+**Item 7 is code-complete and waiting at REVIEW PAUSE 2. Tarik has not reviewed it yet.**
+
+He was handed a link to one lead and asked for "looks good" or "fix X". Nothing had come back when this session ended.
+
+To put it in front of him again:
+
+```bash
+set -a; . ./.env.local; set +a
+npx convex dev --once                 # deploy first — codegen alone does not
+npm run dev                           # leave running
+CLERK_ID=$(curl -s -H "Authorization: Bearer $CLERK_SECRET_KEY" \
+  "https://api.clerk.com/v1/users?email_address=$E2E_CLERK_EMAIL" \
+  | python3 -c "import sys,json;print(json.load(sys.stdin)[0]['id'])")
+npx convex run internal.testing.seedSliceFixture "{\"clerkUserId\":\"$CLERK_ID\"}"
+# open http://localhost:3000/leads/<the candidateId it prints>
+```
+
+**Do not start item 8 until he accepts.** Resume condition, from `checklist.md`: *source traceability and uncertainty presentation accepted*.
+
+**Keep instructions to Tarik short.** He asked "what am I supposed to do" after a long reply. Three steps and a yes/no is the right size.
+
+### The open product question he still owes an answer to
+
+The review lead is **real captured Milwaukee data** (Metcalfe Park Liberation Hub, August 2026). **Three independent Milwaukee outlets** covered it — Journal Sentinel, Urban Milwaukee, Business Journals — plus an r/milwaukee thread.
+
+**SignalGap says it does not qualify, and shows no score.** Three outlets are three independence *groups* but only one *category* (`original_news`), and `MIN_INDEPENDENT_CATEGORIES` is 2. No official record naming the project appears in the captured official-domain payload, so none is attached — inventing that link is the fabrication the product refuses.
+
+So: **is the two-independent-category gate too strict when three newsrooms have already covered something?** That is a product decision for Tarik, not a bug to quietly fix. Do not loosen the rule without his explicit call, and if he changes it, it needs a decision doc.
 
 ---
 
@@ -40,7 +73,7 @@ The central claim, which every decision defends: **SerpApi gives it live eyes. A
 | 4. Deterministic rules engine | MOO-730 | **Done** |
 | 5. SerpApi adapter | MOO-731 | **Done** — all 8 plan tasks complete, CI green (run 32604066171) |
 | 6. AI contracts | MOO-732 | **Done** — all 7 plan tasks complete, 39/39 evaluation checks, CI green |
-| 7. Evidence-to-brief slice | MOO-733 | **Done pending Review Pause 2** — 9 plan tasks complete, CI green |
+| 7. Evidence-to-brief slice | MOO-733 | **Code-complete, AWAITING REVIEW PAUSE 2** — see section 0 |
 | 8–12 | MOO-734…738 | Not planned yet |
 
 355 unit/integration tests, 2 opt-in live tests, plus 22 Playwright tests, all green. CI runs typecheck + lint + tests + build on every push.
@@ -55,7 +88,11 @@ The central claim, which every decision defends: **SerpApi gives it live eyes. A
 
 **Tracking:** `linear-build` skill. Each issue carries Intent / Acceptance criteria / Verification checklist. Post evidence as a comment before moving an issue to Done. Commits end with the issue id, e.g. `(MOO-731)`.
 
-**Two hard-won process notes:**
+**Three hard-won process notes:**
+
+- **UI cannot be verified by reading.** Building the evidence page found five defects that 352 green tests never would: the page did not load at all (Convex query fired before Clerk attached its token), an entire evidence kind rendered nowhere, Reddit filed as `corroborating` let a dead link exclude a sound lead, `Why this surfaced` came out in index order, and the fixture's own trace was internally impossible. Seed one finished record and **open it in a browser** before calling UI work done.
+- **Trace one fact backwards, by hand, and refuse any hop you cannot justify.** That is what caught the impossible trace and the wrong label — no test did. It is also exactly the discipline the product asks its users to apply.
+
 - Implementer subagents go idle mid-task without reporting, fairly often. **Check `git log` and `git status` rather than trusting silence.**
 - Do not let an implementer run `/simplify` or any refactor pass. One did, and it edited a shared module outside its task.
 
@@ -72,6 +109,10 @@ Clerk is fully set up: app created, a JWT template named `convex` exists, and a 
 **No `OPENAI_API_KEY`** — the item 6 Task 14 evaluation ran single-model. `docs/model-evaluation.md` leads with that: it is a measurement of Sonnet, not a head-to-head. Adding a key and re-running `npx tsx scripts/evaluate-models.ts` would produce the comparison.
 
 **Model spend to date: about $1.62** (Anthropic), all on the item 6 evaluation harness. Raw answers are saved in the git-ignored `.eval-runs/`; `npx tsx scripts/evaluate-models.ts --rescore` re-runs the checks against them for free, and `--dry-run` exercises the harness with a stub.
+
+**Nothing in items 5–7 is left half-done.** 355 unit/integration tests, 2 opt-in live tests, 21 Playwright tests, typecheck, lint and build all green on `main` at `fc7eb11`; CI run 32644447389 green.
+
+**The review fixture is `internal.testing.seedSliceFixture`** in `convex/testing.ts`. It builds one finished lead from the REAL captured payloads and makes **no model call**. It is idempotent — re-seeding replaces the lead rather than doubling it. Reuse it for item 8 rather than writing a second fixture.
 
 **SerpApi: Starter plan, 1000 searches/month.** ~983 remaining. About 10 have been spent on fixture capture and diagnostics. A single live scan may use up to 120.
 
@@ -113,34 +154,34 @@ Each is written into the relevant Linear issue as well.
 
 | For | What |
 | --- | --- |
-| **MOO-732** (item 6) | **Decision 004.** The rules engine's judgment inputs (`localityBand`, `relevanceBand`, `beat`, and four flags) are worth 40 of 100 points and gate exclusions, but nothing records who set them. Each needs `basis: "deterministic" \| "ai_suggested" \| "editor"`, and `localityBand` needs a deterministic path via the already-written, currently-unused `isOfficialDomain`. Without this, "rules decide" is not honest. |
-| **MOO-735** (item 9) | `Outdated` is brief-scoped and has no schema home. It must **not** be added to `vProductLabel` (the candidate label union) — it needs a field on `briefVersions` or `candidates`. |
-| **Item 10** | The Events normalizer branch is unverified against a real payload. Re-check whether SerpApi has fixed the engine. |
+| **Tarik** | **The two-category question in section 0.** Real data produced an excluded lead that three newsrooms covered. Unanswered. |
+| **MOO-734** (item 8) | `runSliceForScan` in `convex/slice.ts` is the whole per-scan pipeline: cluster → form → classify → snapshot → **evaluate** → brief. Item 8 wraps it in the Convex Workflow component plus the 13 fixed discovery searches. Keep the exported-plain-function + one-line-`internalAction` shape; it is how tests inject a fake model. |
+| **MOO-734** (item 8) | `convex/candidates/evaluate.ts` is the **only** writer of `status`, `primaryLabel`, `scoreTotal`, `scoreComponents`, `independentCategoryCount`, `coverageOriginalCount`, `coveragePassStatus`. Do not add a second writer. |
+| **MOO-735** (item 9) | The ranked feed needs a **list** query. `evidence.forCandidate` is per-lead and deliberately heavy. |
+| **MOO-735** (item 9) | `Outdated` is brief-scoped and still has no schema home. It must **not** go into `vProductLabel` — it needs a field on `briefVersions` or `candidates`. |
+| **Item 10** | The Google Events normalizer branch is still unverified against a real payload. Re-check whether SerpApi has fixed the engine. |
+| **Item 10** | **Never introduce a fabricated result to improve the demo.** This session shipped an invented lead and Tarik caught it — see the note below. |
 | Deferred minors | Listed in each plan's ledger under `minor (deferred)`. None block. |
+
+**The fabricated-fixture near-miss (2026-08-23).** The first Review Pause 2 lead was a story I invented — fake headlines, fake outlets, fake URLs — even though item 7's checklist says "using a **captured** candidate packet" and real captured Milwaukee payloads had been sitting in `tests/fixtures/serpapi/` since item 5. Tarik asked "is this a fake story you made?" and it was. It is now real captured data. Two rules follow from that:
+
+1. When a checklist says *captured*, go and find the captured thing before inventing one.
+2. A fixture that reaches a screen a human reviews is demo material. Treat it under item 10's no-fabrication rule, not as throwaway test data.
 
 ---
 
-## 8. Immediate next steps
+## 8. What happens after Review Pause 2
 
-**Item 7 is code-complete and stops at REVIEW PAUSE 2.** Do not start item 8 until Tarik has looked at one lead and accepted source traceability and uncertainty presentation.
+Section 0 is the blocker. Once Tarik accepts:
 
-1. **Run Review Pause 2.** Seed and open one lead:
-   ```bash
-   set -a; . ./.env.local; set +a
-   CLERK_ID=$(curl -s -H "Authorization: Bearer $CLERK_SECRET_KEY" \
-     "https://api.clerk.com/v1/users?email_address=$E2E_CLERK_EMAIL" | python3 -c "import sys,json;print(json.load(sys.stdin)[0]['id'])")
-   npx convex run internal.testing.seedSliceFixture "{\"clerkUserId\":\"$CLERK_ID\"}"
-   npm run dev   # then open /leads/<candidateId>
-   ```
-   What Tarik is accepting: `Why this surfaced` leads and shows at least two confirming kinds; every claim opens its source; the query log names searches that could really have returned those sources; the brief says it is AI-drafted; unverified Reddit stays labelled and non-confirming.
+1. **Close MOO-733.** Evidence is already posted as a comment; move it to Done.
+2. **Write the item 8 plan** (`docs/superpowers/plans/`, MOO-734, durable scan workflow). Use the `superpowers:writing-plans` skill and write it against the real interfaces in section 7, not predicted ones — that is what made the item 7 plan hold up.
+3. **Item 8 is the 14-step scan lifecycle**: Convex Workflow component, the 13 frozen discovery templates, two-part coverage searches, 20 corroboration calls, conditional enrichment, the 34-call reserve, hard 120 ceiling, four public stages, cancellation, partial failures. `checklist.md` item 8 has the full acceptance list.
+4. **Item 10 will need SerpApi budget.** ~983 searches left on Starter; one live scan may use up to 120.
 
-2. **Then write the item 8 plan** (durable scan workflow, MOO-734). What it inherits, all real and tested:
-   - `runSliceForScan` in `convex/slice.ts` — cluster → form → classify → snapshot → **evaluate** → brief, for one scan. Item 8 wraps this in the Convex Workflow component and the 13 fixed discovery searches.
-   - `convex/candidates/evaluate.ts` is the **only** writer of status, label and score. Keep it that way.
-   - `convex/evidence.ts` `forCandidate` is the read. The feed (item 9) needs a *list* query; this one is per-lead.
-   - `convex/testing.ts` `seedSliceFixture` builds a finished lead with no model call — reuse it rather than writing a second fixture.
+If he asks for a change instead, it is a change to item 7 — make it, re-run `npm run check && npm run test:e2e`, re-seed, and put it back in front of him. Do not roll it into item 8.
 
-3. **Carry-ins still open** — see section 7. `Outdated` still has no schema home (MOO-735); the Google Events normalizer is still unverified against a real payload (item 10).
+---
 
 ## 9. Working agreements with Tarik
 
