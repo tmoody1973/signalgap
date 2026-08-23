@@ -1,8 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { api, internal } from "../../convex/_generated/api";
+import type { GenerateFn } from "../../convex/ai/provider";
 import { discoverySpecs, runDiscoveryStage } from "../../convex/stages/discovery";
 import { DISCOVERY_TEMPLATE_IDS } from "../../convex/integrations/serpapi/queryCatalog";
-import { runCandidateFinalization, runCandidateFormation } from "../../convex/slice";
+import { runCandidateFinalization, runCandidateFormation, runSliceForScan } from "../../convex/slice";
+import { sliceModelAnswers } from "../fixtures/slice";
 import { asUser, fakeFetch, seedSliceScan, seedUser, setup } from "./helpers";
 
 const NOW = 1_700_000_000_000;
@@ -317,18 +319,91 @@ describe("slice split at the coverage boundary", () => {
     const { scanId, sourceIds, model } = await seedSliceScan(t);
     const formed = await t.action(async (ctx) => runCandidateFormation(ctx, { scanId, sourceResultIds: sourceIds }, model));
     if (!formed.ok) throw new Error(formed.reason);
+    const candidateId = formed.candidates[0].candidateId;
+
+    // Spy on the brief call specifically: read the candidate's live status the
+    // instant that generate call fires. If evaluate had not already run, status
+    // would still read "processing" — so this fails if the order ever reverses.
+    let statusWhenBriefGenerateFired: string | undefined;
+    const spyModel: GenerateFn = async (args) => {
+      const isBrief = !/Group the supplied signals/.test(args.system) && !/suggest how each piece of evidence/.test(args.system);
+      if (isBrief) {
+        const candidate = await t.run(async (ctx) => ctx.db.get(candidateId));
+        statusWhenBriefGenerateFired = candidate?.status;
+      }
+      return await model(args);
+    };
 
     const outcome = await t.action(async (ctx) =>
-      runCandidateFinalization(ctx, { scanId, candidateId: formed.candidates[0].candidateId, now: NOW }, model),
+      runCandidateFinalization(ctx, { scanId, candidateId, now: NOW }, spyModel),
     );
 
     expect(outcome.status).toMatch(/eligible|excluded/);
-    const candidate = await t.run(async (ctx) => ctx.db.get(formed.candidates[0].candidateId));
+    const candidate = await t.run(async (ctx) => ctx.db.get(candidateId));
     expect(candidate?.status).toBe(outcome.status);
     // The brief is generated against a settled verdict, never a provisional one.
     if (outcome.briefId) {
       const brief = await t.run(async (ctx) => ctx.db.get(outcome.briefId!));
       expect(brief?.version).toBe(1);
     }
+    expect(statusWhenBriefGenerateFired).not.toBe("processing");
+    expect(statusWhenBriefGenerateFired).toMatch(/eligible|excluded/);
+  });
+
+  it("a classify failure never reaches evaluate or the brief", async () => {
+    const t = setup();
+    const { scanId, sourceIds, ids } = await seedSliceScan(t);
+    const answers = sliceModelAnswers(ids);
+    // The classify answer cites a source id we never showed the model — the
+    // source-binding guard (convex/ai/validateOutput.ts) invalidates the WHOLE
+    // output for that, so this deterministically fails classification without
+    // depending on any particular malformed shape.
+    const brokenClassify: GenerateFn = async ({ system }) => {
+      if (/Group the supplied signals/.test(system)) return { object: answers.clusterSignals, usage: {} };
+      if (/suggest how each piece of evidence/.test(system)) {
+        return {
+          object: { ...answers.classifyEvidence, items: [{ ...answers.classifyEvidence.items[0], sourceResultIds: ["not-a-real-source-id"] }] },
+          usage: {},
+        };
+      }
+      return { object: answers.generateBrief, usage: {} };
+    };
+
+    const outcome = await t.action(async (ctx) =>
+      runSliceForScan(ctx, { scanId, sourceResultIds: sourceIds, now: NOW }, brokenClassify));
+
+    expect(outcome.ok).toBe(true);
+    if (!outcome.ok) return;
+    expect(outcome.candidates).toHaveLength(1);
+    const [candidate] = outcome.candidates;
+
+    expect(candidate.failures.some((f) => f.startsWith("classify:"))).toBe(true);
+    // The rules had nothing to decide on. Reporting "no_judgment" would name the
+    // wrong cause: classification failed, and the missing judgment is the effect.
+    expect(candidate.failures.some((f) => f.includes("no_judgment"))).toBe(false);
+    expect(candidate.status).toBe("excluded");
+    expect(candidate.briefId).toBeNull();
+
+    const dbCandidate = await t.run(async (ctx) => ctx.db.get(candidate.candidateId));
+    // evaluate never ran, so status is still whatever formFromCluster inserted.
+    expect(dbCandidate?.status).toBe("processing");
+  });
+
+  it("a healthy candidate still reaches finalization and comes back with a real verdict", async () => {
+    const t = setup();
+    const { scanId, sourceIds, model } = await seedSliceScan(t);
+
+    const outcome = await t.action(async (ctx) =>
+      runSliceForScan(ctx, { scanId, sourceResultIds: sourceIds, now: NOW }, model));
+
+    expect(outcome.ok).toBe(true);
+    if (!outcome.ok) return;
+    expect(outcome.candidates).toHaveLength(1);
+    const [candidate] = outcome.candidates;
+    // A wrongly-set readyForVerdict marker would make a healthy candidate
+    // vanish from the feed with an unearned "excluded" instead of a verdict.
+    expect(candidate.failures).toEqual([]);
+    expect(candidate.status).toMatch(/eligible|excluded/);
+    expect(candidate.briefId).not.toBeNull();
   });
 });

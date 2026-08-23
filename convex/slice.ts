@@ -40,6 +40,13 @@ export type FormedCandidate = {
   sourceResultIds: Id<"sourceResults">[];
   evidenceVersion: number | null;
   failures: string[];
+  /**
+   * False when formation could not produce a judgment, so the rules engine has
+   * nothing to decide on. Such a candidate must NOT be finalized: `evaluate`
+   * would no-op with "no_judgment", which misnames the cause — classification
+   * failed, and the absent judgment is the consequence, not the reason.
+   */
+  readyForVerdict: boolean;
 };
 
 export type FormationOutcome =
@@ -82,7 +89,10 @@ export async function runCandidateFormation(
 
     const classified = await runClassifyEvidence(ctx, { scanId, candidateId, sourceResultIds: memberIds }, generate);
     if (!classified.ok) {
-      candidates.push({ candidateId, sourceResultIds: memberIds, evidenceVersion: null, failures: [`classify: ${classified.reason}`] });
+      candidates.push({
+        candidateId, sourceResultIds: memberIds, evidenceVersion: null,
+        failures: [`classify: ${classified.reason}`], readyForVerdict: false,
+      });
       continue;
     }
 
@@ -115,7 +125,7 @@ export async function runCandidateFormation(
     const evidenceVersion = "evidenceVersion" in snapshot ? snapshot.evidenceVersion : null;
     if ("rejected" in snapshot) failures.push(`snapshot: ${snapshot.rejected}`);
 
-    candidates.push({ candidateId, sourceResultIds: memberIds, evidenceVersion: evidenceVersion ?? null, failures });
+    candidates.push({ candidateId, sourceResultIds: memberIds, evidenceVersion: evidenceVersion ?? null, failures, readyForVerdict: true });
   }
 
   return { ok: true, candidates };
@@ -178,6 +188,15 @@ export async function runSliceForScan(
 
   const candidates: SliceCandidateOutcome[] = [];
   for (const c of formed.candidates) {
+    if (!c.readyForVerdict) {
+      // Formation itself failed (no judgment to hand the rules). Match the
+      // old single-pass code's terminal outcome exactly: never call evaluate.
+      candidates.push({
+        candidateId: c.candidateId, status: "excluded", label: "Worth a look", scoreTotal: null,
+        evidenceVersion: c.evidenceVersion, briefId: null, failures: c.failures,
+      });
+      continue;
+    }
     const outcome = await runCandidateFinalization(ctx, { scanId, candidateId: c.candidateId, now }, generate);
     candidates.push({ ...outcome, evidenceVersion: c.evidenceVersion, failures: [...c.failures, ...outcome.failures] });
   }
