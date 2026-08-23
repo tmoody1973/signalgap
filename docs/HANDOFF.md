@@ -20,7 +20,7 @@ The central claim, which every decision defends: **SerpApi gives it live eyes. A
 | Repo (public) | https://github.com/tmoody1973/signalgap |
 | Linear project | https://linear.app/moodyco/project/signalgap-hackathon-mvp-bb9da1e41e47 |
 | Approved spec / PRD / scope / checklist | `docs/hackathon-build/` |
-| Decision log | `docs/decisions/` (001–005 so far) |
+| Decision log | `docs/decisions/` (001–006 so far) |
 | Learning log | `docs/LEARNING-LOG.md` |
 | Plans | `docs/superpowers/plans/` |
 | Convex dev deployment | `dev:handsome-lapwing-832` |
@@ -38,10 +38,10 @@ The central claim, which every decision defends: **SerpApi gives it live eyes. A
 | 3. Clerk–Convex auth + data model | MOO-729 | **Done** |
 | 4. Deterministic rules engine | MOO-730 | **Done** |
 | 5. SerpApi adapter | MOO-731 | **Done** — all 8 plan tasks complete, CI green (run 32604066171) |
-| 6. AI contracts | MOO-732 | Planned, not started |
+| 6. AI contracts | MOO-732 | **Done** — all 7 plan tasks complete, 39/39 evaluation checks, CI green |
 | 7–12 | MOO-733…738 | Not planned yet |
 
-Roughly 159 unit/integration tests, 2 opt-in live tests, plus 7 Playwright tests, all green. CI runs typecheck + lint + tests + build on every push.
+277 unit/integration tests, 2 opt-in live tests, plus 7 Playwright tests, all green. CI runs typecheck + lint + tests + build on every push.
 
 ---
 
@@ -67,7 +67,9 @@ Convex deployment env holds: `CLERK_JWT_ISSUER_DOMAIN`, `SERPAPI_API_KEY`, `ANTH
 
 Clerk is fully set up: app created, a JWT template named `convex` exists, and a test user exists with a strong password (the first one was rejected by Clerk's breach check).
 
-**No `OPENAI_API_KEY`** — so the model challenger comparison in item 6 Task 14 is single-model unless Tarik adds one.
+**No `OPENAI_API_KEY`** — the item 6 Task 14 evaluation ran single-model. `docs/model-evaluation.md` leads with that: it is a measurement of Sonnet, not a head-to-head. Adding a key and re-running `npx tsx scripts/evaluate-models.ts` would produce the comparison.
+
+**Model spend to date: about $1.62** (Anthropic), all on the item 6 evaluation harness. Raw answers are saved in the git-ignored `.eval-runs/`; `npx tsx scripts/evaluate-models.ts --rescore` re-runs the checks against them for free, and `--dry-run` exercises the harness with a stub.
 
 **SerpApi: Starter plan, 1000 searches/month.** ~983 remaining. About 10 have been spent on fixture capture and diagnostics. A single live scan may use up to 120.
 
@@ -96,6 +98,8 @@ These are decisions taken on Tarik's behalf during execution. Each is in the led
 **Evidence honesty**
 - **The 120 cap under concurrency is now proven** (2026-08-22, Task 8). `convex-test` takes a mutex per top-level transaction, so its 20-way test never interleaves and proves nothing about production. `tests/live/reserve-concurrency.test.ts` spawns 20 separate `npx convex run` processes against the real deployment: **granted=5, rejected=15, reserved=120, runs=5** from a scan seeded at 115. Zero SerpApi calls. Item 5's "including under concurrency" and demo gate 5 **are** satisfied. Note the plan's `ConvexHttpClient` sketch was impossible — internal functions need admin auth we do not have.
 - **Two of seven normalizer branches (Events, Maps at the time) were tested against hand-written fixtures.** Maps has since been re-captured live. Events remains hand-written because the engine returns nothing.
+- **The model evaluation is a measurement, not a comparison** (2026-08-23). 18 packets, 39/39 checks, 0 invalid outputs, median ~19s, $0.70. Single-model: no `OPENAI_API_KEY`. **4 of 18 packets carry expectations drafted by the build script and never confirmed by a person** — `analyze-official-01`, `analyze-official-02`, `analyze-spanish-01`, `brief-thin-01`. `docs/model-evaluation.md` names them. Brief *usefulness* is not measured at all.
+- **The quotation rule was corrected, not weakened** (2026-08-23, Tarik's call). It demanded equality with the WHOLE stored field, which rejected the model quoting one true sentence out of a two-sentence snippet. Every failure was checked against saved raw output: all verbatim substrings, nothing invented. Rule is now a word-for-word run of **at least 20 characters** inside a cited source. The floor is what stops a substring becoming a cherry-picked word; it makes a misleading partial quote hard, not impossible. `spec.md:625` amended with the reason. Prompt is at **v2**.
 
 ---
 
@@ -114,16 +118,18 @@ Each is written into the relevant Linear issue as well.
 
 ## 8. Immediate next steps
 
-1. ~~**Close item 5.**~~ **Done.** Code pushed (`b946b34`, `2cf8d3d`), CI green (run 32604066171), evidence posted on MOO-731. What it showed:
-   - cascade: `tests/integration/testing-reset-cascade.test.ts`, red-checked (removing the `ctx.storage.delete` line makes it fail).
-   - real concurrency: `granted=5 rejected=15 reserved=120 runs=5`, 20 independent `npx convex run` processes, scan seeded at 115. Zero SerpApi calls.
-   - live smoke: `query="Milwaukee (housing OR zoning OR development OR displacement OR neighborhood) when:7d" -> 50 normalized, 0 skipped, 126ms`.
-   - spec amended per Tarik's call (Option A, 2026-08-22): Google-family calls use the engine's default page size, no `num`, no `start`. `google_news` returns ~50 per call, and we keep them rather than discard paid results to match a number. `spec.md:539` and the plan's Global Constraints both updated.
+**Items 5 and 6 are both closed.** Next is **item 7**, and it needs its own plan first.
 
-2. **Item 6** — Tasks 9–15 of the same plan. Task 14 makes real paid model calls across 15–20 evaluation packets; **price it and get Tarik's approval before running.**
-3. **Item 7** gets its own plan, written after items 5–6 land so its interfaces are real rather than predicted. It ends at **Review Pause 2**: one fixture lead traced from `Why this surfaced` through citations, coverage, score and generated brief. That plan was deliberately not written in advance — see the scope note at the top of the current plan.
+1. **Write the item 7 plan.** It was deliberately not written in advance — see the scope note at the top of `docs/superpowers/plans/2026-08-22-signalgap-search-and-ai.md`. Write it now against the real interfaces items 5–6 produced, not predicted ones. The pieces it must connect:
+   - `runAnalyzeResults` / `runClusterSignals` / `runClassifyEvidence` / `runPlanFollowUp` / `runGenerateBrief` in `convex/ai/` — each an exported plain function plus a one-line `internalAction` wrapper. That shape exists so tests can inject a fake model; keep it.
+   - `JudgmentSet` from `convex/ai/classifyEvidence.ts` — seven fields, each `{ value, basis, reason }`. **Item 7 owns wiring these into `CandidateInput`** (Ruling 3). The rules engine still takes raw bands today.
+   - `briefVersions` rows written by `runGenerateBrief`, including our fixed empty-section sentences (`EMPTY_SECTION_NOTES`).
+   - No candidate is created anywhere yet. `clusterSignals` proposes groupings and stops; `candidates.formAppearances` does not exist.
+   - Item 7 ends at **Review Pause 2**: one fixture lead traced from `Why this surfaced` through citations, coverage, score and generated brief.
 
----
+2. **Carry-ins that are still open** — see section 7. `Outdated` still has no schema home (MOO-735), and the Google Events normalizer is still unverified against a real payload (item 10).
+
+3. **The AI-draft label is not built.** `briefVersions` has no field marking the brief as AI-drafted editorial assistance; `modelRunId` records that a model wrote it, and `editedByUserId` records a human edit. The spec requires a visible label — that is item 7's UI work, and it was left there deliberately rather than inventing a schema field.
 
 ## 9. Working agreements with Tarik
 
