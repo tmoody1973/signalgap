@@ -51,3 +51,23 @@ Running retro of real learnings from building SignalGap. Dated, three questions 
 **Happened:** It found the existing record and then called the model anyway. The key was doing exactly what it was written to do — avoid a duplicate row — while the expensive part, the network call, happened before anything consulted it. A test that simply asked for the same brief twice exposed it. The same shape of bug had already been found and fixed one layer down, in the paid-search budget, where re-running a finished search would have spent a second SerpApi call.
 
 **Now believe:** An idempotency key protects whatever comes after the lookup. If the costly action sits before the check, or the check does not gate it, the key is a bookkeeping convenience and nothing more. The question to ask of any key is not "does this prevent a duplicate record" but "what, specifically, does this stop from happening twice" — and then write the test that does the thing twice.
+
+---
+
+## 2026-08-23 — Four bugs that only appear when you run the thing
+
+**Expected:** With 352 unit and integration tests green and a design canvas drawn from the real tokens, building the evidence page would be assembly. The tests already covered the query, the rules and the pipeline; the components were rendering data that was known-correct.
+
+**Happened:** The page did not load at all on first run — a Convex query fired before Clerk had attached its token, threw once, and never retried. Behind that were three more: evidence classified as `existing_coverage` rendered nowhere, because it matched none of the four kind-sections and its source was not a coverage-role source, so the official agenda citation was silently missing from a page whose entire job is showing citations. `formFromCluster` filed r/milwaukee as a corroborating source, which both inflated the independence count and let a dead Reddit link exclude a lead the rules should have kept. And `Why this surfaced` came out in database index order, putting the primary record third. None of the four could have been found by reading the code or the tests. All four took minutes to find once the page was on screen.
+
+**Now believe:** For UI, "the data is correct" and "the page is right" are different claims with different evidence. A passing integration test proves a query returns a field; it cannot notice that no component renders it. The cheap habit that found all four was building a seeder that produces one finished record and then actually opening it — worth doing before the components are finished, not after.
+
+---
+
+## 2026-08-23 — A design that shows an impossible state teaches the wrong thing
+
+**Expected:** Drawing the evidence page from the real tokens and the real fixture — every number computed by the actual rules engine — would make the design a faithful preview.
+
+**Happened:** Two things in it were states the system cannot produce. The label read `Coverage gap` on a lead with a dead link; the rules give that lead `Needs a recheck`, because a reverification flag outranks the gap label. And every source's "found by" line showed one `site:city.milwaukee.gov` search — including a Journal Sentinel story, which that search can never return. Both were caught the same way: by running the manual backward trace the plan required, one link at a time, asking of each step "could this actually have happened?"
+
+**Now believe:** A mockup drawn from real values is still a claim about behaviour, and it needs checking against the behaviour, not just the palette. The specific check that works is tracing one fact backwards through every hop and refusing to accept a hop you cannot justify — the same discipline the product is asking its users to apply to a lead. If a fixture cannot survive that trace, no amount of visual fidelity saves it.

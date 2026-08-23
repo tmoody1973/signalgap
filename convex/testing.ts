@@ -198,6 +198,8 @@ const SLICE_SOURCES = [
     title: "Common Council agenda item 250412",
     snippet: "Rezoning of the 3000 block of North Dr. Martin Luther King Jr. Drive.",
     publisher: undefined as string | undefined, accessible: true,
+    templateId: "official-housing-01",
+    query: "(site:city.milwaukee.gov OR site:milwaukee.legistar.com OR site:county.milwaukee.gov OR site:milwaukee.granicus.com OR site:mps.milwaukee.k12.wi.us OR site:wisconsinpublicnotices.org OR site:ridemcts.com) (housing OR zoning OR development OR displacement OR neighborhood)",
   },
   {
     family: "news" as const, engine: "google_news" as const, language: "en",
@@ -205,6 +207,8 @@ const SLICE_SOURCES = [
     title: "Neighbors question Harambee rezoning timeline",
     snippet: "Residents say they learned of the proposal a week before the vote.",
     publisher: "Milwaukee Journal Sentinel", accessible: true,
+    templateId: "news-housing-en-01",
+    query: "Milwaukee (housing OR zoning OR development OR displacement OR neighborhood) when:7d",
   },
   {
     family: "news" as const, engine: "google" as const, language: "es",
@@ -212,6 +216,8 @@ const SLICE_SOURCES = [
     title: "Vecinos cuestionan la rezonificación de Harambee",
     snippet: "Los residentes dicen que se enteraron una semana antes de la votación.",
     publisher: "El Conquistador", accessible: true,
+    templateId: "search-housing-es-01",
+    query: "Milwaukee (vivienda OR zonificación OR desarrollo OR vecindario OR desalojo)",
   },
   {
     family: "community_discussion" as const, engine: "google" as const, language: "en",
@@ -219,10 +225,11 @@ const SLICE_SOURCES = [
     title: "Anyone know what is happening with the Harambee rezoning?",
     snippet: "Saw surveyors on MLK yesterday. Nobody I know got a notice.",
     publisher: undefined, accessible: false,
+    templateId: "reddit-housing-01",
+    query: 'site:reddit.com/r/milwaukee/comments/ (development OR zoning OR apartment OR demolished OR opening OR closing OR "what happened")',
   },
 ];
 
-const SLICE_QUERY = 'site:city.milwaukee.gov "Harambee rezoning"';
 const SLICE_FINGERPRINT = "fixture-harambee-rezoning";
 
 export const seedSliceFixture = internalMutation({
@@ -263,15 +270,6 @@ export const seedSliceFixture = internalMutation({
       failureSummaries: [], isSavedDemo: false,
     });
 
-    const searchRunId = await ctx.db.insert("searchRuns", {
-      scanId, ownerId, idempotencyKey: `${scanId}:discovery:official-housing-01:fixture`,
-      templateId: "official-housing-01", queryCatalogVersion: QUERY_CATALOG_VERSION,
-      purpose: "discovery", engine: "google",
-      query: SLICE_QUERY, parameters: { gl: "us", hl: "en" }, language: "en",
-      status: "succeeded", attemptCount: 1, resultCount: SLICE_SOURCES.length, durationMs: 812,
-      reservedAt: now - 50_000, completedAt: now - 49_000,
-    });
-
     const candidateId = await ctx.db.insert("candidates", {
       ownerId, fingerprint: SLICE_FINGERPRINT,
       currentTitle: "Harambee rezoning heads to a council vote",
@@ -294,6 +292,22 @@ export const seedSliceFixture = internalMutation({
 
     const sourceIds: Id<"sourceResults">[] = [];
     for (const [i, source] of SLICE_SOURCES.entries()) {
+      // One search run per source, carrying the template that could ACTUALLY
+      // have found it. Sharing one run would put a jsonline.com story under a
+      // site:city.milwaukee.gov query — a trace that cannot be true, on the one
+      // page whose whole job is being traceable.
+      const searchRunId = await ctx.db.insert("searchRuns", {
+        scanId, ownerId,
+        idempotencyKey: `${scanId}:discovery:${source.templateId}:fixture`,
+        templateId: source.templateId, queryCatalogVersion: QUERY_CATALOG_VERSION,
+        purpose: "discovery", engine: source.engine,
+        query: source.query,
+        parameters: { gl: "us", hl: source.language },
+        language: source.language === "es" ? "es" : "en",
+        status: "succeeded", attemptCount: 1, resultCount: 10, durationMs: 640 + i * 90,
+        reservedAt: now - 50_000 + i * 500, completedAt: now - 49_000 + i * 500,
+      });
+
       const sourceResultId = await ctx.db.insert("sourceResults", {
         scanId, searchRunId, ownerId,
         canonicalKey: `${source.engine}:${source.url}`, canonicalUrl: source.url, originalUrl: source.url,

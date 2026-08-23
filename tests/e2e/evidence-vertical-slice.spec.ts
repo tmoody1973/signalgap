@@ -79,10 +79,19 @@ test.describe("evidence vertical slice", () => {
     await expect(page.getByText(/city\.milwaukee\.gov/).first()).toBeVisible();
   });
 
-  test("every citation links out and names the query that found it", async ({ page }) => {
-    const found = page.getByText("Found by:").first();
-    await expect(found).toBeVisible();
-    await expect(found).toContainText("site:city.milwaukee.gov");
+  test("every citation names the query that found it", async ({ page }) => {
+    const found = page.getByText("Found by:");
+    await expect(found.first()).toBeVisible();
+    expect(await found.count()).toBeGreaterThan(1);
+  });
+
+  test("a source is traced to a search that could actually have returned it", async ({ page }) => {
+    // The chain has to survive a sceptic. A site:city.milwaukee.gov search cannot
+    // return a jsonline.com story, so each source carries its own real query.
+    const newsClaim = page.getByText("Residents say they learned of the proposal a week before the vote.").first();
+    await expect(newsClaim).toBeVisible();
+    await expect(page.getByText(/Found by: Milwaukee \(housing OR zoning/).first()).toBeVisible();
+    await expect(page.getByText(/Found by: \(site:city\.milwaukee\.gov/).first()).toBeVisible();
   });
 
   test("the brief says it is AI-drafted assistance, not a story", async ({ page }) => {
@@ -109,9 +118,11 @@ test.describe("evidence vertical slice", () => {
     await expect(coverage.getByText(/can\b/).first()).toBeVisible();
   });
 
-  test("the query log shows the executed search text", async ({ page }) => {
+  test("the query log lists every search that produced a source", async ({ page }) => {
     const log = page.getByRole("region", { name: "Query log" });
-    await expect(log.getByText('site:city.milwaukee.gov "Harambee rezoning"')).toBeVisible();
+    await expect(log.getByRole("listitem")).toHaveCount(4);
+    await expect(log.getByText(/site:reddit\.com\/r\/milwaukee\/comments\//)).toBeVisible();
+    await expect(log.getByText(/vivienda OR zonificación/)).toBeVisible();
   });
 
   test("status is readable without colour", async ({ page }) => {
