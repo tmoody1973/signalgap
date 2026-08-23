@@ -92,6 +92,9 @@ describe("evidence.forCandidate", () => {
 
     const categories = new Set(view.whySurfaced.map((w) => w.category));
     expect(categories.size).toBeGreaterThanOrEqual(2);
+    // Each row stands for every outlet of its kind, so it must carry the count
+    // of INDEPENDENT outlets behind it — never fewer than the one it names.
+    for (const row of view.whySurfaced) expect(row.outletCount).toBeGreaterThanOrEqual(1);
   });
 
   it("traces every evidence source back to the exact executed query", async () => {

@@ -39,8 +39,13 @@ export function WhyThisSurfaced({ items }: { items: EvidenceView["whySurfaced"] 
                 <span className="block text-xs text-muted">
                   {isDiscussion
                     ? "Does not count toward confirmation"
-                    : [item.publisher, item.publishedAt ? new Date(item.publishedAt).toLocaleDateString("en-US", { day: "numeric", month: "short" }) : null]
-                        .filter(Boolean).join(" · ")}
+                    : [
+                        item.publisher,
+                        item.publishedAt ? new Date(item.publishedAt).toLocaleDateString("en-US", { day: "numeric", month: "short" }) : null,
+                        // The row shows one source per kind. Without this, three
+                        // newsrooms filing separately reads as one newsroom.
+                        item.outletCount > 1 ? `${item.outletCount} independent outlets` : null,
+                      ].filter(Boolean).join(" · ")}
                 </span>
               </span>
             </li>

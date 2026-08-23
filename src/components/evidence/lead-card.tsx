@@ -32,11 +32,20 @@ export function LeadCard({ candidate, sourceCount, coverage }: {
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
         <span>
           {candidate.scoreTotal === null
-            ? "No score — this lead did not qualify"
+            // spec.md:711 — `Worth a look` means "useful signals, has not passed
+            // every gate". Saying only "did not qualify" next to it read as a
+            // contradiction. This states the same verdict in the label's terms.
+            ? "Has signal, but has not passed every rule — no score"
             : <><strong className="font-semibold text-ink">{candidate.scoreTotal}</strong> of 100</>}
         </span>
         <span>{sourceCount} {sourceCount === 1 ? "source" : "sources"}</span>
-        <span>{coverage.originalReportCount} prior {coverage.originalReportCount === 1 ? "report" : "reports"}</span>
+        {/* A flat "0 prior reports" is a claim about the ABSENCE of reporting.
+            It may only be made once the coverage check actually finished. */}
+        <span>
+          {coverage.passStatus === "complete"
+            ? `${coverage.originalReportCount} prior ${coverage.originalReportCount === 1 ? "report" : "reports"}`
+            : "Prior reports not checked"}
+        </span>
         <span>{DISPOSITION_TEXT[candidate.disposition]}</span>
       </div>
     </header>

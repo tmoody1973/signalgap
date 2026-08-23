@@ -106,6 +106,10 @@ const vEvidenceView = v.object({
     title: v.string(),
     publisher: v.union(v.string(), v.null()),
     publishedAt: v.union(v.number(), v.null()),
+    // How many INDEPENDENT outlets sit behind this one row. The row shows one
+    // source per kind, which is the rule; without this count a story three
+    // newsrooms filed separately looks like a story one newsroom filed.
+    outletCount: v.number(),
   })),
   evidence: v.array(v.object({
     id: v.id("evidenceItems"),
@@ -219,9 +223,19 @@ export const forCandidate = query({
 
     // `Why this surfaced` is the convergence: one entry per distinct kind of
     // source among the non-coverage members.
+    const confirmingMembers = [...sourceById.values()].filter((s) => s.role !== "coverage");
+    // Distinct independence groups per kind, NOT a raw source count. Two results
+    // syndicated from one release are one outlet, exactly as the rules engine
+    // counts them.
+    const outletsByCategory = new Map<string, Set<string>>();
+    for (const s of confirmingMembers) {
+      const groups = outletsByCategory.get(s.signalCategory) ?? new Set<string>();
+      groups.add(s.independenceGroup);
+      outletsByCategory.set(s.signalCategory, groups);
+    }
+
     const whySurfaced = [...new Map(
-      [...sourceById.values()]
-        .filter((s) => s.role !== "coverage")
+      confirmingMembers
         .sort((a, b) => CATEGORY_RANK[a.signalCategory] - CATEGORY_RANK[b.signalCategory])
         .map((s) => [s.signalCategory, {
           category: s.signalCategory,
@@ -230,6 +244,7 @@ export const forCandidate = query({
           title: s.title,
           publisher: s.publisher,
           publishedAt: s.publishedAt,
+          outletCount: outletsByCategory.get(s.signalCategory)?.size ?? 1,
         }]),
     ).values()];
 

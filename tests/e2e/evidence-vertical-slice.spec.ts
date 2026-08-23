@@ -64,6 +64,20 @@ test.describe("evidence vertical slice", () => {
     await expect(why.getByRole("listitem")).toHaveCount(2);
     await expect(why.getByText("Local reporting")).toBeVisible();
     await expect(why.getByText("Does not count toward confirmation")).toBeVisible();
+    // The collapse must not hide the count. Three newsrooms filing separately
+    // is the signal; a row that names only one outlet buries it.
+    await expect(why.getByText(/3 independent outlets/)).toBeVisible();
+  });
+
+  test("the header does not contradict the label, and claims no coverage it did not check", async ({ page }) => {
+    const header = page.getByRole("banner").or(page.locator("header")).first();
+    // spec.md:711 — `Worth a look` means useful signals that have not passed
+    // every gate. The summary line must say the same thing, not the opposite.
+    await expect(page.getByText("Has signal, but has not passed every rule — no score")).toBeVisible();
+    // The fixture never runs the coverage pass, so a bare "0 prior reports"
+    // would be a claim about absence that nothing checked.
+    await expect(page.getByText("Prior reports not checked")).toBeVisible();
+    await expect(header.getByText(/0 prior reports/)).toHaveCount(0);
   });
 
   test("a lead that did not qualify shows NO score, and says why", async ({ page }) => {
