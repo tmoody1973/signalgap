@@ -50,3 +50,17 @@ export const vScoreComponents = v.object({
 });
 export const vFailureSummary = v.object({ purpose: vPurpose, code: v.string(), message: v.string() });
 export const vSourceBoundBlock = v.object({ text: v.string(), sourceResultIds: v.array(v.id("sourceResults")) });
+
+// Decision 004: every judgment field the rules engine reads records WHO set it.
+export const vJudgmentBasis = v.union(v.literal("deterministic"), v.literal("ai_suggested"), v.literal("editor"));
+const vJudgedString = v.union(v.null(), v.object({ value: v.string(), basis: vJudgmentBasis, reason: v.string() }));
+const vJudgedBoolean = v.object({ value: v.boolean(), basis: vJudgmentBasis, reason: v.string() });
+export const vJudgmentRecord = v.object({
+  localityBand: vJudgedString,
+  relevanceBand: vJudgedString,
+  beat: vJudgedString,
+  isSpeculative: vJudgedBoolean,
+  isRoutineCrime: vJudgedBoolean,
+  isDuplicateOfCandidate: vJudgedBoolean,
+  hasMaterialConflict: vJudgedBoolean,
+});

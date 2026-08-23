@@ -21,6 +21,7 @@ import type * as ai_runOperation from "../ai/runOperation.js";
 import type * as ai_validateOutput from "../ai/validateOutput.js";
 import type * as candidates_fingerprint from "../candidates/fingerprint.js";
 import type * as candidates_form from "../candidates/form.js";
+import type * as candidates_judgment from "../candidates/judgment.js";
 import type * as candidates_toEngineSource from "../candidates/toEngineSource.js";
 import type * as config_beats from "../config/beats.js";
 import type * as config_coverageOutlets from "../config/coverageOutlets.js";
@@ -72,6 +73,7 @@ declare const fullApi: ApiFromModules<{
   "ai/validateOutput": typeof ai_validateOutput;
   "candidates/fingerprint": typeof candidates_fingerprint;
   "candidates/form": typeof candidates_form;
+  "candidates/judgment": typeof candidates_judgment;
   "candidates/toEngineSource": typeof candidates_toEngineSource;
   "config/beats": typeof config_beats;
   "config/coverageOutlets": typeof config_coverageOutlets;

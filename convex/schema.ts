@@ -109,6 +109,10 @@ export default defineSchema({
     latestBriefVersion: v.optional(v.number()),
     scoreTotal: v.optional(v.number()),
     scoreComponents: v.optional(V.vScoreComponents),
+    // Decision 004: every judgment field the rules engine reads records WHO set
+    // it — a rule, the AI, or an editor. Optional because a candidate created
+    // before classification runs has no judgment yet.
+    judgment: v.optional(V.vJudgmentRecord),
     independentCategoryCount: v.number(),
     coverageOriginalCount: v.number(),
     coveragePassStatus: V.vCoveragePassStatus,
