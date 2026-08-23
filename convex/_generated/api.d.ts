@@ -59,6 +59,7 @@ import type * as slice from "../slice.js";
 import type * as sourceResults from "../sourceResults.js";
 import type * as stages_coverage from "../stages/coverage.js";
 import type * as stages_discovery from "../stages/discovery.js";
+import type * as stages_enrichment from "../stages/enrichment.js";
 import type * as testing from "../testing.js";
 import type * as users from "../users.js";
 import type * as workflow from "../workflow.js";
@@ -121,6 +122,7 @@ declare const fullApi: ApiFromModules<{
   sourceResults: typeof sourceResults;
   "stages/coverage": typeof stages_coverage;
   "stages/discovery": typeof stages_discovery;
+  "stages/enrichment": typeof stages_enrichment;
   testing: typeof testing;
   users: typeof users;
   workflow: typeof workflow;

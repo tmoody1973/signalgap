@@ -1,11 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { api, internal } from "../../convex/_generated/api";
 import type { GenerateFn } from "../../convex/ai/provider";
+import { runEnrichmentStage } from "../../convex/stages/enrichment";
 import { discoverySpecs, runDiscoveryStage } from "../../convex/stages/discovery";
 import { DISCOVERY_TEMPLATE_IDS } from "../../convex/integrations/serpapi/queryCatalog";
 import { runCandidateFinalization, runCandidateFormation, runSliceForScan } from "../../convex/slice";
 import { sliceModelAnswers } from "../fixtures/slice";
-import { asUser, fakeFetch, seedSliceScan, seedUser, setup } from "./helpers";
+import { asUser, fakeFetch, seedFormedCandidate, seedSliceScan, seedUser, setup } from "./helpers";
 
 const NOW = 1_700_000_000_000;
 
@@ -405,5 +406,108 @@ describe("slice split at the coverage boundary", () => {
     expect(candidate.failures).toEqual([]);
     expect(candidate.status).toMatch(/eligible|excluded/);
     expect(candidate.briefId).not.toBeNull();
+  });
+});
+
+const planAnswer = (intents: unknown[]) => ({ intents });
+
+function planningModel(intents: unknown[]): GenerateFn {
+  return async () => ({ object: planAnswer(intents), usage: { inputTokens: 10, outputTokens: 5 } });
+}
+
+describe("enrichment stage", () => {
+  it("executes an intent the validator approved", async () => {
+    vi.stubEnv("SERPAPI_API_KEY", "test-key");
+    const t = setup();
+    const { scanId, candidateId } = await seedFormedCandidate(t);
+
+    const outcome = await t.action(async (ctx) => runEnrichmentStage(
+      ctx, { scanId, candidateIds: [candidateId], now: NOW },
+      { fetchImpl: fakeFetch(), sleep: async () => {} },
+      planningModel([{ templateId: "corroborate-entity-01", purpose: "corroboration", desiredSourceFamily: "news", reason: "confirm the approval", entityTerms: ["Metcalfe Park"] }]),
+    ));
+
+    expect(outcome.accepted).toBe(1);
+    expect(outcome.executed).toBe(1);
+    const runs = await t.run(async (ctx) =>
+      ctx.db.query("searchRuns").withIndex("by_scan_purpose", (q) => q.eq("scanId", scanId).eq("purpose", "corroboration")).collect());
+    expect(runs).toHaveLength(1);
+  });
+
+  it("refuses an intent carrying operators and executes nothing", async () => {
+    vi.stubEnv("SERPAPI_API_KEY", "test-key");
+    const t = setup();
+    const { scanId, candidateId } = await seedFormedCandidate(t);
+
+    // "lang:es" is a colon operator the output-level URL/operator guard in
+    // validateAgainstSources does not name (it only lists site/inurl/intitle/
+    // filetype/cache/related/source/when/before/after), so this reaches
+    // validateSearchIntent's own strict character allowlist, which rejects any
+    // colon regardless of which word precedes it — the allowlist cannot be
+    // out-argued by an operator nobody thought to name.
+    const outcome = await t.action(async (ctx) => runEnrichmentStage(
+      ctx, { scanId, candidateIds: [candidateId], now: NOW },
+      { fetchImpl: fakeFetch(), sleep: async () => {} },
+      planningModel([{ templateId: "corroborate-entity-01", purpose: "corroboration", desiredSourceFamily: "news", reason: "x", entityTerms: ["lang:es"] }]),
+    ));
+
+    // The model asked. The validator said no. Nothing was bought.
+    expect(outcome.rejected).toBe(1);
+    expect(outcome.executed).toBe(0);
+  });
+
+  it("refuses an unknown template id", async () => {
+    vi.stubEnv("SERPAPI_API_KEY", "test-key");
+    const t = setup();
+    const { scanId, candidateId } = await seedFormedCandidate(t);
+
+    const outcome = await t.action(async (ctx) => runEnrichmentStage(
+      ctx, { scanId, candidateIds: [candidateId], now: NOW },
+      { fetchImpl: fakeFetch(), sleep: async () => {} },
+      planningModel([{ templateId: "invented-template-99", purpose: "corroboration", desiredSourceFamily: "news", reason: "x", entityTerms: ["Metcalfe Park"] }]),
+    ));
+
+    expect(outcome.rejected).toBe(1);
+    expect(outcome.executed).toBe(0);
+  });
+
+  it("passes the REAL remaining budget, so it cannot plan past the hard cap", async () => {
+    vi.stubEnv("SERPAPI_API_KEY", "test-key");
+    const t = setup();
+    const { scanId, candidateId } = await seedFormedCandidate(t);
+    // Push the scan to the ceiling before planning.
+    await t.run(async (ctx) => ctx.db.patch(scanId, { searchesReserved: 120 }));
+
+    const outcome = await t.action(async (ctx) => runEnrichmentStage(
+      ctx, { scanId, candidateIds: [candidateId], now: NOW },
+      { fetchImpl: fakeFetch(), sleep: async () => {} },
+      planningModel([{ templateId: "corroborate-entity-01", purpose: "corroboration", desiredSourceFamily: "news", reason: "x", entityTerms: ["Metcalfe Park"] }]),
+    ));
+
+    expect(outcome.executed).toBe(0);
+    const scan = await t.run(async (ctx) => ctx.db.get(scanId));
+    expect(scan?.searchesReserved).toBe(120);
+  });
+
+  it("stops before planning once cancellation is requested", async () => {
+    vi.stubEnv("SERPAPI_API_KEY", "test-key");
+    const t = setup();
+    const { scanId, candidateId } = await seedFormedCandidate(t);
+    await asUser(t, "owner").mutation(api.scans.cancel, { scanId });
+    // seedFormedCandidate's own classify/cluster calls already wrote modelRuns
+    // rows, so the assertion below has to be a delta, not an absolute zero.
+    const modelRunsBefore = await t.run(async (ctx) => ctx.db.query("modelRuns").collect());
+
+    const outcome = await t.action(async (ctx) => runEnrichmentStage(
+      ctx, { scanId, candidateIds: [candidateId], now: NOW },
+      { fetchImpl: fakeFetch(), sleep: async () => {} },
+      planningModel([{ templateId: "corroborate-entity-01", purpose: "corroboration", desiredSourceFamily: "news", reason: "x", entityTerms: ["Metcalfe Park"] }]),
+    ));
+
+    expect(outcome.canceled).toBe(true);
+    expect(outcome.plannedFor).toBe(0);
+    // A model call is money too. Cancellation stops it before the boundary.
+    const modelRunsAfter = await t.run(async (ctx) => ctx.db.query("modelRuns").collect());
+    expect(modelRunsAfter).toHaveLength(modelRunsBefore.length);
   });
 });
