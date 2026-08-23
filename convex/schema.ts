@@ -116,6 +116,9 @@ export default defineSchema({
     independentCategoryCount: v.number(),
     coverageOriginalCount: v.number(),
     coveragePassStatus: V.vCoveragePassStatus,
+    // Why a candidate was excluded, in the engine's own words. Empty when it
+    // qualified. Optional because rows written before evaluation have no verdict.
+    exclusionReasons: v.optional(v.array(V.vExclusionReason)),
     firstSeenAt: v.number(),
     lastSeenAt: v.number(),
     updatedAt: v.number(),

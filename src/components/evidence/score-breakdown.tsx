@@ -1,3 +1,4 @@
+import { exclusionSentence } from "@/lib/exclusion-reasons";
 import type { EvidenceView } from "@/lib/evidence-view";
 
 const BASIS_TEXT = {
@@ -10,7 +11,15 @@ const BASIS_TEXT = {
  * All five deterministic components, always. A score that showed only its total
  * would be exactly the black box this product exists to avoid.
  */
-export function ScoreBreakdown({ score, judgment }: { score: EvidenceView["score"]; judgment: EvidenceView["judgment"] }) {
+export function ScoreBreakdown({
+  score,
+  judgment,
+  exclusionReasons,
+}: {
+  score: EvidenceView["score"];
+  judgment: EvidenceView["judgment"];
+  exclusionReasons: EvidenceView["candidate"]["exclusionReasons"];
+}) {
   const locality = judgment?.localityBand;
 
   // Decision 004 asks that an editor can always answer "who decided this was a
@@ -22,6 +31,8 @@ export function ScoreBreakdown({ score, judgment }: { score: EvidenceView["score
     </p>
   ) : null;
 
+  const excluded = exclusionSentence(exclusionReasons);
+
   if (!score) {
     return (
       <section aria-labelledby="score-heading" className="border-t border-rule pt-5">
@@ -29,6 +40,10 @@ export function ScoreBreakdown({ score, judgment }: { score: EvidenceView["score
         <p className="mt-2 text-sm text-muted">
           This lead did not qualify, so it has no score. Leads are only scored once they pass every rule.
         </p>
+        {/* Naming the failed rule is the difference between a verdict an editor
+            can act on and a dead end. Absent only when the verdict predates
+            this field. */}
+        {excluded ? <p className="mt-2 text-sm font-medium text-ink">{excluded}</p> : null}
         {basisLine}
       </section>
     );

@@ -20,6 +20,15 @@ export const vSignalCategory = v.union(
   v.literal("official_record"), v.literal("original_news"), v.literal("event"), v.literal("video"),
   v.literal("map"), v.literal("community_discussion"), v.literal("public_web"), v.literal("trend"),
 );
+// The rules engine's own exclusion list. Stored so the lead page can say WHICH
+// rule a candidate failed — a screen that says only "did not qualify" is the
+// black box this product exists to avoid.
+export const vExclusionReason = v.union(
+  v.literal("weak_locality"), v.literal("stale"), v.literal("insufficient_independence"),
+  v.literal("no_beat_relevance"), v.literal("already_covered"), v.literal("inaccessible_evidence"),
+  v.literal("coverage_pass_incomplete"), v.literal("promotional"), v.literal("duplicate"),
+  v.literal("speculative"), v.literal("routine_crime"),
+);
 export const vCandidateStatus = v.union(v.literal("processing"), v.literal("eligible"), v.literal("excluded"), v.literal("needs_reverification"));
 export const vProductLabel = v.union(
   v.literal("Worth a look"), v.literal("Unverified tip"), v.literal("Coverage gap"),

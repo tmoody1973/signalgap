@@ -81,6 +81,9 @@ const vEvidenceView = v.object({
     label: V.vProductLabel,
     disposition: V.vDisposition,
     scoreTotal: v.union(v.number(), v.null()),
+    // Empty when the lead qualified. Never null — the page must be able to tell
+    // "qualified" from "we have not evaluated it".
+    exclusionReasons: v.array(V.vExclusionReason),
     updatedAt: v.number(),
   }),
   judgment: v.union(v.null(), V.vJudgmentRecord),
@@ -285,6 +288,7 @@ export const forCandidate = query({
         label: candidate.primaryLabel,
         disposition: candidate.disposition,
         scoreTotal: candidate.scoreTotal ?? null,
+        exclusionReasons: candidate.exclusionReasons ?? [],
         updatedAt: candidate.updatedAt,
       },
       judgment: candidate.judgment ?? null,

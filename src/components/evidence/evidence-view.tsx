@@ -39,7 +39,7 @@ export function EvidenceViewPanel({ candidateId }: { candidateId: Id<"candidates
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-7 pb-16">
       <LeadCard candidate={view.candidate} sourceCount={sourceCount} coverage={view.coverage} />
-      <ScoreBreakdown score={view.score} judgment={view.judgment} />
+      <ScoreBreakdown score={view.score} judgment={view.judgment} exclusionReasons={view.candidate.exclusionReasons} />
       <WhyThisSurfaced items={view.whySurfaced} />
 
       {KIND_SECTIONS.map(({ kind, heading, empty }) => {

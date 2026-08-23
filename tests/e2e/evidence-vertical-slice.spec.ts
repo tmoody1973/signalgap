@@ -71,6 +71,14 @@ test.describe("evidence vertical slice", () => {
     // needs two categories, so this real lead is excluded and carries no score.
     const score = page.getByRole("region", { name: "Score" });
     await expect(score.getByText(/did not qualify, so it has no score/)).toBeVisible();
+    // Naming the failed rules is what makes this a verdict an editor can act on
+    // rather than a dead end. BOTH gates must be named: one kind of source, and
+    // a coverage check the fixture deliberately leaves unrun (item 8 runs it).
+    await expect(
+      score.getByText(
+        "Did not qualify: only one kind of source confirmed it, and two are required, and the check for existing coverage did not finish.",
+      ),
+    ).toBeVisible();
     await expect(score.locator("dt")).toHaveCount(0);
   });
 

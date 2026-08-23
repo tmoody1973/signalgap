@@ -108,6 +108,8 @@ export const evaluate = internalMutation({
       independentCategoryCount: verdict.independence.independentCategoryCount,
       coverageOriginalCount: verdict.coverage.originalReportCount,
       coveragePassStatus: verdict.coverage.passStatus,
+      // Kept so the lead page can name the failed rule instead of showing a blank.
+      exclusionReasons: verdict.reasons,
       updatedAt: Date.now(),
     });
 
