@@ -1,8 +1,29 @@
 {
   "artboards": [
-    { "file": "Main.dc.html", "x": 0, "y": 0, "w": 1000, "h": 2900, "title": "Evidence view — single column" },
-    { "file": "SplitRail.dc.html", "x": 1120, "y": 0, "w": 1360, "h": 1120, "title": "Direction B — brief pinned beside" },
-    { "file": "WhySurfaced.dc.html", "x": 1120, "y": 1300, "w": 1260, "h": 760, "title": "Why this surfaced — three treatments" }
+    {
+      "file": "Main.dc.html",
+      "x": 0,
+      "y": 0,
+      "w": 1000,
+      "h": 2900,
+      "title": "Evidence view \u2014 single column"
+    },
+    {
+      "file": "SplitRail.dc.html",
+      "x": 1120,
+      "y": 0,
+      "w": 1360,
+      "h": 1120,
+      "title": "Direction B \u2014 brief pinned beside"
+    },
+    {
+      "file": "WhySurfaced.dc.html",
+      "x": 1120,
+      "y": 1300,
+      "w": 1260,
+      "h": 760,
+      "title": "Why this surfaced \u2014 three treatments"
+    }
   ],
   "annotations": [
     {
@@ -10,7 +31,7 @@
       "x": 0,
       "y": -190,
       "w": 460,
-      "text": "SignalGap evidence view.\n\nBuilt from the real tokens in src/styles/theme.css and the real fixture lead. Every number is what the rules engine actually computes for it: 95/100, Coverage gap, 2 independent categories.\n\nLeft: the deliverable. Right: one layout alternative, and three ways to show the demo's central moment.\n\nPick a layout and a Why-this-surfaced treatment, then I build it."
+      "text": "SignalGap evidence view \u2014 BUILT, and corrected against the running app.\n\nEvery number is what the rules engine actually computes: 95/100, 2 independent categories, and the score reasons word for word.\n\nOne correction after building: this lead carries \"Needs a recheck\", not \"Coverage gap\". One of its links is dead, and that flag outranks the gap label. The first draft of this canvas showed a label the rules would never produce.\n\nRight: one layout alternative, and three ways to show the demo's central moment."
     },
     {
       "id": "tradeoff-main",
@@ -34,5 +55,7 @@
       "text": "Only one of these three ships. A is what the plan currently describes. B and C are here because this is the moment the whole product is arguing for, and a numbered list may be underselling it."
     }
   ],
-  "launch": { "view": "canvas" }
+  "launch": {
+    "view": "canvas"
+  }
 }
