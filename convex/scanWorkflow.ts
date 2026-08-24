@@ -1,21 +1,79 @@
 import { v } from "convex/values";
+import { internal } from "./_generated/api";
 import { workflow } from "./workflow";
 
 /**
- * The scan's durable spine. It orchestrates and nothing else — every decision,
- * every write and every external call lives in a step.
+ * The scan's durable spine — `spec.md > Data Flow > Critical scan lifecycle`,
+ * steps 1 through 14.
  *
- * The handler is replayed from the top each time a step completes, so it must
- * stay deterministic: no `fetch`, no `process.env`, no unseeded randomness. The
- * component blocks those; this comment is here so nobody spends an hour finding
- * out why.
+ * It orchestrates and NOTHING else. There is no `if` here that decides an
+ * editorial question, no arithmetic on a score, and no string a user will read.
+ * Every one of those lives in a step, written and tested on its own.
+ *
+ * The handler replays from the top whenever a step completes, so it must stay
+ * deterministic: no `fetch`, no `process.env`, no unseeded randomness. The
+ * component blocks those; this comment is here so nobody spends an hour on it.
+ *
+ * Cancellation is not checked here — each step checks it immediately before its
+ * own external boundary and returns `canceled: true`, which is both more precise
+ * and the only way to stop mid-stage.
  */
 export const runScan = workflow.define({
   args: { scanId: v.id("scans") },
   returns: v.null(),
-  // The explicit Promise<null> annotation breaks the type cycle that otherwise
-  // forms through `internal.*` once steps are added in Task 3.
-}).handler(async (_step, _args): Promise<null> => {
-  // Tasks 3–8 fill this in, stage by stage.
+}).handler(async (step, { scanId }): Promise<null> => {
+  // ── Stage 1 of 4: Discovering signals ──────────────────────────────────
+  await step.runMutation(internal.scans.setStage, { scanId, stage: "discovery" });
+  const discovery = await step.runAction(internal.stages.discovery.discover, { scanId });
+  if (discovery.canceled) {
+    await step.runMutation(internal.scans.finalize, { scanId });
+    return null;
+  }
+
+  // ── Stage 2 of 4: Checking local evidence ─────────────────────────────
+  await step.runMutation(internal.scans.setStage, { scanId, stage: "evidence" });
+  const evidence = await step.runAction(internal.stages.evidence.buildEvidence, {
+    scanId, sourceResultIds: discovery.sourceResultIds,
+  });
+  if (evidence.canceled) {
+    await step.runMutation(internal.scans.finalize, { scanId });
+    return null;
+  }
+
+  // ── Stage 3 of 4: Reviewing existing coverage ─────────────────────────
+  // Coverage before enrichment, always: `spec.md > Search budget` requires the
+  // required coverage capacity to be reserved before optional Maps or YouTube.
+  await step.runMutation(internal.scans.setStage, { scanId, stage: "coverage" });
+  const selection = await step.runQuery(internal.stages.evidence.selectForCoverage, {
+    scanId, candidateIds: evidence.candidateIds, now: Date.now(),
+  });
+  const coverage = await step.runAction(internal.stages.coverage.checkCoverage, {
+    scanId, candidateIds: selection.ordered,
+  });
+  if (coverage.canceled) {
+    await step.runMutation(internal.scans.finalize, { scanId });
+    return null;
+  }
+
+  const enrichment = await step.runAction(internal.stages.enrichment.enrich, {
+    scanId, candidateIds: selection.ordered,
+  });
+  if (enrichment.canceled) {
+    await step.runMutation(internal.scans.finalize, { scanId });
+    return null;
+  }
+
+  // ── Stage 4 of 4: Preparing leads ─────────────────────────────────────
+  // Every candidate is evaluated, including the ones the prefilter skipped.
+  // A skipped candidate is not deleted — it is excluded with its reasons shown,
+  // which is what an editor needs to overrule it. `evidence.candidateIds` was
+  // already narrowed to the readyForVerdict set in stages/evidence.ts, so a
+  // classification failure (no judgment) never reaches finalization.
+  await step.runMutation(internal.scans.setStage, { scanId, stage: "briefs" });
+  await step.runAction(internal.stages.finalize.finalizeCandidates, {
+    scanId, candidateIds: evidence.candidateIds,
+  });
+
+  await step.runMutation(internal.scans.finalize, { scanId });
   return null;
 });

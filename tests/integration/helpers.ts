@@ -1,6 +1,7 @@
 import workflowTest from "@convex-dev/workflow/test";
 import type { TestConvex } from "convex-test";
 import { convexTest } from "convex-test";
+import { afterEach, vi } from "vitest";
 import { internal } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import type { GenerateFn } from "../../convex/ai/provider";
@@ -11,13 +12,42 @@ import { SLICE_SOURCES, sliceModelAnswers, type SliceSourceKey } from "../fixtur
 
 export const modules = import.meta.glob("../../convex/**/*.ts");
 
+// @convex-dev/workflow's setupEnvironment (delete + later restore of
+// Math/Date/console/process/crypto, for step determinism) only runs when the
+// workflow's real handler executes. Since `scans.startScan` now uses
+// startAsync: true (correctly — a scan cannot block the mutation that starts
+// it), that execution happens later, via convex-test's scheduler, in the same
+// JS realm every other test in this file shares. Left undrained it can fire
+// DURING an unrelated later test; almost no test here stubs SERPAPI_API_KEY,
+// so the handler throws, and the patched globals are never restored — every
+// test after that one then fails on `process.env` being undefined, for a
+// reason that has nothing to do with what it's testing.
+//
+// Draining scheduled functions before each test ends is what actually
+// prevents the leak (a snapshot/restore alone does not: the leaked run can
+// still land mid-test, before that test's own afterEach gets a chance to
+// clean up). Fake timers are what let `finishAllScheduledFunctions` settle
+// deterministically instead of racing the real clock.
+vi.useFakeTimers();
+let currentTest: ReturnType<typeof convexTest> | undefined;
+afterEach(async () => {
+  await currentTest?.finishAllScheduledFunctions(vi.runAllTimers);
+  currentTest = undefined;
+});
+
 export function setup() {
   const t = convexTest(schema, modules);
   // startScan/cancel call into the workflow component (convex/workflow.ts);
   // convex-test needs it registered or those calls throw "Component
-  // \"workflow\" is not registered." This does not make the workflow run —
-  // see the scan-workflow tests' own note on that.
+  // \"workflow\" is not registered." Registering it does not make the
+  // workflow's real STEPS run in the order scanWorkflow.ts drives them —
+  // convex-test cannot execute the durable component's step-by-step replay,
+  // which is why the scan-workflow tests drive stages directly instead of
+  // going through startScan to prove ordering. It DOES, however, mean the
+  // handler function itself gets invoked (drained by the afterEach above) and
+  // will run until its first real failure — see the comment above.
   workflowTest.register(t);
+  currentTest = t;
   return t;
 }
 

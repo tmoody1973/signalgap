@@ -63,7 +63,13 @@ export const startScan = mutation({
     // Started INSIDE the same transaction as the insert. Either both happen or
     // neither does, so there is no window where a queued scan exists with
     // nothing executing it.
-    const workflowId = await start(ctx, internal.scanWorkflow.runScan, { scanId });
+    //
+    // startAsync: the handler must NOT run inline inside this mutation. Inline
+    // execution would run 13 searches and several model calls while the
+    // caller's click hangs, blow the mutation time limit, and defeat the point
+    // of a durable workflow. It also patches the runtime (`delete
+    // global.process`), which breaks any step reading an env var.
+    const workflowId = await start(ctx, internal.scanWorkflow.runScan, { scanId }, { startAsync: true });
     await ctx.db.patch(scanId, { workflowId });
     return scanId;
   },

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { api, internal } from "../../convex/_generated/api";
 import type { GenerateFn } from "../../convex/ai/provider";
+import { runCoverageStage } from "../../convex/stages/coverage";
 import { runEnrichmentStage } from "../../convex/stages/enrichment";
 import { discoverySpecs, runDiscoveryStage } from "../../convex/stages/discovery";
 import { SEARCH_BUDGET } from "../../convex/config/searchBudget";
@@ -535,5 +536,48 @@ describe("enrichment stage", () => {
     // A model call is money too. Cancellation stops it before the boundary.
     const modelRunsAfter = await t.run(async (ctx) => ctx.db.query("modelRuns").collect());
     expect(modelRunsAfter).toHaveLength(modelRunsBefore.length);
+  });
+});
+
+describe("full lifecycle", () => {
+  it("walks all four public stages and ends completed", async () => {
+    const t = setup();
+    await seedUser(t);
+    const scanId = await asUser(t, "owner").mutation(api.scans.startScan, {});
+
+    // convex-test does not execute the workflow component, so the lifecycle is
+    // driven here in the same order the handler drives it. What this proves is
+    // the ORDER and the state transitions; Step 8 proves the real workflow runs.
+    await t.mutation(internal.scans.setStage, { scanId, stage: "discovery" });
+    await t.mutation(internal.scans.setStage, { scanId, stage: "evidence" });
+    await t.mutation(internal.scans.setStage, { scanId, stage: "coverage" });
+    await t.mutation(internal.scans.setStage, { scanId, stage: "briefs" });
+    const { status } = await t.mutation(internal.scans.finalize, { scanId });
+
+    expect(status).toBe("completed");
+    const scan = await t.run(async (ctx) => ctx.db.get(scanId));
+    expect(scan?.stage).toBe("briefs");
+    // succeeded + failed can never exceed what was authorised.
+    expect(scan!.searchesSucceeded + scan!.searchesFailed).toBeLessThanOrEqual(scan!.searchesReserved);
+  });
+
+  it("coverage is reserved before any enrichment search", async () => {
+    const t = setup();
+    const { scanId, candidateId } = await seedFormedCandidate(t);
+
+    await t.action(async (ctx) => runCoverageStage(ctx, { scanId, candidateIds: [candidateId], now: NOW }, { fetchImpl: fakeFetch(), sleep: async () => {} }));
+    await t.action(async (ctx) => runEnrichmentStage(
+      ctx, { scanId, candidateIds: [candidateId], now: NOW },
+      { fetchImpl: fakeFetch(), sleep: async () => {} },
+      planningModel([{ templateId: "corroborate-entity-01", purpose: "corroboration", reason: "x", entityTerms: ["Metcalfe Park"] }]),
+    ));
+
+    const runs = await t.run(async (ctx) =>
+      ctx.db.query("searchRuns").withIndex("by_scan_status", (q) => q.eq("scanId", scanId)).collect());
+    const firstCoverage = Math.min(...runs.filter((r) => r.purpose === "coverage").map((r) => r.reservedAt));
+    const firstOptional = Math.min(...runs.filter((r) => r.purpose !== "coverage" && r.purpose !== "discovery").map((r) => r.reservedAt));
+    // spec.md > Search budget: "Required coverage capacity is reserved before
+    // optional Maps or YouTube enrichment."
+    expect(firstCoverage).toBeLessThanOrEqual(firstOptional);
   });
 });
