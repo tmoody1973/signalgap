@@ -3,6 +3,7 @@ import { api, internal } from "../../convex/_generated/api";
 import type { GenerateFn } from "../../convex/ai/provider";
 import { runCoverageStage } from "../../convex/stages/coverage";
 import { runEnrichmentStage } from "../../convex/stages/enrichment";
+import { runEvidenceStage } from "../../convex/stages/evidence";
 import { discoverySpecs, runDiscoveryStage } from "../../convex/stages/discovery";
 import { SEARCH_BUDGET } from "../../convex/config/searchBudget";
 import { DISCOVERY_TEMPLATE_IDS } from "../../convex/integrations/serpapi/queryCatalog";
@@ -390,6 +391,44 @@ describe("slice split at the coverage boundary", () => {
     const dbCandidate = await t.run(async (ctx) => ctx.db.get(candidate.candidateId));
     // evaluate never ran, so status is still whatever formFromCluster inserted.
     expect(dbCandidate?.status).toBe("processing");
+  });
+
+  it("runEvidenceStage drops a classify failure from candidateIds so finalization never sees it", async () => {
+    const t = setup();
+    const { scanId, sourceIds, ids } = await seedSliceScan(t);
+    const answers = sliceModelAnswers(ids);
+    // Same fixture as "a classify failure never reaches evaluate or the
+    // brief" above, driven through the workflow's own evidence stage instead
+    // of the combined runSliceForScan path — this is what proves the
+    // readyForVerdict filter at convex/stages/evidence.ts survives, since
+    // nothing at the type level stops a future refactor from dropping it.
+    const brokenClassify: GenerateFn = async ({ system }) => {
+      if (/Group the supplied signals/.test(system)) return { object: answers.clusterSignals, usage: {} };
+      if (/suggest how each piece of evidence/.test(system)) {
+        return {
+          object: { ...answers.classifyEvidence, items: [{ ...answers.classifyEvidence.items[0], sourceResultIds: ["not-a-real-source-id"] }] },
+          usage: {},
+        };
+      }
+      return { object: answers.generateBrief, usage: {} };
+    };
+
+    const evidence = await t.action(async (ctx) =>
+      runEvidenceStage(ctx, { scanId, sourceResultIds: sourceIds }, brokenClassify));
+
+    expect(evidence.candidateIds).toHaveLength(0);
+  });
+
+  it("runEvidenceStage keeps a healthy candidate in candidateIds", async () => {
+    const t = setup();
+    const { scanId, sourceIds, model } = await seedSliceScan(t);
+
+    // The other direction: a wrongly-set filter (e.g. inverted, or dropping
+    // everything) must not make a healthy, verdict-ready candidate vanish.
+    const evidence = await t.action(async (ctx) =>
+      runEvidenceStage(ctx, { scanId, sourceResultIds: sourceIds }, model));
+
+    expect(evidence.candidateIds).toHaveLength(1);
   });
 
   it("a healthy candidate still reaches finalization and comes back with a real verdict", async () => {

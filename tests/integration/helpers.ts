@@ -28,6 +28,17 @@ export const modules = import.meta.glob("../../convex/**/*.ts");
 // still land mid-test, before that test's own afterEach gets a chance to
 // clean up). Fake timers are what let `finishAllScheduledFunctions` settle
 // deterministically instead of racing the real clock.
+//
+// Draining means the handler genuinely RUNS for tests that never intended to
+// exercise it (e.g. plain startScan/cancel tests) — and it throws on all of
+// them: "SERPAPI_API_KEY is not configured", from convex/integrations/serpapi/
+// executeSearch.ts, before any fetch happens. convex-test's own scheduler
+// catches that throw (console.error, never rethrown), so it's contained noise,
+// not a real failure. DO NOT stub SERPAPI_API_KEY here to silence it: none of
+// these tests inject fetchImpl into the drained handler's path, so the missing
+// key is the ONLY thing stopping that leaked continuation from reaching a real
+// `fetch` — stubbing it would turn silent noise into real paid SerpApi calls
+// firing from a unit test run.
 vi.useFakeTimers();
 let currentTest: ReturnType<typeof convexTest> | undefined;
 
