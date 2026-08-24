@@ -4,6 +4,7 @@ import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import { AppHeader } from "@/components/shell/app-header";
+import { ScanProgress } from "@/components/scan/scan-progress";
 import { FirstRunState } from "./workspace-shell";
 
 export default function WorkspacePage() {
@@ -18,6 +19,7 @@ export default function WorkspacePage() {
   }, [isAuthenticated, ensure]);
   const scans = useQuery(api.scans.list, me ? { paginationOpts: { numItems: 25, cursor: null } } : "skip");
   const start = useMutation(api.scans.startScan);
+  const cancelScan = useMutation(api.scans.cancel);
   const [startError, setStartError] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
 
@@ -43,8 +45,11 @@ export default function WorkspacePage() {
         ) : (
           <section aria-labelledby="latest-scan">
             <h1 id="latest-scan" className="font-editorial text-3xl">Latest scan</h1>
-            <p className="mt-2 text-muted">Status: {scans.page[0].status}. Searches reserved: {scans.page[0].searchesReserved} / {scans.page[0].searchBudgetLimit}.</p>
-            {/* ponytail: full summary + Run new scan arrive with the feed plan (items 8–9) */}
+            <ScanProgress
+              scan={scans.page[0]}
+              onCancel={() => { void cancelScan({ scanId: scans.page[0]._id }); }}
+            />
+            {/* ponytail: Run new scan arrives with the feed plan (item 8) */}
           </section>
         )}
       </main>

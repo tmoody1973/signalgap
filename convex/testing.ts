@@ -7,6 +7,7 @@ import { MARKET_KEY, QUERY_CATALOG_VERSION, RULESET_VERSION } from "./config/rul
 import { SEARCH_BUDGET } from "./config/searchBudget";
 import { EMPTY_SECTION_NOTES } from "./ai/generateBrief";
 import { MILWAUKEE_LOCATION } from "./integrations/serpapi/contracts";
+import * as V from "./lib/validators";
 
 // Deleting a scan must take everything the scan produced with it: its searches,
 // its results, their archived raw JSON, and — since item 7 — the candidates the
@@ -110,6 +111,48 @@ export const seedScanAtReservation = internalMutation({
       failureSummaries: [], isSavedDemo: false,
     });
     return { scanId, userId };
+  },
+});
+
+/**
+ * One scan parked in a named state, for rendering tests.
+ *
+ * Deliberately NOT a second copy of `seedSliceFixture`. That one builds a real
+ * lead from captured payloads and is demo material; this one exists only to put
+ * the progress panel into a state, and creates no candidates at all.
+ */
+export const seedScanInState = internalMutation({
+  args: {
+    clerkUserId: v.string(),
+    stage: V.vStage,
+    status: V.vScanStatus,
+    withFailure: v.optional(v.boolean()),
+  },
+  returns: v.object({ scanId: v.id("scans") }),
+  handler: async (ctx, { clerkUserId, stage, status, withFailure = false }) => {
+    const user = await ctx.db.query("users").withIndex("by_clerk_user_id", (q) => q.eq("clerkUserId", clerkUserId)).unique();
+    if (!user) throw new Error("Seed the Clerk user first");
+
+    for (const existing of await ctx.db.query("scans").withIndex("by_owner_started", (q) => q.eq("ownerId", user._id)).collect()) {
+      await ctx.db.delete(existing._id);
+    }
+
+    const now = Date.now();
+    const scanId = await ctx.db.insert("scans", {
+      ownerId: user._id,
+      marketKey: MARKET_KEY, rulesetVersion: RULESET_VERSION, queryCatalogVersion: QUERY_CATALOG_VERSION,
+      status, stage, startedAt: now - 60_000,
+      completedAt: status === "running" || status === "queued" ? undefined : now,
+      cancelRequestedAt: status === "canceled" ? now - 1_000 : undefined,
+      searchBudgetLimit: SEARCH_BUDGET.hardCap,
+      searchesReserved: 27, searchesSucceeded: 25, searchesFailed: 2,
+      eligibleCount: 3, excludedCount: 5, processingCount: status === "running" ? 2 : 0,
+      failureSummaries: withFailure
+        ? [{ purpose: "coverage" as const, code: "coverage_partition_failed", message: "the community coverage partition failed; no coverage gap can be claimed" }]
+        : [],
+      isSavedDemo: false,
+    });
+    return { scanId };
   },
 });
 
