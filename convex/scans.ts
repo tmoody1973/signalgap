@@ -168,22 +168,6 @@ export const recordFailure = internalMutation({
   },
 });
 
-export const recordSearchOutcome = internalMutation({
-  args: { scanId: v.id("scans"), succeeded: v.number(), failed: v.number() },
-  returns: v.null(),
-  handler: async (ctx, { scanId, succeeded, failed }) => {
-    const scan = await ctx.db.get(scanId);
-    if (!scan) return null;
-    // A terminal scan is a snapshot; a snapshot that keeps changing is not one.
-    if (scan.status !== "queued" && scan.status !== "running") return null;
-    await ctx.db.patch(scanId, {
-      searchesSucceeded: scan.searchesSucceeded + succeeded,
-      searchesFailed: scan.searchesFailed + failed,
-    });
-    return null;
-  },
-});
-
 export const setCandidateCounts = internalMutation({
   args: {
     scanId: v.id("scans"),

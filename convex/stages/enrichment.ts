@@ -92,10 +92,7 @@ export async function runEnrichmentStage(
       if (result.status === "skipped") continue;
 
       outcome.executed++;
-      if (result.status === "succeeded") {
-        await ctx.runMutation(internal.scans.recordSearchOutcome, { scanId, succeeded: 1, failed: 0 });
-      } else {
-        await ctx.runMutation(internal.scans.recordSearchOutcome, { scanId, succeeded: 0, failed: 1 });
+      if (result.status !== "succeeded") {
         // The real error, not a static stand-in: recordFailure dedupes by
         // purpose+code, so a generic code here would let a second, different
         // enrichment failure (a rate limit after a timeout, say) go unreported.

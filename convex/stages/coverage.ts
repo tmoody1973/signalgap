@@ -96,11 +96,9 @@ export async function runCoverageStage(
         await ctx.runMutation(internal.candidates.coverage.attachReports, {
           scanId, candidateId, searchRunId: result.runId, now,
         });
-        await ctx.runMutation(internal.scans.recordSearchOutcome, { scanId, succeeded: 1, failed: 0 });
       } else if (result.status === "failed") {
         allSucceeded = false;
         await ctx.runMutation(internal.candidates.coverage.recordPartition, { candidateId, group, status: "failed" });
-        await ctx.runMutation(internal.scans.recordSearchOutcome, { scanId, succeeded: 0, failed: 1 });
         // The real error, not a static stand-in: recordFailure dedupes by
         // purpose+code, so a generic code here would let a second, different
         // coverage failure (a rate limit after a timeout, say) go unreported.

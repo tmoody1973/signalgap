@@ -98,10 +98,6 @@ export async function runDiscoveryStage(
     }
   }
 
-  await ctx.runMutation(internal.scans.recordSearchOutcome, {
-    scanId, succeeded: outcome.succeeded, failed: outcome.failed,
-  });
-
   outcome.sourceResultIds = await ctx.runQuery(internal.sourceResults.idsForScan, { scanId, purpose: "discovery" });
   return outcome;
 }
