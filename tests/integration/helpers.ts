@@ -1,7 +1,7 @@
 import workflowTest from "@convex-dev/workflow/test";
 import type { TestConvex } from "convex-test";
 import { convexTest } from "convex-test";
-import { afterEach, vi } from "vitest";
+import { afterEach, beforeEach, vi } from "vitest";
 import { internal } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import type { GenerateFn } from "../../convex/ai/provider";
@@ -30,9 +30,21 @@ export const modules = import.meta.glob("../../convex/**/*.ts");
 // deterministically instead of racing the real clock.
 vi.useFakeTimers();
 let currentTest: ReturnType<typeof convexTest> | undefined;
+
+// @convex-dev/workflow's setupEnvironment does `delete global.process` for
+// determinism and restores it when the handler returns. A handler that throws
+// mid-flight never reaches that restore, and every later test in the file then
+// fails on `process.env` being undefined — a failure that has nothing to do
+// with the test reporting it. Belt and braces alongside the drain.
+let savedProcess: typeof globalThis.process;
+beforeEach(() => {
+  savedProcess = globalThis.process;
+});
+
 afterEach(async () => {
   await currentTest?.finishAllScheduledFunctions(vi.runAllTimers);
   currentTest = undefined;
+  globalThis.process = savedProcess;
 });
 
 export function setup() {
