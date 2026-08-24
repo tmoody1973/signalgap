@@ -127,9 +127,12 @@ export const seedScanInState = internalMutation({
     stage: V.vStage,
     status: V.vScanStatus,
     withFailure: v.optional(v.boolean()),
+    eligibleCount: v.optional(v.number()),
+    excludedCount: v.optional(v.number()),
+    processingCount: v.optional(v.number()),
   },
   returns: v.object({ scanId: v.id("scans") }),
-  handler: async (ctx, { clerkUserId, stage, status, withFailure = false }) => {
+  handler: async (ctx, { clerkUserId, stage, status, withFailure = false, eligibleCount = 3, excludedCount = 5, processingCount = status === "running" ? 2 : 0 }) => {
     const user = await ctx.db.query("users").withIndex("by_clerk_user_id", (q) => q.eq("clerkUserId", clerkUserId)).unique();
     if (!user) throw new Error("Seed the Clerk user first");
 
@@ -146,7 +149,7 @@ export const seedScanInState = internalMutation({
       cancelRequestedAt: status === "canceled" ? now - 1_000 : undefined,
       searchBudgetLimit: SEARCH_BUDGET.hardCap,
       searchesReserved: 27, searchesSucceeded: 25, searchesFailed: 2,
-      eligibleCount: 3, excludedCount: 5, processingCount: status === "running" ? 2 : 0,
+      eligibleCount, excludedCount, processingCount,
       failureSummaries: withFailure
         ? [{ purpose: "coverage" as const, code: "coverage_partition_failed", message: "the community coverage partition failed; no coverage gap can be claimed" }]
         : [],

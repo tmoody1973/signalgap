@@ -18,9 +18,9 @@ async function clerkUserId(): Promise<string> {
   return users[0].id;
 }
 
-function seed(stage: string, status: string, withFailure = false) {
+function seed(stage: string, status: string, withFailure = false, counts: Partial<Record<"eligibleCount" | "excludedCount" | "processingCount", number>> = {}) {
   const userId = process.env.__CLERK_ID__!;
-  execSync(`npx convex run internal.testing.seedScanInState '${JSON.stringify({ clerkUserId: userId, stage, status, withFailure })}'`, { encoding: "utf8" });
+  execSync(`npx convex run internal.testing.seedScanInState '${JSON.stringify({ clerkUserId: userId, stage, status, withFailure, ...counts })}'`, { encoding: "utf8" });
 }
 
 test.beforeAll(async () => { process.env.__CLERK_ID__ = await clerkUserId(); });
@@ -51,22 +51,24 @@ test.describe("scan progress", () => {
 
     const panel = page.getByRole("region", { name: "Scan progress" });
     await expect(panel.getByText("Done").first()).toBeVisible();      // discovery, evidence
-    // .first(): "Working" also substring-matches the counts line's "X still
-    // working" (Playwright's text match is case-insensitive substring), so a
-    // scenario with a processing count > 0 legitimately has two matches.
-    await expect(panel.getByText("Working").first()).toBeVisible();    // coverage
+    // exact: true — "Working" also substring-matches the counts line's "X
+    // still working" (Playwright's text match is case-insensitive substring),
+    // so a plain match would pass even if the stage badge lost its own text.
+    await expect(panel.getByText("Working", { exact: true })).toBeVisible(); // coverage
     await expect(panel.getByText("Not started").first()).toBeVisible(); // briefs
   });
 
   test("shows all three counts even when two of them are zero", async ({ page }) => {
-    seed("briefs", "running");
+    // eligible and excluded genuinely at zero — the case that matters, since an
+    // editor seeing "0 ready" needs to see it, not have it silently hidden.
+    seed("briefs", "running", false, { eligibleCount: 0, excludedCount: 0, processingCount: 4 });
     await signInOnly(page);
     await page.goto("/workspace");
 
     const panel = page.getByRole("region", { name: "Scan progress" });
-    await expect(panel.getByText(/\d+ ready/)).toBeVisible();
-    await expect(panel.getByText(/\d+ did not qualify/)).toBeVisible();
-    await expect(panel.getByText(/\d+ still working/)).toBeVisible();
+    await expect(panel.getByText("0 ready")).toBeVisible();
+    await expect(panel.getByText("0 did not qualify")).toBeVisible();
+    await expect(panel.getByText("4 still working")).toBeVisible();
   });
 
   test("shows search usage against the ceiling", async ({ page }) => {
@@ -84,9 +86,10 @@ test.describe("scan progress", () => {
     const panel = page.getByRole("region", { name: "Scan progress" });
     await expect(panel.getByText("Incomplete scan")).toBeVisible();
     // Naming the purpose is what turns a warning into something actionable.
-    // .first(): "coverage" also matches the always-visible stage name
-    // "Reviewing existing coverage", so more than one match is expected.
-    await expect(panel.getByText(/coverage/i).first()).toBeVisible();
+    // exact: true — the failure-purpose span's text is literally "coverage";
+    // the always-visible stage name's is the longer "Reviewing existing
+    // coverage", so exact matching targets the failure content specifically.
+    await expect(panel.getByText("coverage", { exact: true })).toBeVisible();
   });
 
   test("a cancelled scan says Stopped early and offers no cancel button", async ({ page }) => {
