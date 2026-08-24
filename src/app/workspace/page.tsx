@@ -47,9 +47,12 @@ export default function WorkspacePage() {
             <h1 id="latest-scan" className="font-editorial text-3xl">Latest scan</h1>
             <ScanProgress
               scan={scans.page[0]}
-              onCancel={() => { void cancelScan({ scanId: scans.page[0]._id }); }}
+              onCancel={() => {
+                cancelScan({ scanId: scans.page[0]._id })
+                  .catch((err: unknown) => setStartError(err instanceof Error ? err.message : "Could not cancel scan"));
+              }}
             />
-            {/* ponytail: Run new scan arrives with the feed plan (item 8) */}
+            {/* ponytail: Run new scan arrives with the feed plan (item 9) */}
           </section>
         )}
       </main>

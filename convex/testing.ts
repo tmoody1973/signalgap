@@ -137,7 +137,7 @@ export const seedScanInState = internalMutation({
     if (!user) throw new Error("Seed the Clerk user first");
 
     for (const existing of await ctx.db.query("scans").withIndex("by_owner_started", (q) => q.eq("ownerId", user._id)).collect()) {
-      await ctx.db.delete(existing._id);
+      await purgeScan(ctx, existing._id);
     }
 
     const now = Date.now();

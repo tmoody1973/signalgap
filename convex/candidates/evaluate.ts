@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { internalMutation, internalQuery } from "../_generated/server";
+import { outletGroupForDomain } from "../config/coverageOutlets";
 import { COVERAGE_WINDOW_MS } from "../config/ruleset";
 import { evaluateCandidate } from "../editorial/status";
 import type { CandidateInput, CoverageInput, EngineSource, LocalityBand, RelevanceBand } from "../editorial/types";
@@ -50,11 +51,14 @@ export const evaluate = internalMutation({
         // only inside the 30-day window — outside it, a story is not "prior
         // coverage of this development", it is a different story.
         if (row.publishedAt !== undefined && now - row.publishedAt <= COVERAGE_WINDOW_MS) {
-          coverageReports.push({
-            id: row._id as string,
-            independenceGroup: membership.independenceGroup,
-            group: "general",
-          });
+          // Same helper `attachReports` used to decide this row WAS coverage
+          // (convex/candidates/coverage.ts) — recomputed rather than persisted,
+          // so there is exactly one source of truth for what group an outlet is
+          // in. A hardcoded "general" here silently reported every community
+          // outlet as a general one — final-review.md I5.
+          let group: "general" | "community" = "general";
+          try { group = outletGroupForDomain(new URL(row.canonicalUrl).hostname) ?? "general"; } catch { /* keep default */ }
+          coverageReports.push({ id: row._id as string, independenceGroup: membership.independenceGroup, group });
         }
         continue;
       }

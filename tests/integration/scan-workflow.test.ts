@@ -9,6 +9,7 @@ import { discoverySpecs, runDiscoveryStage } from "../../convex/stages/discovery
 import { SEARCH_BUDGET } from "../../convex/config/searchBudget";
 import { DISCOVERY_TEMPLATE_IDS } from "../../convex/integrations/serpapi/queryCatalog";
 import { runCandidateFinalization, runCandidateFormation, runSliceForScan } from "../../convex/slice";
+import { scanDoc, searchRunDoc } from "../fixtures/factories";
 import { sliceModelAnswers } from "../fixtures/slice";
 import { asUser, fakeFetch, seedFormedCandidate, seedSliceScan, seedUser, setup } from "./helpers";
 
@@ -432,6 +433,87 @@ describe("slice split at the coverage boundary", () => {
     expect(evidence.candidateIds).toHaveLength(1);
   });
 
+  it("stops classifying further clusters once shouldContinue turns false, mid-formation", async () => {
+    // final-review.md I2: `runClassifyEvidence` runs once PER CLUSTER, so a
+    // single check at the top of `runEvidenceStage` leaves an unbounded number
+    // of model calls behind it. This proves the per-cluster check in
+    // `runCandidateFormation`'s loop itself, the way the enrichment stage's
+    // "stops before planning once cancellation is requested" test proves its
+    // own per-candidate check — a model call before the second cluster is what
+    // this fix removes.
+    const t = setup();
+    const ownerId = await seedUser(t);
+    const { scanId, sourceIdA, sourceIdB } = await t.run(async (ctx) => {
+      const scanId = await ctx.db.insert("scans", scanDoc(ownerId) as never);
+      const searchRunId = await ctx.db.insert("searchRuns", searchRunDoc(scanId, ownerId));
+      const base = {
+        scanId, searchRunId, ownerId,
+        engine: "google" as const, sourceFamily: "news" as const, sourceType: "unknown" as const,
+        originalLanguage: "en", discoveredAt: NOW, isAccessible: true,
+      };
+      const sourceIdA = await ctx.db.insert("sourceResults", {
+        ...base, canonicalKey: "cluster-a", canonicalUrl: "https://jsonline.com/cluster-a",
+        originalUrl: "https://jsonline.com/cluster-a", title: "Cluster A story", snippet: "s-a", contentHash: "h-a",
+      });
+      const sourceIdB = await ctx.db.insert("sourceResults", {
+        ...base, canonicalKey: "cluster-b", canonicalUrl: "https://jsonline.com/cluster-b",
+        originalUrl: "https://jsonline.com/cluster-b", title: "Cluster B story", snippet: "s-b", contentHash: "h-b",
+      });
+      return { scanId, sourceIdA, sourceIdB };
+    });
+
+    let classifyCalls = 0;
+    const model: GenerateFn = async ({ system, prompt }) => {
+      if (/Group the supplied signals/.test(system)) {
+        return {
+          object: {
+            clusters: [
+              { sourceResultIds: [sourceIdA], similarityBasis: "Cluster A on its own.", entityKeys: ["a"], suggestedExistingCandidateId: null },
+              { sourceResultIds: [sourceIdB], similarityBasis: "Cluster B on its own.", entityKeys: ["b"], suggestedExistingCandidateId: null },
+            ],
+          },
+          usage: {},
+        };
+      }
+      if (/suggest how each piece of evidence/.test(system)) {
+        classifyCalls++;
+        const cited = /"sourceResultId":\s*"([^"]+)"/.exec(prompt)?.[1] ?? sourceIdA;
+        return {
+          object: {
+            beatSuggestion: "housing", localityBandSuggestion: "area_city_consequence",
+            relevanceBandSuggestion: "policy_service_change",
+            flags: { isSpeculative: false, isRoutineCrime: false, isDuplicateOfCandidate: false, hasMaterialConflict: false },
+            items: [{
+              sourceResultIds: [cited], kind: "unverified_signal" as const,
+              claimText: "A test claim about this cluster.", exactExcerpt: null,
+              originalLanguageText: null, translatedText: null,
+              sourceTypeSuggestion: "secondary" as const, independenceGroupSuggestion: null,
+              relationship: "supports" as const, milwaukeeConnection: "Milwaukee test connection.",
+              accessibilityConcern: false, repeatsPressRelease: false, reason: "test reason",
+            }],
+          },
+          usage: {},
+        };
+      }
+      throw new Error("unexpected prompt in cancellation test");
+    };
+
+    // A fake, not the real scan-status plumbing: true for the first cluster,
+    // false from then on. What it proves is that the loop CALLS this between
+    // clusters and stops when told to — `convex/stages/evidence.ts` wires the
+    // real check (the same `getForWorkflow` every other stage uses).
+    let shouldContinueCalls = 0;
+    const shouldContinue = async () => { shouldContinueCalls++; return shouldContinueCalls === 1; };
+
+    const formed = await t.action(async (ctx) =>
+      runCandidateFormation(ctx, { scanId, sourceResultIds: [sourceIdA, sourceIdB] }, model, shouldContinue));
+
+    expect(formed.ok).toBe(true);
+    if (!formed.ok) return;
+    expect(formed.candidates).toHaveLength(1);
+    expect(classifyCalls).toBe(1);
+  });
+
   it("a healthy candidate still reaches finalization and comes back with a real verdict", async () => {
     const t = setup();
     const { scanId, sourceIds, model } = await seedSliceScan(t);
@@ -602,22 +684,35 @@ describe("full lifecycle", () => {
   });
 
   it("coverage is reserved before any enrichment search", async () => {
+    // final-review.md I3: helpers.ts freezes Date.now() (vi.useFakeTimers()),
+    // so every `reservedAt` in this test is the SAME number — comparing them
+    // cannot tell order apart. Instead, snapshot how many coverage runs exist
+    // the instant the FIRST enrichment search actually fires.
+    vi.stubEnv("SERPAPI_API_KEY", "test-key");
     const t = setup();
     const { scanId, candidateId } = await seedFormedCandidate(t);
 
     await t.action(async (ctx) => runCoverageStage(ctx, { scanId, candidateIds: [candidateId], now: NOW }, { fetchImpl: fakeFetch(), sleep: async () => {} }));
+
+    let coverageRunsAtFirstEnrichmentSearch: number | null = null;
+    const countingFetch: typeof fetch = (async (input: RequestInfo | URL) => {
+      if (coverageRunsAtFirstEnrichmentSearch === null) {
+        const runs = await t.run(async (ctx) =>
+          ctx.db.query("searchRuns").withIndex("by_scan_status", (q) => q.eq("scanId", scanId)).collect());
+        coverageRunsAtFirstEnrichmentSearch = runs.filter((r) => r.purpose === "coverage").length;
+      }
+      return fakeFetch()(input);
+    }) as typeof fetch;
+
     await t.action(async (ctx) => runEnrichmentStage(
       ctx, { scanId, candidateIds: [candidateId], now: NOW },
-      { fetchImpl: fakeFetch(), sleep: async () => {} },
-      planningModel([{ templateId: "corroborate-entity-01", purpose: "corroboration", reason: "x", entityTerms: ["Metcalfe Park"] }]),
+      { fetchImpl: countingFetch, sleep: async () => {} },
+      planningModel([{ templateId: "corroborate-entity-01", purpose: "corroboration", desiredSourceFamily: "news", reason: "x", entityTerms: ["Metcalfe Park"] }]),
     ));
 
-    const runs = await t.run(async (ctx) =>
-      ctx.db.query("searchRuns").withIndex("by_scan_status", (q) => q.eq("scanId", scanId)).collect());
-    const firstCoverage = Math.min(...runs.filter((r) => r.purpose === "coverage").map((r) => r.reservedAt));
-    const firstOptional = Math.min(...runs.filter((r) => r.purpose !== "coverage" && r.purpose !== "discovery").map((r) => r.reservedAt));
     // spec.md > Search budget: "Required coverage capacity is reserved before
-    // optional Maps or YouTube enrichment."
-    expect(firstCoverage).toBeLessThanOrEqual(firstOptional);
+    // optional Maps or YouTube enrichment." Both coverage partitions (general,
+    // community) must already exist before the first enrichment search fires.
+    expect(coverageRunsAtFirstEnrichmentSearch).toBe(2);
   });
 });

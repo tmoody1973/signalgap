@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { api, internal } from "../../convex/_generated/api";
 import { runCoverageStage } from "../../convex/stages/coverage";
+import { runEnrichmentStage } from "../../convex/stages/enrichment";
 import { asUser, seedFormedCandidate, seedManyFormedCandidates, setup } from "./helpers";
 
 const NOW = 1_700_000_000_000;
@@ -203,5 +204,30 @@ describe("coverage stage", () => {
     expect(runs.length).toBe(20);
     expect(outcome.checked).toBe(10);
     expect(outcome.skippedForBudget).toBe(5);
+  });
+
+  it("enrichment plans only for the candidates coverage actually finished, not the whole selection", async () => {
+    // final-review.md I1: coverage caps itself at 10 of these 15 candidates;
+    // the other 5 stay `coveragePartitions: pending` and are guaranteed
+    // `coverage_pass_incomplete` at evaluate. Handing the workflow's full
+    // selection to enrichment would still buy each of those 5 a paid
+    // corroboration search and a planFollowUp model call for a verdict that
+    // is already decided. Enrichment must see only what coverage finished.
+    const t = setup();
+    const { scanId, candidateIds } = await seedManyFormedCandidates(t, 15);
+
+    const coverage = await t.action(async (ctx) => runCoverageStage(ctx, { scanId, candidateIds, now: NOW }, {
+      fetchImpl: (async () => new Response(JSON.stringify(emptyResults), { status: 200, headers: { "content-type": "application/json" } })) as unknown as typeof fetch,
+      sleep: async () => {},
+    }));
+    expect(coverage.completed).toHaveLength(10);
+
+    const enrichment = await t.action(async (ctx) => runEnrichmentStage(
+      ctx, { scanId, candidateIds: coverage.completed, now: NOW },
+      { fetchImpl: (async () => new Response(JSON.stringify(emptyResults), { status: 200 })) as unknown as typeof fetch, sleep: async () => {} },
+      async () => ({ object: { intents: [] }, usage: { inputTokens: 1, outputTokens: 1 } }),
+    ));
+
+    expect(enrichment.plannedFor).toBe(10);
   });
 });

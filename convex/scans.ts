@@ -128,15 +128,6 @@ export const cancel = mutation({
   },
 });
 
-export const attachWorkflow = internalMutation({
-  args: { scanId: v.id("scans"), workflowId: v.string() },
-  returns: v.null(),
-  handler: async (ctx, { scanId, workflowId }) => {
-    await ctx.db.patch(scanId, { workflowId });
-    return null;
-  },
-});
-
 export const setStage = internalMutation({
   args: { scanId: v.id("scans"), stage: V.vStage },
   returns: v.null(),

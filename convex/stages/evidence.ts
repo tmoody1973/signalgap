@@ -51,7 +51,22 @@ export async function runEvidenceStage(
     // clusters are thinner, but the sources are real and the scan continues.
   }
 
-  const formed = await runCandidateFormation(ctx, { scanId, sourceResultIds }, generate);
+  // Checked again here: analysis above was a model call too, and classification
+  // ahead runs one more PER CLUSTER — an editor cancelling during "Checking
+  // local evidence" must not keep paying for it. `shouldContinue` repeats this
+  // same check at the top of the per-cluster loop inside formation itself.
+  let canceledDuringFormation = false;
+  const shouldContinue = async () => {
+    const s = await ctx.runQuery(internal.scans.getForWorkflow, { scanId });
+    const ok = !!s && s.isActive && !s.isCancelRequested;
+    if (!ok) canceledDuringFormation = true;
+    return ok;
+  };
+  if (!(await shouldContinue())) {
+    return { candidateIds: [], analyzed: analyzed.ok, canceled: true };
+  }
+
+  const formed = await runCandidateFormation(ctx, { scanId, sourceResultIds }, generate, shouldContinue);
   if (!formed.ok) {
     await ctx.runMutation(internal.scans.recordFailure, {
       scanId, purpose: "discovery", code: "cluster_failed", message: formed.reason,
@@ -62,7 +77,7 @@ export async function runEvidenceStage(
   return {
     candidateIds: formed.candidates.filter((c) => c.readyForVerdict).map((c) => c.candidateId),
     analyzed: analyzed.ok,
-    canceled: false,
+    canceled: canceledDuringFormation,
   };
 }
 

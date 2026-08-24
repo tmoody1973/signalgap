@@ -55,8 +55,11 @@ export const runScan = workflow.define({
     return null;
   }
 
+  // Only candidates coverage actually finished, never the full selection —
+  // enrichment money on a candidate coverage never reached buys a search that
+  // is excluded regardless of what it finds. `final-review.md` I1.
   const enrichment = await step.runAction(internal.stages.enrichment.enrich, {
-    scanId, candidateIds: selection.ordered,
+    scanId, candidateIds: coverage.completed,
   });
   if (enrichment.canceled) {
     await step.runMutation(internal.scans.finalize, { scanId });

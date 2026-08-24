@@ -19,6 +19,11 @@ export const vCoverageStageOutcome = v.object({
   // wrong story about why coverage came back thin.
   skippedNoTerms: v.number(),
   canceled: v.boolean(),
+  // The candidates that actually finished BOTH partitions, in the order they
+  // finished. Whoever spends money next (enrichment) must hand it only these —
+  // handing the full input list back would enrich (and exclude) candidates
+  // this stage never got the budget to check. See I1 in final-review.md.
+  completed: v.array(v.id("candidates")),
 });
 export type CoverageStageOutcome = Infer<typeof vCoverageStageOutcome>;
 
@@ -45,7 +50,7 @@ export async function runCoverageStage(
   options: CoverageOptions = {},
 ): Promise<CoverageStageOutcome> {
   const outcome: CoverageStageOutcome = {
-    checked: 0, attempted: 0, skippedForBudget: 0, skippedNoTerms: 0, canceled: false,
+    checked: 0, attempted: 0, skippedForBudget: 0, skippedNoTerms: 0, canceled: false, completed: [],
   };
   let spent = 0;
 
@@ -115,7 +120,10 @@ export async function runCoverageStage(
       }
     }
 
-    if (allSucceeded) outcome.checked++;
+    if (allSucceeded) {
+      outcome.checked++;
+      outcome.completed.push(candidateId);
+    }
   }
 
   return outcome;

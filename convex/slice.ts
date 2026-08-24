@@ -65,6 +65,11 @@ export async function runCandidateFormation(
   ctx: ActionCtx,
   { scanId, sourceResultIds }: { scanId: Id<"scans">; sourceResultIds: Id<"sourceResults">[] },
   generate?: GenerateFn,
+  // Optional so runSliceForScan and item 7's tests, which never cancel, are
+  // unaffected. Checked once per cluster: `runClassifyEvidence` below is a
+  // model call, and an unbounded number of clusters means an unbounded number
+  // of them behind a single top-of-stage check otherwise. final-review.md I2.
+  shouldContinue?: () => Promise<boolean>,
 ): Promise<FormationOutcome> {
   const signals = sourceResultIds.map((id) => ({ sourceResultId: id, entityKeys: [], claimSummary: "" }));
   const clustered = await runClusterSignals(ctx, { scanId, signals }, generate);
@@ -73,6 +78,8 @@ export async function runCandidateFormation(
   const candidates: FormedCandidate[] = [];
 
   for (const cluster of clustered.clusters) {
+    if (shouldContinue && !(await shouldContinue())) break;
+
     const failures: string[] = [];
 
     const formed = await ctx.runMutation(internal.candidates.form.formFromCluster, {
