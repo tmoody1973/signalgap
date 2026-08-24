@@ -17,17 +17,20 @@ export const modules = import.meta.glob("../../convex/**/*.ts");
 // workflow's real handler executes. Since `scans.startScan` now uses
 // startAsync: true (correctly — a scan cannot block the mutation that starts
 // it), that execution happens later, via convex-test's scheduler, in the same
-// JS realm every other test in this file shares. Left undrained it can fire
-// DURING an unrelated later test; almost no test here stubs SERPAPI_API_KEY,
-// so the handler throws, and the patched globals are never restored — every
-// test after that one then fails on `process.env` being undefined, for a
-// reason that has nothing to do with what it's testing.
+// JS realm every other test in this file shares. Left undrained, a
+// continuation scheduled by one test can fire DURING a later, unrelated one.
 //
-// Draining scheduled functions before each test ends is what actually
-// prevents the leak (a snapshot/restore alone does not: the leaked run can
-// still land mid-test, before that test's own afterEach gets a chance to
-// clean up). Fake timers are what let `finishAllScheduledFunctions` settle
-// deterministically instead of racing the real clock.
+// The library restores those globals reliably even on a throw — it wraps the
+// handler in its own try/finally (workflowMutation.ts), so a crash mid-flight
+// does NOT leave `process` deleted forever. The real risk is narrower: a
+// continuation from an earlier test firing while a LATER test is mid-flight,
+// patching the globals for part of that later test's execution before the
+// library's own finally restores them a moment after. Draining before each
+// test ends is the actual fix — it forces any leaked continuation through the
+// library's finally BEFORE the current test finishes, so nothing is left to
+// fire during the next one. Fake timers are what let
+// `finishAllScheduledFunctions` settle deterministically instead of racing
+// the real clock.
 //
 // Draining means the handler genuinely RUNS for tests that never intended to
 // exercise it (e.g. plain startScan/cancel tests) — and it throws on all of
@@ -42,20 +45,24 @@ export const modules = import.meta.glob("../../convex/**/*.ts");
 vi.useFakeTimers();
 let currentTest: ReturnType<typeof convexTest> | undefined;
 
-// @convex-dev/workflow's setupEnvironment does `delete global.process` for
-// determinism and restores it when the handler returns. A handler that throws
-// mid-flight never reaches that restore, and every later test in the file then
-// fails on `process.env` being undefined — a failure that has nothing to do
-// with the test reporting it. Belt and braces alongside the drain.
+// Belt and braces alongside the drain, for the timing window described
+// above: snapshot `process` before each test and restore it after, in case a
+// leaked continuation patches it mid-test before the library's own finally
+// gets to it. `finishAllScheduledFunctions` can itself throw ("too many
+// iterations" / "too many timer pumps"), so the restore lives in `finally` —
+// otherwise it would be skipped on exactly the failure path it exists for.
 let savedProcess: typeof globalThis.process;
 beforeEach(() => {
   savedProcess = globalThis.process;
 });
 
 afterEach(async () => {
-  await currentTest?.finishAllScheduledFunctions(vi.runAllTimers);
-  currentTest = undefined;
-  globalThis.process = savedProcess;
+  try {
+    await currentTest?.finishAllScheduledFunctions(vi.runAllTimers);
+  } finally {
+    currentTest = undefined;
+    globalThis.process = savedProcess;
+  }
 });
 
 export function setup() {
