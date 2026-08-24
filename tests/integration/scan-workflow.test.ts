@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { api, internal } from "../../convex/_generated/api";
 import type { GenerateFn } from "../../convex/ai/provider";
+import type { Id } from "../../convex/_generated/dataModel";
 import { runCoverageStage } from "../../convex/stages/coverage";
 import { runEnrichmentStage } from "../../convex/stages/enrichment";
 import { runEvidenceStage } from "../../convex/stages/evidence";
@@ -163,11 +164,24 @@ describe("scan state transitions", () => {
     const t = setup();
     await seedUser(t);
     const scanId = await asUser(t, "owner").mutation(api.scans.startScan, {});
-    await t.mutation(internal.scans.finalize, { scanId });
 
+    // A search that was reserved before the scan ended, but is still
+    // in-flight (a real HTTP call cannot be aborted) when it does.
+    const lateSpec = {
+      templateId: "news-housing-en-01", engine: "google_news", purpose: "discovery",
+      query: "Milwaukee housing when:7d", location: "Milwaukee, Wisconsin, United States",
+      language: "en", timeWindow: "7d",
+    } as const;
+    const reserved = await t.mutation(internal.searchRuns.reserve, { scanId, spec: lateSpec });
+    const { runId } = reserved as { runId: Id<"searchRuns"> };
+    await t.mutation(internal.searchRuns.markRunning, { runId, parameters: {} });
+
+    await t.mutation(internal.scans.finalize, { scanId });
     const atFinalize = await t.run(async (ctx) => ctx.db.get(scanId));
 
-    // A late write arriving after the scan ended must not change the summary.
+    // The in-flight search resolves AFTER the scan is already terminal.
+    await t.mutation(internal.searchRuns.complete, { runId, resultCount: 0, durationMs: 1 });
+    // Other late writes arriving after the scan ended must not change the summary either.
     await t.mutation(internal.scans.recordFailure, { scanId, purpose: "coverage", code: "late", message: "arrived after the scan ended" });
     await t.mutation(internal.scans.setCandidateCounts, { scanId, eligibleCount: 9, excludedCount: 9, processingCount: 9 });
 
@@ -176,7 +190,14 @@ describe("scan state transitions", () => {
     // reading "completed" with a failure under it and no Incomplete scan label.
     expect(after!.failureSummaries).toEqual(atFinalize!.failureSummaries);
     expect(after!.eligibleCount).toBe(atFinalize!.eligibleCount);
+    // The counter must not move after finalize...
+    expect(after!.searchesSucceeded).toBe(atFinalize!.searchesSucceeded);
     expect(after!.status).toBe("completed");
+
+    // ...but the run row itself IS the audit trail, so it must still reach a
+    // real terminal status rather than being stranded at "running" forever.
+    const lateRun = await t.run(async (ctx) => ctx.db.get(runId));
+    expect(lateRun?.status).toBe("succeeded");
   });
 });
 

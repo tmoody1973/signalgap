@@ -148,12 +148,21 @@ export const complete = internalMutation({
     if (!run) return null;
     // Idempotent: a run already succeeded or failed does not touch scan counters again (Ruling 8).
     if (run.status !== "reserved" && run.status !== "running") return null;
+    // The run row's own terminal write is UNCONDITIONAL — a run stranded at
+    // "running" after its scan finalizes is worse than a missed counter,
+    // because searchRuns IS the authoritative per-search record an editor
+    // can audit.
     await ctx.db.patch(runId, { status: "succeeded", resultCount, durationMs, rawStorageId, completedAt: Date.now() });
     const scan = await ctx.db.get(run.scanId);
     // The single place a scan's search counters move. Stages must not also
     // report outcomes in bulk; doing so double-counted every search until
-    // 2026-08-24.
-    if (scan) await ctx.db.patch(run.scanId, { searchesSucceeded: scan.searchesSucceeded + 1 });
+    // 2026-08-24. The counter only moves while the scan is still live — a
+    // search that lands after cancellation is real and stays visible in the
+    // query log, but a terminal scan is a snapshot and its summary does not
+    // change afterwards.
+    if (scan && (scan.status === "queued" || scan.status === "running")) {
+      await ctx.db.patch(run.scanId, { searchesSucceeded: scan.searchesSucceeded + 1 });
+    }
     return null;
   },
 });
@@ -184,9 +193,14 @@ export const fail = internalMutation({
     if (!run) return null;
     // Idempotent: a run already succeeded or failed does not touch scan counters again (Ruling 8).
     if (run.status !== "reserved" && run.status !== "running") return null;
+    // Unconditional for the same reason as complete(): the run row is the
+    // audit trail and must reach a terminal state regardless of the scan.
     await ctx.db.patch(runId, { status: "failed", errorCode, errorMessage, durationMs, completedAt: Date.now() });
     const scan = await ctx.db.get(run.scanId);
-    if (scan) await ctx.db.patch(run.scanId, { searchesFailed: scan.searchesFailed + 1 });
+    // Counter only moves while the scan is live — see complete() above.
+    if (scan && (scan.status === "queued" || scan.status === "running")) {
+      await ctx.db.patch(run.scanId, { searchesFailed: scan.searchesFailed + 1 });
+    }
     return null;
   },
 });
