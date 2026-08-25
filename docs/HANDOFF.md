@@ -1,22 +1,31 @@
 # SignalGap — session handoff
 
-**Last updated:** 2026-08-24, 20:35 CDT.
+**Last updated:** 2026-08-24, 20:45 CDT.
 **Purpose:** everything a fresh Claude session needs to pick this up without re-deriving it. Read this, then `docs/hackathon-build/spec.md`.
 
 ---
 
 ## 0. START HERE
 
-**Item 8 is done and closed. Item 9 is split into three parts; part A (the ranked feed) is mid-build — 3 of 8 tasks complete, task 4 was in flight when this was written.**
+**Item 8 is done and closed. Item 9 is split into three parts; part A (the ranked feed) is mid-build — tasks 1–4 complete and reviewed, task 5 is next.**
 
 First thing to do:
 
 ```bash
 cd /Users/tarikmoody/Projects/SignalGap
-git log --oneline -5          # did task 4 land? look for "feat(feed): the lead card"
+git log --oneline -5
 git status --short            # anything uncommitted is a task that stalled mid-flight
 cat .superpowers/sdd/2026-08-24-signalgap-ranked-feed/progress.md
 ```
+
+**Resume at task 5** — the feed UI, its filters and its empty states. Extract its brief with:
+
+```bash
+.claude/plugins/cache/claude-plugins-official/superpowers/6.3.0/skills/subagent-driven-development/scripts/task-brief \
+  docs/superpowers/plans/2026-08-24-signalgap-ranked-feed.md 5
+```
+
+**Task 5 is the first task that can be looked at in a browser.** Tasks 1–4 built the verdict fix, the query, the filters and the card, but nothing renders yet. Do the visual pass properly — light, dark, keyboard focus, 375px, greyscale. The task-4 review left a list of exactly what only a browser can settle, in `.superpowers/sdd/2026-08-24-signalgap-ranked-feed/task-4-review.md`.
 
 **The ledger is the memory.** It holds the pre-flight scan, every ruling with what it costs if wrong, and a completion line per task. Trust it and `git log` over anything you think you remember.
 
@@ -56,10 +65,10 @@ The central claim, which every decision defends: **SerpApi gives it live eyes. A
 | --- | --- | --- |
 | 1–7 | MOO-727…733 | **Done** |
 | 8. Durable scan workflow | MOO-734 | **Done** — 20 commits, CI green, closed with evidence |
-| 9. Feed + controls + history | MOO-735 | **Split into three. Part A (feed) is 3/8 tasks in.** |
+| 9. Feed + controls + history | MOO-735 | **Split into three. Part A (feed) is 4/8 tasks in, all reviewed clean.** |
 | 10–12 | MOO-736…738 | Not started |
 
-`main` is at `f5c1125`, pushed, CI green. **437 unit/integration tests, 30 Playwright tests.**
+`main` is at `6ac336e`, pushed. **437 unit/integration tests, 30 Playwright tests.**
 
 ### Item 9 is three plans, not one
 
@@ -156,6 +165,8 @@ The full list with costs-if-wrong is in each plan's ledger. The load-bearing one
 | **Part B** | `selectForCoverage` computes real per-candidate reasons for why a lead was never coverage-checked. Nothing surfaces them. A coverage-skipped lead currently reads `coverage_pass_incomplete`, which is true but does not say *we ran out of budget before reaching you*. |
 | **Part B** | `Outdated` has no schema home. Brief-scoped — must not enter `vProductLabel`. |
 | **Anywhere** | **At most ten leads per scan can ever qualify**, because coverage affords two searches each out of twenty. The didn't-qualify list is where most of a scan lives. Honest, not broken — but check it against the live scan. |
+| **Part A follow-up** | `DISPOSITION_TEXT` is duplicated byte-identically in `src/components/feed/lead-card.tsx` and `src/components/evidence/lead-card.tsx`. Unlike the score and coverage wording — deliberately different per surface — this map has no reason to differ. Hoist it beside `BEAT_TEXT` in `src/lib/source-labels.ts`. Third time this session the disposition vocabulary has been copied rather than shared. |
+| **Part A follow-up** | `convex/candidates/list.ts`'s card shape has no `coveragePassStatus`, so `feed/lead-card.tsx` infers "coverage never checked" from `exclusionReasons.includes("coverage_pass_incomplete")`. That is type-safe today — a renamed literal fails the build. But if `list.ts` ever gains a real pass-status field **without** removing the inference, both compile and could silently disagree. Update both when that day comes. |
 
 ---
 
