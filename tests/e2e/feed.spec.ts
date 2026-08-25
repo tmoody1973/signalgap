@@ -211,8 +211,12 @@ test.describe("ranked feed", () => {
       }),
     ).toBeVisible();
 
-    // A real guard on a product promise, not a formality: no copy in this
-    // component may offer to move the bar.
+    // A real guard on a product promise, not a formality: no copy the feed
+    // renders may offer to move the bar. Note this reads the whole region,
+    // which includes every <option> in the three filter selects — so a future
+    // beat, label or disposition containing one of these words would fail this
+    // test for a reason unrelated to the empty state. Today the vocabularies
+    // are clean; if that changes, narrow the locator rather than the word list.
     const copy = (await feed.innerText()).toLowerCase();
     for (const word of BAR_MOVING_WORDS) expect(copy, `feed copy offers to move the bar: "${word}"`).not.toContain(word);
 
@@ -229,5 +233,40 @@ test.describe("ranked feed", () => {
     const overflow = await page.evaluate(() =>
       document.documentElement.scrollWidth > document.documentElement.clientWidth);
     expect(overflow).toBe(false);
+  });
+});
+
+/**
+ * Three DISTINCT counts, so the slots can be told apart.
+ *
+ * The fixture above has eligible and processing both at zero, which means the
+ * counts test in it passes on any wiring that puts *a* zero in each slot —
+ * swapping two fields would not fail it. This block closes that: it seeds one
+ * scan whose three counts are three different numbers and asserts each lands
+ * where it belongs.
+ *
+ * It runs LAST on purpose. `seedScanInState` purges every existing scan for
+ * this user before inserting its own, so it destroys the feed fixture — with a
+ * single worker (playwright.config.ts) file order is execution order, and
+ * nothing above may run after it.
+ */
+test.describe("the counts row maps each field to its own slot", () => {
+  test("shows eligible, excluded and processing as three different numbers", async ({ page }) => {
+    execSync(
+      `npx convex run internal.testing.seedScanInState '${JSON.stringify({
+        clerkUserId: userId, stage: "briefs", status: "running",
+        eligibleCount: 7, excludedCount: 3, processingCount: 5,
+      })}'`,
+      { stdio: "ignore" },
+    );
+    await page.goto("/workspace");
+    const feed = feedOf(page);
+    const views = feed.getByRole("navigation", { name: "Feed view" });
+
+    // A swap of any two of these three fails here, which the all-zeroes
+    // fixture cannot detect.
+    await expect(views.getByRole("link", { name: "Ready (7)" })).toBeVisible();
+    await expect(views.getByRole("link", { name: "Did not qualify (3)" })).toBeVisible();
+    await expect(feed.getByText("5 still working", { exact: true })).toBeVisible();
   });
 });
