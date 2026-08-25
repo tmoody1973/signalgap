@@ -941,7 +941,7 @@ const FEED_LEADS: FeedLead[] = [
   },
   {
     slug: "legistar-znd-calendar", beat: "housing", locality: "direct_city", relevance: "policy_service_change",
-    question: "What is the Neighborhood Improvement Development Corporation taking up at 526 E Concordia Ave?",
+    question: "What is the Neighborhood Improvement Development Corporation taking up regarding 526 E Concordia Ave?",
     sources: [src("official-1", "initiating")],
     unjudged: true,
   },
@@ -952,7 +952,7 @@ const FEED_LEADS: FeedLead[] = [
   },
   {
     slug: "bucks-jakucionis", beat: "culture", locality: "direct_city", relevance: "emerging_question",
-    question: "What goal does the column set for Kasparas Jakucionis’s development this season?",
+    question: "What goal does the column set for Kasparas Jakucionis’s development?",
     sources: [src("news-33", "initiating")],
     noBeat: true,
   },
