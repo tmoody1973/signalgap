@@ -151,6 +151,18 @@ describe("candidates.list.listForScan", () => {
     expect(result.page[0].scoreTotal).toBeNull();
   });
 
+  it("falls back to an empty list when a row has no exclusionReasons at all", async () => {
+    const t = setup();
+    const { ownerId, scanId } = await seedOwnerAndScan(t, "owner", { excludedCount: 1 });
+    // exclusionReasons omitted entirely — the field is optional on the row,
+    // and this is the shape an imported saved-demo scan (item 10) can have.
+    await seedLead(t, { ownerId, scanId, status: "excluded" });
+
+    const result = await page(t, "owner", { scanId, view: "excluded" });
+    expect(result.page).toHaveLength(1);
+    expect(result.page[0].exclusionReasons).toEqual([]);
+  });
+
   it("filters by beat, label and disposition independently", async () => {
     const t = setup();
     const { ownerId, scanId } = await seedOwnerAndScan(t, "owner", { eligibleCount: 4 });
@@ -186,6 +198,11 @@ describe("candidates.list.listForScan", () => {
     const seenIds = [...first.page, ...second.page].map((c) => c.candidateId);
     expect(new Set(seenIds).size).toBe(30);
     expect(new Set(seenIds)).toEqual(new Set(ids));
+
+    // Page 1 must be entirely above page 2. Without this, an implementation
+    // that sliced before sorting would still pass the distinctness check above.
+    expect(Math.min(...first.page.map((c) => c.scoreTotal!)))
+      .toBeGreaterThanOrEqual(Math.max(...second.page.map((c) => c.scoreTotal!)));
   });
 
   it("counts are for the whole scan, not the current page", async () => {
