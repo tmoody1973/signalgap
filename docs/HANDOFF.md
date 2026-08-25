@@ -1,40 +1,28 @@
 # SignalGap — session handoff
 
-**Last updated:** 2026-08-23, 09:15 CDT.
+**Last updated:** 2026-08-24, 20:35 CDT.
 **Purpose:** everything a fresh Claude session needs to pick this up without re-deriving it. Read this, then `docs/hackathon-build/spec.md`.
 
 ---
 
-## 0. START HERE — the one thing blocking
+## 0. START HERE
 
-**Item 7 is code-complete and waiting at REVIEW PAUSE 2. Tarik has not reviewed it yet.**
+**Item 8 is done and closed. Item 9 is split into three parts; part A (the ranked feed) is mid-build — 3 of 8 tasks complete, task 4 was in flight when this was written.**
 
-He was handed a link to one lead and asked for "looks good" or "fix X". Nothing had come back when this session ended.
-
-To put it in front of him again:
+First thing to do:
 
 ```bash
-set -a; . ./.env.local; set +a
-npx convex dev --once                 # deploy first — codegen alone does not
-npm run dev                           # leave running
-CLERK_ID=$(curl -s -H "Authorization: Bearer $CLERK_SECRET_KEY" \
-  "https://api.clerk.com/v1/users?email_address=$E2E_CLERK_EMAIL" \
-  | python3 -c "import sys,json;print(json.load(sys.stdin)[0]['id'])")
-npx convex run internal.testing.seedSliceFixture "{\"clerkUserId\":\"$CLERK_ID\"}"
-# open http://localhost:3000/leads/<the candidateId it prints>
+cd /Users/tarikmoody/Projects/SignalGap
+git log --oneline -5          # did task 4 land? look for "feat(feed): the lead card"
+git status --short            # anything uncommitted is a task that stalled mid-flight
+cat .superpowers/sdd/2026-08-24-signalgap-ranked-feed/progress.md
 ```
 
-**Do not start item 8 until he accepts.** Resume condition, from `checklist.md`: *source traceability and uncertainty presentation accepted*.
+**The ledger is the memory.** It holds the pre-flight scan, every ruling with what it costs if wrong, and a completion line per task. Trust it and `git log` over anything you think you remember.
 
-**Keep instructions to Tarik short.** He asked "what am I supposed to do" after a long reply. Three steps and a yes/no is the right size.
+Then resume at the first task with no `complete` line, using `superpowers:subagent-driven-development` against `docs/superpowers/plans/2026-08-24-signalgap-ranked-feed.md`.
 
-### The open product question he still owes an answer to
-
-The review lead is **real captured Milwaukee data** (Metcalfe Park Liberation Hub, August 2026). **Three independent Milwaukee outlets** covered it — Journal Sentinel, Urban Milwaukee, Business Journals — plus an r/milwaukee thread.
-
-**SignalGap says it does not qualify, and shows no score.** Three outlets are three independence *groups* but only one *category* (`original_news`), and `MIN_INDEPENDENT_CATEGORIES` is 2. No official record naming the project appears in the captured official-domain payload, so none is attached — inventing that link is the fabrication the product refuses.
-
-So: **is the two-independent-category gate too strict when three newsrooms have already covered something?** That is a product decision for Tarik, not a bug to quietly fix. Do not loosen the rule without his explicit call, and if he changes it, it needs a decision doc.
+**Nothing is blocked. Nothing is waiting on Tarik.**
 
 ---
 
@@ -52,9 +40,8 @@ The central claim, which every decision defends: **SerpApi gives it live eyes. A
 | --- | --- |
 | Repo (public) | https://github.com/tmoody1973/signalgap |
 | Linear project | https://linear.app/moodyco/project/signalgap-hackathon-mvp-bb9da1e41e47 |
-| Approved spec / PRD / scope / checklist | `docs/hackathon-build/` |
-| Decision log | `docs/decisions/` (001–006 so far) |
-| Design canvas (evidence view) | https://claude.ai/code/artifact/ac8addbb-0610-461d-bddf-ee1ee62491d1 — sources in `design/` |
+| Spec / PRD / scope / checklist | `docs/hackathon-build/` |
+| Decision log | `docs/decisions/` (001–007) |
 | Learning log | `docs/LEARNING-LOG.md` |
 | Plans | `docs/superpowers/plans/` |
 | Convex dev deployment | `dev:handsome-lapwing-832` |
@@ -67,125 +54,115 @@ The central claim, which every decision defends: **SerpApi gives it live eyes. A
 
 | Item | Linear | State |
 | --- | --- | --- |
-| 1. Repo + CI foundation | MOO-727 | **Done** |
-| 2. Design system + shell | MOO-728 | **Done** — Review Pause 1 approved by Tarik |
-| 3. Clerk–Convex auth + data model | MOO-729 | **Done** |
-| 4. Deterministic rules engine | MOO-730 | **Done** |
-| 5. SerpApi adapter | MOO-731 | **Done** — all 8 plan tasks complete, CI green (run 32604066171) |
-| 6. AI contracts | MOO-732 | **Done** — all 7 plan tasks complete, 39/39 evaluation checks, CI green |
-| 7. Evidence-to-brief slice | MOO-733 | **Code-complete, AWAITING REVIEW PAUSE 2** — see section 0 |
-| 8–12 | MOO-734…738 | Not planned yet |
+| 1–7 | MOO-727…733 | **Done** |
+| 8. Durable scan workflow | MOO-734 | **Done** — 20 commits, CI green, closed with evidence |
+| 9. Feed + controls + history | MOO-735 | **Split into three. Part A (feed) is 3/8 tasks in.** |
+| 10–12 | MOO-736…738 | Not started |
 
-355 unit/integration tests, 2 opt-in live tests, plus 22 Playwright tests, all green. CI runs typecheck + lint + tests + build on every push.
+`main` is at `f5c1125`, pushed, CI green. **437 unit/integration tests, 30 Playwright tests.**
+
+### Item 9 is three plans, not one
+
+Tarik's call, 2026-08-24. It is really three subsystems and the feed is the missing front door — until it exists, nothing links the workspace to a lead and you would have to know the URL.
+
+- **Part A — the ranked feed.** `docs/superpowers/plans/2026-08-24-signalgap-ranked-feed.md`. In progress.
+- **Part B — editorial controls.** Reject/Monitor/Assign, notes, corrections, immutable brief regeneration. Not planned yet. **`Outdated` still has no schema home** and belongs here — it is brief-scoped, so it must NOT go into `vProductLabel`.
+- **Part C — histories and scan comparison.** Not planned yet.
+
+Only tick the feed bullets on checklist item 9. A checklist that overstates is worse than one that lags.
 
 ---
 
 ## 4. How the work is being done
 
-**Process:** the `superpowers:subagent-driven-development` skill. For each task: a fresh implementer subagent works from an extracted task brief; the controller (main session) then dispatches an independent reviewer against the diff; findings go into a fix loop; each task ends with a commit.
+**Process:** `superpowers:subagent-driven-development`. Per task: a fresh implementer works from an extracted brief; an independent reviewer runs against the diff; findings go into a fix loop; each fix round ends with a scoped re-review; the task ends with a commit. Then a whole-branch review on the strongest model, and one fix wave.
 
-**The ledger is the memory.** `.superpowers/sdd/<plan-name>/progress.md` holds the pre-flight scan, every ruling, and per-task completion lines. It is git-ignored scratch — **if you are resuming, read it first.** Rulings are numbered and each states what it costs if wrong.
+**It works.** Item 8 shipped six real defects caught before merge, three of them by implementers escalating instead of guessing.
 
-**Tracking:** `linear-build` skill. Each issue carries Intent / Acceptance criteria / Verification checklist. Post evidence as a comment before moving an issue to Done. Commits end with the issue id, e.g. `(MOO-731)`.
+**Tracking:** `linear-build` skill. Post evidence as a comment before moving an issue to Done. Commits end with the issue id.
 
-**Three hard-won process notes:**
+### Process notes that cost real time to learn
 
-- **UI cannot be verified by reading.** Building the evidence page found five defects that 352 green tests never would: the page did not load at all (Convex query fired before Clerk attached its token), an entire evidence kind rendered nowhere, Reddit filed as `corroborating` let a dead link exclude a sound lead, `Why this surfaced` came out in index order, and the fixture's own trace was internally impossible. Seed one finished record and **open it in a browser** before calling UI work done.
-- **Trace one fact backwards, by hand, and refuse any hop you cannot justify.** That is what caught the impossible trace and the wrong label — no test did. It is also exactly the discipline the product asks its users to apply.
-
-- Implementer subagents go idle mid-task without reporting, fairly often. **Check `git log` and `git status` rather than trusting silence.**
-- Do not let an implementer run `/simplify` or any refactor pass. One did, and it edited a shared module outside its task.
+- **Reviewers must write their report to a file AND reply.** One went idle without reporting and its whole review was lost. Every review prompt now says so.
+- **Implementers go idle mid-task without reporting, often.** Check `git log` and `git status`, not silence. Twice a task was complete and committed while the agent said nothing.
+- **A report is a claim, not evidence.** One report asserted an import that did not exist. Reviewers are told to verify claims against the code, and implementers are now told plainly that "I could not do this" is always an acceptable answer.
+- **UI cannot be verified by reading.** Seed a record and open it in a browser. Item 7 found five defects this way that 352 green tests never would.
+- **Never let an implementer run `/simplify`.** One did and it edited a shared module outside its task.
+- **Weigh the model by verification burden, not writing burden.** A cheap model on a "just transcribe this" task produced correct-ish code and an overclaiming report.
 
 ---
 
-## 5. Environment — all configured, nothing pending
+## 5. Environment
 
 `.env.local` (git-ignored, never commit) holds: Clerk publishable + secret keys, `E2E_CLERK_EMAIL` / `E2E_CLERK_PASSWORD`, `NEXT_PUBLIC_CONVEX_URL`, `CONVEX_DEPLOYMENT`, `NEXT_PUBLIC_APP_URL`, `SERPAPI_API_KEY`, `ANTHROPIC_API_KEY`.
 
 Convex deployment env holds: `CLERK_JWT_ISSUER_DOMAIN`, `SERPAPI_API_KEY`, `ANTHROPIC_API_KEY`, `AI_PRIMARY_MODEL=claude-sonnet-5`, `AI_FALLBACK_MODEL=gpt-5.6-terra`, `AI_FALLBACK_ENABLED=false`.
 
-Clerk is fully set up: app created, a JWT template named `convex` exists, and a test user exists with a strong password (the first one was rejected by Clerk's breach check).
+**No `OPENAI_API_KEY`** — `docs/model-evaluation.md` is a measurement of Sonnet, not a head-to-head, and says so.
 
-**No `OPENAI_API_KEY`** — the item 6 Task 14 evaluation ran single-model. `docs/model-evaluation.md` leads with that: it is a measurement of Sonnet, not a head-to-head. Adding a key and re-running `npx tsx scripts/evaluate-models.ts` would produce the comparison.
+**SerpApi: Starter, ~983 searches left this month.** A single live scan may use up to 120.
 
-**Model spend to date: about $1.62** (Anthropic), all on the item 6 evaluation harness. Raw answers are saved in the git-ignored `.eval-runs/`; `npx tsx scripts/evaluate-models.ts --rescore` re-runs the checks against them for free, and `--dry-run` exercises the harness with a stub.
+**Model spend to date: about $1.62.**
 
-**Nothing in items 5–7 is left half-done.** 355 unit/integration tests, 2 opt-in live tests, 21 Playwright tests, typecheck, lint and build all green on `main` at `fc7eb11`; CI run 32644447389 green.
+### Gotchas
 
-**The review fixture is `internal.testing.seedSliceFixture`** in `convex/testing.ts`. It builds one finished lead from the REAL captured payloads and makes **no model call**. It is idempotent — re-seeding replaces the lead rather than doubling it. Reuse it for item 8 rather than writing a second fixture.
-
-**SerpApi: Starter plan, 1000 searches/month.** ~983 remaining. About 10 have been spent on fixture capture and diagnostics. A single live scan may use up to 120.
-
-**Gotchas that cost real time:**
-- `npx convex codegen` does **not** deploy. After adding or changing a Convex function that a CLI or e2e run will call, also run `npx convex dev --once`.
-- Convex CLI commands need the env sourced: `set -a; . ./.env.local; set +a`.
-- `.env.local` has twice been clobbered when keys were added — `CONVEX_DEPLOYMENT` disappeared and `NEXT_PUBLIC_CONVEX_URL` reverted to the `example.convex.cloud` placeholder. If Convex commands suddenly fail, check that file first.
+- `npx convex codegen` does **not** deploy. Also run `npx convex dev --once`.
+- Convex CLI needs the env sourced: `set -a; . ./.env.local; set +a`.
+- `.env.local` has twice been clobbered when keys were added. If Convex commands suddenly fail, check that file first.
+- **`vitest` runs with module-scope fake timers**, so `Date.now()` is frozen inside a test. Any assertion comparing two timestamps within one test compares a value to itself. This made one test vacuous for days.
+- **Do not add a global `SERPAPI_API_KEY` stub.** `tests/integration/helpers.ts` carries a comment explaining why: the drained workflow handler runs without a `fetchImpl`, so the missing key is the only thing stopping a leaked continuation from firing **real paid searches from a unit test run**.
 
 ---
 
 ## 6. Rulings a new session must honor
 
-These are decisions taken on Tarik's behalf during execution. Each is in the ledger with its cost-if-wrong. The load-bearing ones:
+The full list with costs-if-wrong is in each plan's ledger. The load-bearing ones:
 
-**Product**
-- **Labels are newsroom language, not spec-speak** (Tarik's call). `Worth a look`, `Unverified tip`, `Coverage gap`, `Conflicting reports`, `Needs a recheck`, `No longer qualifies`, `Incomplete scan`, `Stopped early`, `Outdated`, `Saved copy`. Decision 003.
-- **Google Events moved from discovery to enrichment** (Tarik's call). The engine returns zero results for everything including SerpApi's own documented example. The fixed opening set is **13 searches, not 16**. Connector kept and tested. Decision 005.
-- **`No longer qualifies` is directional** — it fires only when a lead falls from eligible to excluded, never the reverse. The plan had this backwards.
+### Product
 
-**Correctness**
-- **Eligibility follows the spec's wording, not a stricter reading.** Only an inaccessible `initiating` or `corroborating` source excludes a candidate; a dead enrichment link still shows `Needs a recheck` but does not kill the lead. An earlier stricter version would have thinned the live feed.
-- **The logged query must equal the executed query.** Google News carries its time filter inside the query text (`when:7d`), so the template renders it — `buildParams` must never mutate `spec.query`.
-- **Entity terms from a model go through an allowlist, not a denylist.** Plain words only; anything else is rejected, not sanitised. A denylist was demonstrably bypassable six ways.
-- **`searchesReserved` means authorized paid attempts** and never exceeds 120. Re-opening a failed run counts as a new authorized attempt: it increments `searchesReserved` and is refused at the cap. It does **not** decrement `searchesFailed` — that field is a cumulative count of failed attempts, not a live gauge of rows currently failed. Decrementing it makes the invariant `succeeded + failed + in-flight == reserved` impossible to hold, because the retry reuses the same row rather than creating a new one.
+- **Labels are newsroom language, not spec-speak** (Tarik). Decision 003.
+- **Google Events is enrichment, not discovery** (Tarik). The fixed opening set is **13 searches, not 16**. `SEARCH_BUDGET.discovery` stays at 16 as a *ceiling*. Decision 005.
+- **The two-independent-category gate stays** (Tarik, 2026-08-23). Three newsrooms covering something means an editor is late, not early; loosening it turns the feed into a clip service. The screen explains the failed rule instead. Decision 007.
+- **A lead the AI could not read is shown, not hidden** (Tarik, 2026-08-24). New exclusion reason `unreadable_evidence`, and the verdict comes from the rules engine so "transparent rules decide" stays true.
 
-**Evidence honesty**
-- **The 120 cap under concurrency is now proven** (2026-08-22, Task 8). `convex-test` takes a mutex per top-level transaction, so its 20-way test never interleaves and proves nothing about production. `tests/live/reserve-concurrency.test.ts` spawns 20 separate `npx convex run` processes against the real deployment: **granted=5, rejected=15, reserved=120, runs=5** from a scan seeded at 115. Zero SerpApi calls. Item 5's "including under concurrency" and demo gate 5 **are** satisfied. Note the plan's `ConvexHttpClient` sketch was impossible — internal functions need admin auth we do not have.
-- **Two of seven normalizer branches (Events, Maps at the time) were tested against hand-written fixtures.** Maps has since been re-captured live. Events remains hand-written because the engine returns nothing.
-- **The model evaluation is a measurement, not a comparison** (2026-08-23). 18 packets, 39/39 checks, 0 invalid outputs, median ~19s, $0.70. Single-model: no `OPENAI_API_KEY`. **4 of 18 packets carry expectations drafted by the build script and never confirmed by a person** — `analyze-official-01`, `analyze-official-02`, `analyze-spanish-01`, `brief-thin-01`. `docs/model-evaluation.md` names them. Brief *usefulness* is not measured at all.
-- **Community discussion enters as `enrichment`, never `corroborating`** (2026-08-23). spec.md:541 says indexed Reddit results never count as corroboration. Filed as corroborating it did two wrong things at once: it inflated the independence count, and — because an inaccessible corroborating source excludes a candidate — **a dead Reddit link killed an otherwise sound lead**. As enrichment it flags `Needs a recheck` and leaves the lead standing, which is what the spec describes.
-- **Every fixture source carries the search that could really have found it** (2026-08-23). The first `seedSliceFixture` put all four sources under one `site:city.milwaukee.gov` run, so a Journal Sentinel story claimed it was found by a search that cannot return jsonline.com. On the one page whose job is traceability, that is a lie. One search run per source now, using real catalog queries. The manual backward trace in the item 7 plan is what caught it — keep doing it.
-- **The quotation rule was corrected, not weakened** (2026-08-23, Tarik's call). It demanded equality with the WHOLE stored field, which rejected the model quoting one true sentence out of a two-sentence snippet. Every failure was checked against saved raw output: all verbatim substrings, nothing invented. Rule is now a word-for-word run of **at least 20 characters** inside a cited source. The floor is what stops a substring becoming a cherry-picked word; it makes a misleading partial quote hard, not impossible. `spec.md:625` amended with the reason. Prompt is at **v2**.
+### Correctness
+
+- **`convex/candidates/evaluate.ts` is the ONLY writer** of `status`, `primaryLabel`, `scoreTotal`, `scoreComponents`, `independentCategoryCount`, `coverageOriginalCount`, `coveragePassStatus`, `exclusionReasons`. This invariant has been defended four times. Do not add a second writer.
+- **`startAsync: true` on the workflow start is load-bearing.** Without it `start()` runs the entire handler inline inside the `startScan` mutation — 13 searches and several model calls while the user's click hangs, past the mutation time limit.
+- **`cancel` finalizes the scan itself.** A cancelled workflow never reaches its own `finalize`, and `startScan` refuses a new scan while one is queued or running — so without this, one cancel locks the user out permanently.
+- **A terminal scan is a snapshot.** `setStage`, `recordFailure`, `setCandidateCounts` and the counter writes in `searchRuns.complete`/`fail` all refuse to move a scan that has ended.
+- **`searchRuns.complete`/`fail` are the only writers of the scan's search counters.** A bulk `recordSearchOutcome` used to exist and double-counted every search; it is deleted. Do not reintroduce it.
+- **Both coverage partitions must succeed** for `coveragePassStatus = "complete"`. A failed partition blocks `Coverage gap` but must not bin the lead. This is the equity rule: searching only the general outlets and finding nothing is not "nobody covered this."
+- **Entity terms from a model go through an allowlist, not a denylist.** A denylist was demonstrably bypassable six ways.
+- **The logged query must equal the executed query.**
+
+### Evidence honesty
+
+- **`convex-test` cannot execute the Convex Workflow component.** Integration tests prove the steps and their order by driving them directly. **Only a live scan proves the workflow replays.** That is item 10.
+- **The in-process budget tests prove arithmetic, not concurrency.** The concurrency proof is `tests/live/reserve-concurrency.test.ts` (20 separate processes; granted=5, rejected=15, reserved=120, zero SerpApi calls). Do not quote one as the other.
+- **Fixtures must not rot.** `seedSliceFixture`'s `now` is anchored to `Date.UTC(2026, 7, 20)`, not `Date.now()`, because the captured articles are dated 17–18 August and the gap widened daily until the reviewed lead aged out of the discovery window and silently changed verdict. **Never "modernise" that back.**
+- **Every fixture source carries the search that could really have found it.**
+- **Never introduce a fabricated result to improve a demo.** This session shipped an invented lead once and Tarik caught it.
 
 ---
 
-## 7. Carried forward — do not lose these
-
-Each is written into the relevant Linear issue as well.
+## 7. Carried forward
 
 | For | What |
 | --- | --- |
-| **Tarik** | **The two-category question in section 0.** Real data produced an excluded lead that three newsrooms covered. Unanswered. |
-| **MOO-734** (item 8) | `runSliceForScan` in `convex/slice.ts` is the whole per-scan pipeline: cluster → form → classify → snapshot → **evaluate** → brief. Item 8 wraps it in the Convex Workflow component plus the 13 fixed discovery searches. Keep the exported-plain-function + one-line-`internalAction` shape; it is how tests inject a fake model. |
-| **MOO-734** (item 8) | `convex/candidates/evaluate.ts` is the **only** writer of `status`, `primaryLabel`, `scoreTotal`, `scoreComponents`, `independentCategoryCount`, `coverageOriginalCount`, `coveragePassStatus`. Do not add a second writer. |
-| **MOO-735** (item 9) | The ranked feed needs a **list** query. `evidence.forCandidate` is per-lead and deliberately heavy. |
-| **MOO-735** (item 9) | `Outdated` is brief-scoped and still has no schema home. It must **not** go into `vProductLabel` — it needs a field on `briefVersions` or `candidates`. |
-| **Item 10** | The Google Events normalizer branch is still unverified against a real payload. Re-check whether SerpApi has fixed the engine. |
-| **Item 10** | **Never introduce a fabricated result to improve the demo.** This session shipped an invented lead and Tarik caught it — see the note below. |
-| Deferred minors | Listed in each plan's ledger under `minor (deferred)`. None block. |
-
-**The fabricated-fixture near-miss (2026-08-23).** The first Review Pause 2 lead was a story I invented — fake headlines, fake outlets, fake URLs — even though item 7's checklist says "using a **captured** candidate packet" and real captured Milwaukee payloads had been sitting in `tests/fixtures/serpapi/` since item 5. Tarik asked "is this a fake story you made?" and it was. It is now real captured data. Two rules follow from that:
-
-1. When a checklist says *captured*, go and find the captured thing before inventing one.
-2. A fixture that reaches a screen a human reviews is demo material. Treat it under item 10's no-fabrication rule, not as throwaway test data.
+| **Item 10** | **The live scan has never been run.** Nothing has spent real search budget. Only it proves the workflow replays in order. Up to 120 of ~983 searches. **Tarik's call to authorise.** |
+| **Item 10** | Google Events is still unverified against a real payload — the engine returns nothing. Re-check whether SerpApi fixed it. |
+| **Part A, task 5** | `scan.processingCount` starts at 0 and only moves once the **finalize** stage begins. A running scan can genuinely have candidates in flight during discovery/clustering/coverage while the count reads 0. The UI must not render it as "nothing is happening." |
+| **Part B** | `selectForCoverage` computes real per-candidate reasons for why a lead was never coverage-checked. Nothing surfaces them. A coverage-skipped lead currently reads `coverage_pass_incomplete`, which is true but does not say *we ran out of budget before reaching you*. |
+| **Part B** | `Outdated` has no schema home. Brief-scoped — must not enter `vProductLabel`. |
+| **Anywhere** | **At most ten leads per scan can ever qualify**, because coverage affords two searches each out of twenty. The didn't-qualify list is where most of a scan lives. Honest, not broken — but check it against the live scan. |
 
 ---
 
-## 8. What happens after Review Pause 2
+## 8. Working agreements with Tarik
 
-Section 0 is the blocker. Once Tarik accepts:
-
-1. **Close MOO-733.** Evidence is already posted as a comment; move it to Done.
-2. **Write the item 8 plan** (`docs/superpowers/plans/`, MOO-734, durable scan workflow). Use the `superpowers:writing-plans` skill and write it against the real interfaces in section 7, not predicted ones — that is what made the item 7 plan hold up.
-3. **Item 8 is the 14-step scan lifecycle**: Convex Workflow component, the 13 frozen discovery templates, two-part coverage searches, 20 corroboration calls, conditional enrichment, the 34-call reserve, hard 120 ceiling, four public stages, cancellation, partial failures. `checklist.md` item 8 has the full acceptance list.
-4. **Item 10 will need SerpApi budget.** ~983 searches left on Starter; one live scan may use up to 120.
-
-If he asks for a change instead, it is a change to item 7 — make it, re-run `npm run check && npm run test:e2e`, re-seed, and put it back in front of him. Do not roll it into item 8.
-
----
-
-## 9. Working agreements with Tarik
-
-- He wants **plain English**, short sentences, one idea per sentence. When a decision is needed: two options, the context to choose fast, and a recommendation.
-- **Decision log entries are a portfolio deliverable**, not paperwork — written so a smart non-engineer can follow them, jargon defined inline on first use. Claude drafts the decision; **the "What actually happened" section is left blank for Tarik to fill in his own voice.** That split is what makes them credible.
+- **Plain English**, short sentences, one idea per sentence. When a decision is needed: two options, the context to choose fast, and a recommendation.
+- **Decision log entries are a portfolio deliverable.** Written so a smart non-engineer can follow them, jargon defined inline on first use. Claude drafts the decision; **"What actually happened" is left blank for Tarik to fill in his own voice.** That split is what makes them credible.
 - Read primary sources before building. A summary of a source is not the source.
-- Never weaken an evidence, locality, independence, coverage, or citation rule to make the feed look fuller.
+- **Never weaken an evidence, locality, independence, coverage, or citation rule to make the feed look fuller.**
+- Tell him what you did, whether it worked, and what he does now. If he has to decide: two options max.
