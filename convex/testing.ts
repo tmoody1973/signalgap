@@ -7,6 +7,7 @@ import { MARKET_KEY, QUERY_CATALOG_VERSION, RULESET_VERSION } from "./config/rul
 import { SEARCH_BUDGET } from "./config/searchBudget";
 import { EMPTY_SECTION_NOTES } from "./ai/generateBrief";
 import { MILWAUKEE_LOCATION } from "./integrations/serpapi/contracts";
+import { getTemplate, renderQuery } from "./integrations/serpapi/queryCatalog";
 import * as V from "./lib/validators";
 
 // Deleting a scan must take everything the scan produced with it: its searches,
@@ -355,7 +356,7 @@ export const seedSliceFixture = internalMutation({
     const candidateId = await ctx.db.insert("candidates", {
       ownerId, fingerprint: SLICE_FINGERPRINT,
       currentTitle: "Metcalfe Park Liberation Hub clears the plan commission",
-      reportingQuestion: "Who is behind the Metcalfe Park Liberation Hub, and what did the city promise it?",
+      reportingQuestion: "Who is behind the Metcalfe Park Liberation Hub, and what did the plan commission approve?",
       beat: "housing", status: "processing", primaryLabel: "Worth a look", disposition: "new",
       latestEvidenceVersion: 0, independentCategoryCount: 0, coverageOriginalCount: 0,
       // The coverage check has not run for this fixture, so a coverage gap can
@@ -456,7 +457,7 @@ export const seedSliceFixture = internalMutation({
 
     await ctx.db.insert("briefVersions", {
       candidateId, scanId, ownerId, version: 1, modelRunId,
-      reportingQuestion: "Who is behind the Metcalfe Park Liberation Hub, and what did the city promise it?",
+      reportingQuestion: "Who is behind the Metcalfe Park Liberation Hub, and what did the plan commission approve?",
       whySurfaced: "Three local outlets reported the same plan commission approval within two days.",
       // Empty sections carry OUR fixed sentences with no citations, exactly as
       // runGenerateBrief writes them.
@@ -805,7 +806,6 @@ type FeedLead = {
   relevance: "policy_service_change" | "community_cultural_impact" | "emerging_question" | "promotion_only";
   sources: Array<{ row: FeedRowKey; role: FeedRole; unreachable?: true }>;
   speculative?: true;
-  duplicate?: true;
   /** The classifier could not put it in a covered beat -> `no_beat_relevance`. */
   noBeat?: true;
   /** Classification failed outright: no judgment at all -> `unreadable_evidence`. */
@@ -819,7 +819,7 @@ const src = (row: FeedRowKey, role: FeedRole, unreachable?: true) => ({ row, rol
 const FEED_LEADS: FeedLead[] = [
   {
     slug: "metcalfe-park-hub", beat: "housing", locality: "direct_city", relevance: "policy_service_change",
-    question: "Who is behind the Metcalfe Park Liberation Hub, and what did the city promise it?",
+    question: "Who is behind the Metcalfe Park Liberation Hub, and what did the plan commission approve?",
     sources: [src("slice-0", "initiating"), src("slice-1", "corroborating"), src("slice-2", "corroborating"), src("slice-3", "enrichment")],
   },
   {
@@ -855,12 +855,12 @@ const FEED_LEADS: FeedLead[] = [
   },
   {
     slug: "pope-leo-village-harambee", beat: "housing", locality: "direct_city", relevance: "community_cultural_impact",
-    question: "How many affordable homes does Pope Leo Village add in Harambee, and who can rent them?",
+    question: "How many affordable homes does Pope Leo Village add in Harambee, and who qualifies for them?",
     sources: [src("news-4", "initiating")],
   },
   {
     slug: "art-therapists-milwaukee", beat: "culture", locality: "direct_city", relevance: "community_cultural_impact",
-    question: "How are Milwaukee art therapists reaching residents who would not walk into a clinic?",
+    question: "What new ways are Milwaukee art therapists using to help residents deal with emotions?",
     sources: [src("news-24", "initiating")],
   },
   {
@@ -875,7 +875,6 @@ const FEED_LEADS: FeedLead[] = [
     slug: "wheda-counseling-grants", beat: "housing", locality: "area_city_consequence", relevance: "policy_service_change",
     question: "Which Milwaukee-area homebuyer agencies did FHLBank Chicago and WHEDA recognize?",
     sources: [src("news-8", "initiating"), src("news-49", "corroborating")],
-    duplicate: true,
   },
   {
     slug: "kenosha-mckinley-school", beat: "housing", locality: "none", relevance: "policy_service_change",
@@ -899,12 +898,12 @@ const FEED_LEADS: FeedLead[] = [
   },
   {
     slug: "flooding-lessons-oped", beat: "housing", locality: "direct_city", relevance: "emerging_question",
-    question: "What flood-control changes does the Urban Milwaukee op-ed argue the city should make?",
+    question: "What lessons does the Urban Milwaukee op-ed draw from Milwaukee’s flooding?",
     sources: [src("news-11", "initiating")],
     speculative: true,
   },
   {
-    slug: "state-fair-fight-thread", beat: "culture", locality: "direct_city", relevance: "emerging_question",
+    slug: "state-fair-fight-thread", beat: "culture", locality: "county_city_effect", relevance: "emerging_question",
     question: "What happened in the State Fair fight that r/milwaukee is asking about?",
     sources: [src("reddit-1", "enrichment")],
     noBeat: true,
@@ -942,7 +941,7 @@ const FEED_LEADS: FeedLead[] = [
   },
   {
     slug: "legistar-znd-calendar", beat: "housing", locality: "direct_city", relevance: "policy_service_change",
-    question: "What is the Zoning, Neighborhoods and Development Committee taking up at 526 E Concordia Ave?",
+    question: "What is the Neighborhood Improvement Development Corporation taking up at 526 E Concordia Ave?",
     sources: [src("official-1", "initiating")],
     unjudged: true,
   },
@@ -953,7 +952,7 @@ const FEED_LEADS: FeedLead[] = [
   },
   {
     slug: "bucks-jakucionis", beat: "culture", locality: "direct_city", relevance: "emerging_question",
-    question: "What is the Bucks' development plan for Kasparas Jakucionis this season?",
+    question: "What goal does the column set for Kasparas Jakucionis’s development this season?",
     sources: [src("news-33", "initiating")],
     noBeat: true,
   },
@@ -974,7 +973,7 @@ const FEED_LEADS: FeedLead[] = [
   },
   {
     slug: "river-woods-condos-thread", beat: "housing", locality: "direct_city", relevance: "emerging_question",
-    question: "What do residents say about management at the River Woods Condos in Riverwest?",
+    question: "What is the building management like at the River Woods Condos on Randolph Ct?",
     sources: [src("reddit-2", "enrichment")],
   },
   {
@@ -993,7 +992,14 @@ const feedJudgment = (lead: FeedLead) => ({
   beat: lead.noBeat ? null : aiValue(lead.beat),
   isSpeculative: aiFlag(lead.speculative === true),
   isRoutineCrime: aiFlag(false),
-  isDuplicateOfCandidate: aiFlag(lead.duplicate === true),
+  // Always false, like isRoutineCrime and hasMaterialConflict. The flag means
+  // "this lead repeats a lead already in the feed" (src/lib/exclusion-reasons.ts:18).
+  // The capture has one real syndication — the FHLBank/WHEDA release at news-8 and
+  // news-49, same headline 57 seconds apart — but those are two SOURCES ON ONE
+  // lead, not one lead repeating another, so the flag does not describe them.
+  // Setting it anyway costs the fixture its `duplicate` reason; producing less is
+  // the rule.
+  isDuplicateOfCandidate: aiFlag(false),
   hasMaterialConflict: aiFlag(false),
 });
 
@@ -1129,13 +1135,16 @@ export const seedFeedFixture = internalMutation({
 
       if (lead.coverageTerms) {
         for (const templateId of ["coverage-general-01", "coverage-community-01"] as const) {
-          const group = templateId === "coverage-general-01" ? "general" : "community";
+          // The logged query must be the query the catalog would execute, so it
+          // comes from the real template rather than from a description of it.
+          const template = getTemplate(templateId);
+          if (!template) throw new Error(`no query template ${templateId}`);
           await ctx.db.insert("searchRuns", {
             scanId, ownerId, candidateId,
             idempotencyKey: `${scanId}:coverage:${templateId}:${lead.slug}`,
             templateId, queryCatalogVersion: QUERY_CATALOG_VERSION,
             purpose: "coverage", engine: "google",
-            query: `${group} coverage outlets ${lead.coverageTerms.map((t) => `"${t}"`).join(" ")}`,
+            query: renderQuery(template, { now, terms: lead.coverageTerms }),
             parameters: { gl: "us", hl: "en" }, language: "en",
             status: "succeeded", attemptCount: 1, resultCount: 10, durationMs: 820,
             reservedAt: now - 200_000 + coverageRuns * 1_000, completedAt: now - 199_000 + coverageRuns * 1_000,

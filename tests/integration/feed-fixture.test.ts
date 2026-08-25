@@ -9,23 +9,25 @@ import { setup } from "./helpers";
  * This fixture is demo material: a human looks at the feed it produces and
  * believes it. So the test that matters is not "does it seed 30 rows" — it is
  * "does every row it seeds trace back to a captured SerpApi payload". A future
- * edit that invents a headline, a publisher, a URL or a date fails here.
+ * edit that invents a headline, a publisher, a URL, a date or a snippet fails
+ * here.
  */
 
 const payload = (name: string) =>
   JSON.parse(readFileSync(new URL(`../fixtures/serpapi/${name}.json`, import.meta.url), "utf8"));
 
-type CapturedRow = { url: string; title: string; publisher?: string; publishedAt?: number };
+type CapturedRow = { url: string; title: string; publisher?: string; publishedAt?: number; snippet?: string };
 
 function capturedRows(): CapturedRow[] {
   const rows: CapturedRow[] = [];
   for (const r of payload("google_news").news_results as Array<Record<string, never>>) {
     const row = r as unknown as { link: string; title: string; source: { name: string }; iso_date: string };
+    // `news_results` carries no snippet at all, so a seeded news row must hold "".
     rows.push({ url: row.link, title: row.title, publisher: row.source.name, publishedAt: Date.parse(row.iso_date) });
   }
   for (const name of ["google_official", "google_reddit"]) {
-    for (const r of payload(name).organic_results as Array<{ link: string; title: string }>) {
-      rows.push({ url: r.link, title: r.title });
+    for (const r of payload(name).organic_results as Array<{ link: string; title: string; snippet: string }>) {
+      rows.push({ url: r.link, title: r.title, snippet: r.snippet });
     }
   }
   return rows;
@@ -38,7 +40,7 @@ describe("seedFeedFixture", () => {
 
     const seeded = await t.run(async (ctx) =>
       (await ctx.db.query("sourceResults").collect()).map((s) => ({
-        url: s.canonicalUrl, title: s.title, publisher: s.publisher, publishedAt: s.publishedAt,
+        url: s.canonicalUrl, title: s.title, publisher: s.publisher, publishedAt: s.publishedAt, snippet: s.snippet,
       })));
     expect(seeded.length).toBeGreaterThan(0);
 
@@ -50,6 +52,11 @@ describe("seedFeedFixture", () => {
       expect(row.title).toBe(match?.title);
       expect(row.publisher).toBe(match?.publisher);
       expect(row.publishedAt).toBe(match?.publishedAt);
+      // Every snippet in this fixture belongs to an official or Reddit row — the
+      // rows whose entire visible substance IS the snippet, and which two
+      // reporting questions quote. `?? ""` also catches a snippet invented onto a
+      // news row, where the payload carries none.
+      expect(row.snippet).toBe(match?.snippet ?? "");
     }
   });
 
