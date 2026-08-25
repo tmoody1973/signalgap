@@ -313,7 +313,13 @@ export const seedSliceFixture = internalMutation({
   args: { clerkUserId: v.string() },
   returns: v.object({ scanId: v.id("scans"), candidateId: v.id("candidates") }),
   handler: async (ctx, { clerkUserId }): Promise<{ scanId: Id<"scans">; candidateId: Id<"candidates"> }> => {
-    const now = Date.now();
+    // The captured articles are real and dated 17-18 August 2026 — that stays
+    // fixed, it is the whole point of this fixture. `now` anchors to the
+    // moment a real scan would have found them, not to wall-clock time: with
+    // Date.now() the gap to those dates widened every day until the lead aged
+    // out of the 7-day discovery window and the reviewed verdict silently
+    // changed underneath this fixture.
+    const now = Date.UTC(2026, 7, 20);
 
     const existingUser = await ctx.db
       .query("users")
