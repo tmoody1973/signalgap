@@ -4,6 +4,7 @@ import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import { AppHeader } from "@/components/shell/app-header";
+import { LeadFeed } from "@/components/feed/lead-feed";
 import { ScanProgress } from "@/components/scan/scan-progress";
 import { FirstRunState } from "./workspace-shell";
 
@@ -52,7 +53,7 @@ export default function WorkspacePage() {
                   .catch((err: unknown) => setStartError(err instanceof Error ? err.message : "Could not cancel scan"));
               }}
             />
-            {/* ponytail: Run new scan arrives with the feed plan (item 9) */}
+            <LeadFeed scan={scans.page[0]} onRunNewScan={handleStart} runNewScanDisabled={starting} />
           </section>
         )}
       </main>
