@@ -27,7 +27,7 @@ export const vExclusionReason = v.union(
   v.literal("weak_locality"), v.literal("stale"), v.literal("insufficient_independence"),
   v.literal("no_beat_relevance"), v.literal("already_covered"), v.literal("inaccessible_evidence"),
   v.literal("coverage_pass_incomplete"), v.literal("promotional"), v.literal("duplicate"),
-  v.literal("speculative"), v.literal("routine_crime"),
+  v.literal("speculative"), v.literal("routine_crime"), v.literal("unreadable_evidence"),
 );
 export const vCandidateStatus = v.union(v.literal("processing"), v.literal("eligible"), v.literal("excluded"), v.literal("needs_reverification"));
 export const vProductLabel = v.union(

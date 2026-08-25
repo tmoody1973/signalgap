@@ -23,25 +23,27 @@ export type FinalizeOutcome = Infer<typeof vFinalizeOutcome>;
  * is what `spec.md > UI Behavior` asks for; the feed stays marked incomplete
  * until the scan reaches a terminal state.
  */
+type FinalizeCandidateRef = { candidateId: Id<"candidates">; readyForVerdict: boolean };
+
 export async function runFinalizeStage(
   ctx: ActionCtx,
-  { scanId, candidateIds, now = Date.now() }: { scanId: Id<"scans">; candidateIds: Id<"candidates">[]; now?: number },
+  { scanId, candidates, now = Date.now() }: { scanId: Id<"scans">; candidates: FinalizeCandidateRef[]; now?: number },
   generate?: GenerateFn,
 ): Promise<FinalizeOutcome> {
   let eligible = 0;
   let excluded = 0;
 
-  for (const [index, candidateId] of candidateIds.entries()) {
+  for (const [index, { candidateId, readyForVerdict }] of candidates.entries()) {
     const scan = await ctx.runQuery(internal.scans.getForWorkflow, { scanId });
     if (!scan || !scan.isActive || scan.isCancelRequested) {
       await ctx.runMutation(internal.scans.setCandidateCounts, {
         scanId, eligibleCount: eligible, excludedCount: excluded,
-        processingCount: candidateIds.length - index,
+        processingCount: candidates.length - index,
       });
       return { eligible, excluded, canceled: true };
     }
 
-    const outcome = await runCandidateFinalization(ctx, { scanId, candidateId, now }, generate);
+    const outcome = await runCandidateFinalization(ctx, { scanId, candidateId, readyForVerdict, now }, generate);
     if (outcome.status === "eligible") eligible++;
     else excluded++;
 
@@ -53,7 +55,7 @@ export async function runFinalizeStage(
 
     await ctx.runMutation(internal.scans.setCandidateCounts, {
       scanId, eligibleCount: eligible, excludedCount: excluded,
-      processingCount: candidateIds.length - (index + 1),
+      processingCount: candidates.length - (index + 1),
     });
   }
 
@@ -61,7 +63,7 @@ export async function runFinalizeStage(
 }
 
 export const finalizeCandidates = internalAction({
-  args: { scanId: v.id("scans"), candidateIds: v.array(v.id("candidates")) },
+  args: { scanId: v.id("scans"), candidates: v.array(v.object({ candidateId: v.id("candidates"), readyForVerdict: v.boolean() })) },
   returns: vFinalizeOutcome,
   handler: (ctx, args): Promise<FinalizeOutcome> => runFinalizeStage(ctx, args),
 });

@@ -129,13 +129,18 @@ describe("candidate evaluation", () => {
     expect(candidate.scoreTotal).toBeUndefined();
   });
 
-  it("refuses to evaluate a candidate that has no stored judgment", async () => {
+  it("excludes a candidate with no stored judgment as unreadable, rather than refusing to evaluate it", async () => {
     const t = setup();
     const { scanId, candidateId } = await seed(t, { families: ["official", "news"] });
     await t.run(async (ctx) => await ctx.db.patch(candidateId, { judgment: undefined }));
 
-    expect(await t.mutation(internal.candidates.evaluate.evaluate, { scanId, candidateId, now: NOW }))
-      .toEqual({ rejected: "no_judgment" });
+    const result = await t.mutation(internal.candidates.evaluate.evaluate, { scanId, candidateId, now: NOW });
+    expect(result).toEqual({ status: "excluded", label: "Worth a look", scoreTotal: null, reasons: ["unreadable_evidence"] });
+
+    const candidate = await read(t, candidateId);
+    expect(candidate.status).toBe("excluded");
+    expect(candidate.exclusionReasons).toEqual(["unreadable_evidence"]);
+    expect(candidate.scoreTotal).toBeUndefined();
   });
 
   it("uses the editor's band over the model's when an editor has overridden it", async () => {

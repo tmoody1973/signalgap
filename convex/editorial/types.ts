@@ -43,4 +43,5 @@ export type CandidateInput = {
 
 export type ExclusionReason =
   | "weak_locality" | "stale" | "insufficient_independence" | "no_beat_relevance" | "already_covered"
-  | "inaccessible_evidence" | "coverage_pass_incomplete" | "promotional" | "duplicate" | "speculative" | "routine_crime";
+  | "inaccessible_evidence" | "coverage_pass_incomplete" | "promotional" | "duplicate" | "speculative"
+  | "routine_crime" | "unreadable_evidence";

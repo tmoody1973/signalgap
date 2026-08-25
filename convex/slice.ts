@@ -42,9 +42,12 @@ export type FormedCandidate = {
   failures: string[];
   /**
    * False when formation could not produce a judgment, so the rules engine has
-   * nothing to decide on. Such a candidate must NOT be finalized: `evaluate`
-   * would no-op with "no_judgment", which misnames the cause — classification
-   * failed, and the absent judgment is the consequence, not the reason.
+   * nothing to decide on. Such a candidate is still finalized — `evaluate`
+   * writes the honest "we could not read this" verdict (`unreadableVerdict` in
+   * `convex/editorial/status.ts`) rather than leaving it invisible at
+   * "processing" forever. This flag now only decides one thing: whether
+   * `runCandidateFinalization` asks for a brief. There is no evidence snapshot
+   * to cite, so it does not.
    */
   readyForVerdict: boolean;
 };
@@ -146,7 +149,9 @@ export async function runCandidateFormation(
  */
 export async function runCandidateFinalization(
   ctx: ActionCtx,
-  { scanId, candidateId, now = Date.now() }: { scanId: Id<"scans">; candidateId: Id<"candidates">; now?: number },
+  { scanId, candidateId, readyForVerdict = true, now = Date.now() }: {
+    scanId: Id<"scans">; candidateId: Id<"candidates">; readyForVerdict?: boolean; now?: number;
+  },
   generate?: GenerateFn,
 ): Promise<SliceCandidateOutcome> {
   const failures: string[] = [];
@@ -160,11 +165,15 @@ export async function runCandidateFinalization(
   }
 
   let briefId: Id<"briefVersions"> | null = null;
-  const brief = await runGenerateBrief(ctx, { scanId, candidateId }, generate);
-  if (brief.ok) briefId = brief.briefId;
-  // "already_generated" means the identical brief exists; that is a success,
-  // not a failure, and it deliberately costs no model call.
-  else if (brief.reason !== "already_generated") failures.push(`brief: ${brief.reason}`);
+  // No evidence snapshot means nothing to cite. Asking a model to write a brief
+  // from nothing is the fabrication this product refuses.
+  if (readyForVerdict) {
+    const brief = await runGenerateBrief(ctx, { scanId, candidateId }, generate);
+    if (brief.ok) briefId = brief.briefId;
+    // "already_generated" means the identical brief exists; that is a success,
+    // not a failure, and it deliberately costs no model call.
+    else if (brief.reason !== "already_generated") failures.push(`brief: ${brief.reason}`);
+  }
 
   const candidate = await ctx.runQuery(internal.candidates.evaluate.getEvidenceVersion, { candidateId });
 
@@ -195,16 +204,11 @@ export async function runSliceForScan(
 
   const candidates: SliceCandidateOutcome[] = [];
   for (const c of formed.candidates) {
-    if (!c.readyForVerdict) {
-      // Formation itself failed (no judgment to hand the rules). Match the
-      // old single-pass code's terminal outcome exactly: never call evaluate.
-      candidates.push({
-        candidateId: c.candidateId, status: "excluded", label: "Worth a look", scoreTotal: null,
-        evidenceVersion: c.evidenceVersion, briefId: null, failures: c.failures,
-      });
-      continue;
-    }
-    const outcome = await runCandidateFinalization(ctx, { scanId, candidateId: c.candidateId, now }, generate);
+    // Every formed candidate is finalized, including one formation could not
+    // classify — `evaluate` gives it the honest "unreadable" verdict instead
+    // of leaving it invisible. `readyForVerdict` still decides whether a
+    // brief is attempted; see `runCandidateFinalization`.
+    const outcome = await runCandidateFinalization(ctx, { scanId, candidateId: c.candidateId, readyForVerdict: c.readyForVerdict, now }, generate);
     candidates.push({ ...outcome, evidenceVersion: c.evidenceVersion, failures: [...c.failures, ...outcome.failures] });
   }
   return { ok: true, candidates };

@@ -356,7 +356,7 @@ describe("slice split at the coverage boundary", () => {
     expect(statusWhenBriefGenerateFired).toMatch(/eligible|excluded/);
   });
 
-  it("a classify failure never reaches evaluate or the brief", async () => {
+  it("a lead the AI could not read is excluded with an honest reason, not left invisible", async () => {
     const t = setup();
     const { scanId, sourceIds, ids } = await seedSliceScan(t);
     const answers = sliceModelAnswers(ids);
@@ -384,26 +384,28 @@ describe("slice split at the coverage boundary", () => {
     const [candidate] = outcome.candidates;
 
     expect(candidate.failures.some((f) => f.startsWith("classify:"))).toBe(true);
-    // The rules had nothing to decide on. Reporting "no_judgment" would name the
-    // wrong cause: classification failed, and the missing judgment is the effect.
-    expect(candidate.failures.some((f) => f.includes("no_judgment"))).toBe(false);
     expect(candidate.status).toBe("excluded");
+    // Still no brief — there was no evidence to cite.
     expect(candidate.briefId).toBeNull();
 
     const dbCandidate = await t.run(async (ctx) => ctx.db.get(candidate.candidateId));
-    // evaluate never ran, so status is still whatever formFromCluster inserted.
-    expect(dbCandidate?.status).toBe("processing");
+    // This was the bug: a candidate with no judgment used to stay at
+    // "processing" forever, invisible in both the feed and the exclusions
+    // list. It now gets the rules engine's own honest verdict.
+    expect(dbCandidate?.status).toBe("excluded");
+    expect(dbCandidate?.exclusionReasons).toEqual(["unreadable_evidence"]);
+    expect(dbCandidate?.latestBriefVersion).toBeUndefined();
   });
 
-  it("runEvidenceStage drops a classify failure from candidateIds so finalization never sees it", async () => {
+  it("runEvidenceStage keeps a classify failure in candidates, marked not ready for a brief", async () => {
     const t = setup();
     const { scanId, sourceIds, ids } = await seedSliceScan(t);
     const answers = sliceModelAnswers(ids);
-    // Same fixture as "a classify failure never reaches evaluate or the
-    // brief" above, driven through the workflow's own evidence stage instead
-    // of the combined runSliceForScan path — this is what proves the
-    // readyForVerdict filter at convex/stages/evidence.ts survives, since
-    // nothing at the type level stops a future refactor from dropping it.
+    // Same fixture as the test above, driven through the workflow's own
+    // evidence stage instead of the combined runSliceForScan path — this is
+    // what proves `readyForVerdict` (convex/stages/evidence.ts) survives on
+    // the candidate rather than filtering it out, since nothing at the type
+    // level stops a future refactor from dropping it.
     const brokenClassify: GenerateFn = async ({ system }) => {
       if (/Group the supplied signals/.test(system)) return { object: answers.clusterSignals, usage: {} };
       if (/suggest how each piece of evidence/.test(system)) {
@@ -418,19 +420,21 @@ describe("slice split at the coverage boundary", () => {
     const evidence = await t.action(async (ctx) =>
       runEvidenceStage(ctx, { scanId, sourceResultIds: sourceIds }, brokenClassify));
 
-    expect(evidence.candidateIds).toHaveLength(0);
+    expect(evidence.candidates).toHaveLength(1);
+    expect(evidence.candidates[0].readyForVerdict).toBe(false);
   });
 
-  it("runEvidenceStage keeps a healthy candidate in candidateIds", async () => {
+  it("runEvidenceStage keeps a healthy candidate in candidates, marked ready for a brief", async () => {
     const t = setup();
     const { scanId, sourceIds, model } = await seedSliceScan(t);
 
-    // The other direction: a wrongly-set filter (e.g. inverted, or dropping
-    // everything) must not make a healthy, verdict-ready candidate vanish.
+    // The other direction: a wrongly-set flag (e.g. inverted) must not make a
+    // healthy, verdict-ready candidate lose its brief.
     const evidence = await t.action(async (ctx) =>
       runEvidenceStage(ctx, { scanId, sourceResultIds: sourceIds }, model));
 
-    expect(evidence.candidateIds).toHaveLength(1);
+    expect(evidence.candidates).toHaveLength(1);
+    expect(evidence.candidates[0].readyForVerdict).toBe(true);
   });
 
   it("stops classifying further clusters once shouldContinue turns false, mid-formation", async () => {

@@ -1,10 +1,97 @@
 import { v } from "convex/values";
-import { internalMutation, internalQuery } from "../_generated/server";
+import type { Doc, Id } from "../_generated/dataModel";
+import { internalMutation, internalQuery, type MutationCtx } from "../_generated/server";
 import { outletGroupForDomain } from "../config/coverageOutlets";
 import { COVERAGE_WINDOW_MS } from "../config/ruleset";
-import { evaluateCandidate } from "../editorial/status";
+import { evaluateCandidate, unreadableVerdict } from "../editorial/status";
 import type { CandidateInput, CoverageInput, EngineSource, LocalityBand, RelevanceBand } from "../editorial/types";
 import { toEngineSource } from "./toEngineSource";
+
+/**
+ * Everything `evaluateCandidate` needs, read off the candidate's sources and
+ * its judgment. Only called when a judgment exists — see `evaluate` below.
+ */
+async function buildInput(
+  ctx: MutationCtx,
+  { scanId, candidateId, candidate, judgment, now }: {
+    scanId: Id<"scans">;
+    candidateId: Id<"candidates">;
+    candidate: Doc<"candidates">;
+    judgment: NonNullable<Doc<"candidates">["judgment"]>;
+    now: number;
+  },
+): Promise<CandidateInput> {
+  const memberships = await ctx.db
+    .query("candidateSources")
+    .withIndex("by_candidate_scan", (q) => q.eq("candidateId", candidateId).eq("scanId", scanId))
+    .collect();
+
+  const sources: EngineSource[] = [];
+  const coverageReports: CoverageInput["reports"] = [];
+  let initiatingSignalAt = now;
+
+  for (const membership of memberships) {
+    const row = await ctx.db.get(membership.sourceResultId);
+    if (!row) continue;
+
+    if (membership.role === "coverage") {
+      // Coverage reports are counted separately from confirming sources, and
+      // only inside the 30-day window — outside it, a story is not "prior
+      // coverage of this development", it is a different story.
+      if (row.publishedAt !== undefined && now - row.publishedAt <= COVERAGE_WINDOW_MS) {
+        // Same helper `attachReports` used to decide this row WAS coverage
+        // (convex/candidates/coverage.ts) — recomputed rather than persisted,
+        // so there is exactly one source of truth for what group an outlet is
+        // in. A hardcoded "general" here silently reported every community
+        // outlet as a general one — final-review.md I5.
+        let group: "general" | "community" = "general";
+        try { group = outletGroupForDomain(new URL(row.canonicalUrl).hostname) ?? "general"; } catch { /* keep default */ }
+        coverageReports.push({ id: row._id as string, independenceGroup: membership.independenceGroup, group });
+      }
+      continue;
+    }
+
+    if (membership.role === "initiating" && row.publishedAt !== undefined) initiatingSignalAt = row.publishedAt;
+
+    sources.push(toEngineSource({
+      sourceResultId: row._id as string,
+      sourceFamily: row.sourceFamily,
+      canonicalUrl: row.canonicalUrl,
+      publisher: row.publisher ?? null,
+      publishedAt: row.publishedAt,
+      isAccessible: row.isAccessible,
+      role: membership.role,
+      independenceGroupOverride: membership.independenceGroup,
+      signalCategoryOverride: membership.signalCategory,
+      isPromotional: false,
+    }));
+  }
+
+  // Real per-partition state when the coverage stage has run. The fallback
+  // maps an old row's single status onto both partitions so a candidate
+  // written before this field existed still evaluates the same way.
+  const fallback = candidate.coveragePassStatus === "complete" ? "succeeded"
+    : candidate.coveragePassStatus === "failed" ? "failed" : "pending";
+  const coverage: CoverageInput = {
+    partitions: candidate.coveragePartitions ?? { general: fallback, community: fallback },
+    reports: coverageReports,
+  };
+
+  return {
+    localityBand: (judgment.localityBand?.value ?? "none") as LocalityBand,
+    relevanceBand: (judgment.relevanceBand?.value ?? "promotion_only") as RelevanceBand,
+    beat: (judgment.beat?.value ?? null) as CandidateInput["beat"],
+    initiatingSignalAt,
+    now,
+    sources,
+    coverage,
+    hasTrendMomentum: sources.some((s) => s.signalCategory === "trend"),
+    isDuplicateOfCandidate: judgment.isDuplicateOfCandidate.value,
+    isSpeculative: judgment.isSpeculative.value,
+    isRoutineCrime: judgment.isRoutineCrime.value,
+    hasMaterialConflict: judgment.hasMaterialConflict.value,
+  };
+}
 
 /**
  * The single writer of a candidate's verdict.
@@ -23,88 +110,20 @@ export const evaluate = internalMutation({
       scoreTotal: v.union(v.number(), v.null()),
       reasons: v.array(v.string()),
     }),
-    v.object({ rejected: v.union(v.literal("candidate_not_found"), v.literal("no_judgment")) }),
+    v.object({ rejected: v.literal("candidate_not_found") }),
   ),
   handler: async (ctx, { scanId, candidateId, now = Date.now() }) => {
     const candidate = await ctx.db.get(candidateId);
     if (!candidate) return { rejected: "candidate_not_found" as const };
 
-    // No judgment means no bands. Guessing a band is fabricating 40 points.
+    // A candidate whose classification failed has no bands to judge. It still
+    // gets a verdict — the rules engine's honest "we could not read this" —
+    // because a lead that silently stays at "processing" appears in neither
+    // the feed nor the exclusions list, and an editor never learns it existed.
     const judgment = candidate.judgment;
-    if (!judgment) return { rejected: "no_judgment" as const };
-
-    const memberships = await ctx.db
-      .query("candidateSources")
-      .withIndex("by_candidate_scan", (q) => q.eq("candidateId", candidateId).eq("scanId", scanId))
-      .collect();
-
-    const sources: EngineSource[] = [];
-    const coverageReports: CoverageInput["reports"] = [];
-    let initiatingSignalAt = now;
-
-    for (const membership of memberships) {
-      const row = await ctx.db.get(membership.sourceResultId);
-      if (!row) continue;
-
-      if (membership.role === "coverage") {
-        // Coverage reports are counted separately from confirming sources, and
-        // only inside the 30-day window — outside it, a story is not "prior
-        // coverage of this development", it is a different story.
-        if (row.publishedAt !== undefined && now - row.publishedAt <= COVERAGE_WINDOW_MS) {
-          // Same helper `attachReports` used to decide this row WAS coverage
-          // (convex/candidates/coverage.ts) — recomputed rather than persisted,
-          // so there is exactly one source of truth for what group an outlet is
-          // in. A hardcoded "general" here silently reported every community
-          // outlet as a general one — final-review.md I5.
-          let group: "general" | "community" = "general";
-          try { group = outletGroupForDomain(new URL(row.canonicalUrl).hostname) ?? "general"; } catch { /* keep default */ }
-          coverageReports.push({ id: row._id as string, independenceGroup: membership.independenceGroup, group });
-        }
-        continue;
-      }
-
-      if (membership.role === "initiating" && row.publishedAt !== undefined) initiatingSignalAt = row.publishedAt;
-
-      sources.push(toEngineSource({
-        sourceResultId: row._id as string,
-        sourceFamily: row.sourceFamily,
-        canonicalUrl: row.canonicalUrl,
-        publisher: row.publisher ?? null,
-        publishedAt: row.publishedAt,
-        isAccessible: row.isAccessible,
-        role: membership.role,
-        independenceGroupOverride: membership.independenceGroup,
-        signalCategoryOverride: membership.signalCategory,
-        isPromotional: false,
-      }));
-    }
-
-    // Real per-partition state when the coverage stage has run. The fallback
-    // maps an old row's single status onto both partitions so a candidate
-    // written before this field existed still evaluates the same way.
-    const fallback = candidate.coveragePassStatus === "complete" ? "succeeded"
-      : candidate.coveragePassStatus === "failed" ? "failed" : "pending";
-    const coverage: CoverageInput = {
-      partitions: candidate.coveragePartitions ?? { general: fallback, community: fallback },
-      reports: coverageReports,
-    };
-
-    const input: CandidateInput = {
-      localityBand: (judgment.localityBand?.value ?? "none") as LocalityBand,
-      relevanceBand: (judgment.relevanceBand?.value ?? "promotion_only") as RelevanceBand,
-      beat: (judgment.beat?.value ?? null) as CandidateInput["beat"],
-      initiatingSignalAt,
-      now,
-      sources,
-      coverage,
-      hasTrendMomentum: sources.some((s) => s.signalCategory === "trend"),
-      isDuplicateOfCandidate: judgment.isDuplicateOfCandidate.value,
-      isSpeculative: judgment.isSpeculative.value,
-      isRoutineCrime: judgment.isRoutineCrime.value,
-      hasMaterialConflict: judgment.hasMaterialConflict.value,
-    };
-
-    const verdict = evaluateCandidate(input);
+    const verdict = judgment
+      ? evaluateCandidate(await buildInput(ctx, { scanId, candidateId, candidate, judgment, now }))
+      : unreadableVerdict();
 
     await ctx.db.patch(candidateId, {
       status: verdict.status,

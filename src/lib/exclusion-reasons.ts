@@ -18,6 +18,7 @@ export const EXCLUSION_REASON_TEXT = {
   duplicate: "it repeats a lead already in the feed",
   speculative: "the claim is speculation, not a reported development",
   routine_crime: "it is routine crime, which this feed leaves out",
+  unreadable_evidence: "the evidence could not be read, so nothing was judged",
 } as const;
 
 export type ExclusionReason = keyof typeof EXCLUSION_REASON_TEXT;

@@ -45,7 +45,7 @@ export const runScan = workflow.define({
   // required coverage capacity to be reserved before optional Maps or YouTube.
   await step.runMutation(internal.scans.setStage, { scanId, stage: "coverage" });
   const selection = await step.runQuery(internal.stages.evidence.selectForCoverage, {
-    scanId, candidateIds: evidence.candidateIds, now: Date.now(),
+    scanId, candidateIds: evidence.candidates.map((c) => c.candidateId), now: Date.now(),
   });
   const coverage = await step.runAction(internal.stages.coverage.checkCoverage, {
     scanId, candidateIds: selection.ordered,
@@ -67,14 +67,15 @@ export const runScan = workflow.define({
   }
 
   // ── Stage 4 of 4: Preparing leads ─────────────────────────────────────
-  // Every candidate is evaluated, including the ones the prefilter skipped.
-  // A skipped candidate is not deleted — it is excluded with its reasons shown,
-  // which is what an editor needs to overrule it. `evidence.candidateIds` was
-  // already narrowed to the readyForVerdict set in stages/evidence.ts, so a
-  // classification failure (no judgment) never reaches finalization.
+  // Every candidate is evaluated, including the ones the prefilter skipped AND
+  // the ones formation could not classify. A skipped candidate is not deleted —
+  // it is excluded with its reasons shown, which is what an editor needs to
+  // overrule it. `evidence.candidates` carries `readyForVerdict` per candidate
+  // so finalization still knows which ones have no evidence snapshot to write
+  // a brief from.
   await step.runMutation(internal.scans.setStage, { scanId, stage: "briefs" });
   await step.runAction(internal.stages.finalize.finalizeCandidates, {
-    scanId, candidateIds: evidence.candidateIds,
+    scanId, candidates: evidence.candidates,
   });
 
   await step.runMutation(internal.scans.finalize, { scanId });

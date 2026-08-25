@@ -10,8 +10,9 @@ import { CONFIRMING_CATEGORIES } from "../editorial/types";
 import { orderForCoverage, prefilterCandidate } from "../editorial/prefilter";
 import { runCandidateFormation } from "../slice";
 
+const vFormedCandidateRef = v.object({ candidateId: v.id("candidates"), readyForVerdict: v.boolean() });
 export const vEvidenceOutcome = v.object({
-  candidateIds: v.array(v.id("candidates")),
+  candidates: v.array(vFormedCandidateRef),
   analyzed: v.boolean(),
   canceled: v.boolean(),
 });
@@ -24,12 +25,12 @@ export type EvidenceOutcome = Infer<typeof vEvidenceOutcome>;
  * It stops short of a verdict. `runCandidateFormation` is the half of the slice
  * that runs before coverage — see the comment on the split in `convex/slice.ts`.
  *
- * `candidateIds` carries ONLY the candidates formation marked `readyForVerdict`.
- * A candidate whose classification failed has no judgment for the rules engine
- * to decide on — `runSliceForScan` (convex/slice.ts) never hands such a
- * candidate to `runCandidateFinalization`, and this is the one place that split
- * has to be replicated by hand, because the handler calls the two halves
- * separately with the coverage stage in between.
+ * `candidates` carries EVERY formed candidate, including ones formation could
+ * not classify — such a candidate still gets finalized, so it still needs a
+ * verdict (`convex/editorial/status.ts`'s `unreadableVerdict`). Each entry
+ * keeps its own `readyForVerdict` so `finalizeCandidates` knows, per candidate,
+ * whether there is an evidence snapshot worth asking a model to write a brief
+ * from.
  */
 export async function runEvidenceStage(
   ctx: ActionCtx,
@@ -38,9 +39,9 @@ export async function runEvidenceStage(
 ): Promise<EvidenceOutcome> {
   const scan = await ctx.runQuery(internal.scans.getForWorkflow, { scanId });
   if (!scan || !scan.isActive || scan.isCancelRequested) {
-    return { candidateIds: [], analyzed: false, canceled: true };
+    return { candidates: [], analyzed: false, canceled: true };
   }
-  if (sourceResultIds.length === 0) return { candidateIds: [], analyzed: false, canceled: false };
+  if (sourceResultIds.length === 0) return { candidates: [], analyzed: false, canceled: false };
 
   const analyzed = await runAnalyzeResults(ctx, { scanId, sourceResultIds }, generate);
   if (!analyzed.ok) {
@@ -63,7 +64,7 @@ export async function runEvidenceStage(
     return ok;
   };
   if (!(await shouldContinue())) {
-    return { candidateIds: [], analyzed: analyzed.ok, canceled: true };
+    return { candidates: [], analyzed: analyzed.ok, canceled: true };
   }
 
   const formed = await runCandidateFormation(ctx, { scanId, sourceResultIds }, generate, shouldContinue);
@@ -71,11 +72,11 @@ export async function runEvidenceStage(
     await ctx.runMutation(internal.scans.recordFailure, {
       scanId, purpose: "discovery", code: "cluster_failed", message: formed.reason,
     });
-    return { candidateIds: [], analyzed: analyzed.ok, canceled: false };
+    return { candidates: [], analyzed: analyzed.ok, canceled: false };
   }
 
   return {
-    candidateIds: formed.candidates.filter((c) => c.readyForVerdict).map((c) => c.candidateId),
+    candidates: formed.candidates.map((c) => ({ candidateId: c.candidateId, readyForVerdict: c.readyForVerdict })),
     analyzed: analyzed.ok,
     canceled: canceledDuringFormation,
   };

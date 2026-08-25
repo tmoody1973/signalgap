@@ -73,3 +73,27 @@ export function applyCorrection(input: CandidateInput, c: Correction): Candidate
 
 export const eligibilityTransition = (before: CandidateEvaluation, after: CandidateEvaluation): "none" | "No longer qualifies" =>
   before.status === "eligible" && after.status === "excluded" ? "No longer qualifies" : "none";
+
+/**
+ * The verdict for a candidate the system could not judge at all — its evidence
+ * classification failed, so there are no bands, no categories and no snapshot.
+ *
+ * It exists so such a lead is EXCLUDED WITH A REASON rather than left at
+ * "processing" forever, invisible in both the feed and the exclusions list.
+ * Naming the real cause matters: "no judgment" describes the consequence, and
+ * an editor reading it would look for the wrong problem.
+ *
+ * It lives here, beside `evaluateCandidate`, because the rules decide every
+ * verdict this product renders — including the verdict "we cannot decide".
+ */
+export function unreadableVerdict(): CandidateEvaluation {
+  return {
+    status: "excluded",
+    label: "Worth a look",
+    reasons: ["unreadable_evidence"],
+    // No score. Not zero — a zero would say the rules ran and found nothing.
+    score: null,
+    independence: { independentCategoryCount: 0, hasPrimary: false, groups: [], nonConfirmingSourceIds: [] },
+    coverage: { passStatus: "pending", originalReportCount: 0, countedReportIds: [], groupsChecked: [] },
+  };
+}
