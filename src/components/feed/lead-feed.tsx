@@ -82,6 +82,10 @@ export function LeadFeed({
   // and every one after it, not only the first.
   // On a filter change both go undefined together — which is right, because
   // the previous list is then the wrong answer, not a stale one.
+  // Keep `pinnedPage` declared FIRST: its subscription must be live before
+  // `widerPage`'s observer drops that same argument set, or the client can
+  // briefly hold zero listeners for it, drop the cached value, and flash a
+  // loading state. Reordering these two silently undoes half of this.
   const pinnedPage = useQuery(api.candidates.list.listForScan, {
     ...args,
     paginationOpts: { numItems: pinned, cursor: null },
