@@ -489,3 +489,695 @@ export const seedSliceFixture = internalMutation({
     return { scanId, candidateId };
   },
 });
+
+// --- A whole feed, from the same captured payloads ---------------------------
+
+/**
+ * Thirty Milwaukee leads across all three beats, so the ranked feed can be seen
+ * doing its job: two views, a beat filter that changes the list, a page
+ * boundary, and a did-not-qualify list whose reasons are not one sentence
+ * repeated thirty times.
+ *
+ * Same rule as `seedSliceFixture`, and it is the whole point: NOTHING HERE IS
+ * INVENTED. Every title, publisher, URL, date and excerpt is a row from
+ * tests/fixtures/serpapi/{google_news,google_official,google_reddit}.json exactly
+ * as SerpApi returned it, and each `query` is the query that actually captured
+ * that payload, read from its own `search_parameters`. The Metcalfe Park lead
+ * reuses `SLICE_SOURCES` above rather than restating those four rows.
+ *
+ * What IS written here is the product's own output — the reporting question and
+ * the beat — and each question's premise is in the sources under it.
+ *
+ * Three captured files are deliberately absent. google_events.json is
+ * HAND-WRITTEN (its own `_handwritten` key says so) and its events are invented,
+ * so it may not reach a screen a human reads. youtube.json is real, but no
+ * template in the query catalog produces a YouTube search, so seeding one would
+ * claim a search this product cannot run. google_maps.json and
+ * google_trends_trending_now.json carry only non-confirming categories.
+ *
+ * THE FEED HAS NO ELIGIBLE LEAD, and that is a finding, not an omission.
+ * Eligibility needs two DISTINCT confirming signal categories on one
+ * development (MIN_INDEPENDENT_CATEGORIES). The usable payloads offer only
+ * original_news and official_record, and no news row in the capture names any
+ * subject an official row names — the single shared proper noun in the whole set
+ * is WHEDA, across a city event page and an unrelated grant announcement.
+ * Pairing those would be exactly the invented link `seedSliceFixture` refuses
+ * above. A live capture is what fixes this, not a cleverer fixture.
+ */
+
+// The captured articles are dated 16-22 August 2026. `now` is fixed two days
+// past the newest of them, for the same reason `seedSliceFixture` fixes its
+// own: with Date.now() the seven-day discovery window would walk forward every
+// day until leads aged out and the verdicts changed underneath the fixture.
+const FEED_NOW = Date.UTC(2026, 7, 24);
+
+// Every candidate this seeder writes carries this prefix, so a re-run can find
+// its own rows by prefix even when the scan they belonged to is already gone.
+const FEED_PREFIX = "fixture-feed-";
+
+// One entry per DISTINCT captured search. The query strings are verbatim from
+// each payload's `search_parameters.q`. Note the reddit query's own
+// `after:2026-08-15`: that is the date the capture ran with, not one derived
+// from FEED_NOW. Using the captured text exactly outranks making it agree.
+const FEED_SEARCHES = {
+  news: {
+    engine: "google_news" as const,
+    templateId: "news-housing-en-01",
+    query: "Milwaukee (housing OR zoning OR development OR displacement OR neighborhood) when:7d",
+  },
+  official: {
+    engine: "google" as const,
+    templateId: "official-housing-01",
+    query: "(site:city.milwaukee.gov OR site:milwaukee.legistar.com OR site:county.milwaukee.gov OR site:milwaukee.granicus.com OR site:mps.milwaukee.k12.wi.us OR site:wisconsinpublicnotices.org OR site:ridemcts.com) (housing OR zoning OR development OR displacement OR neighborhood)",
+  },
+  community_discussion: {
+    engine: "google" as const,
+    templateId: "reddit-housing-01",
+    query: 'site:reddit.com/r/milwaukee/comments/ (development OR zoning OR apartment OR demolished OR opening OR closing OR "what happened") after:2026-08-15',
+  },
+} as const;
+
+type FeedFamily = keyof typeof FEED_SEARCHES;
+type FeedRow = {
+  family: FeedFamily;
+  title: string;
+  url: string;
+  snippet: string;
+  publisher?: string;
+  publishedAt?: number;
+  position: number;
+};
+
+// The Metcalfe Park rows, re-keyed rather than re-typed. Their families map onto
+// the same two captured searches, and their `query`/`templateId` already match
+// FEED_SEARCHES, which is why this re-key is lossless.
+const sliceRow = (i: number): FeedRow => ({
+  family: SLICE_SOURCES[i].family,
+  title: SLICE_SOURCES[i].title,
+  url: SLICE_SOURCES[i].url,
+  snippet: SLICE_SOURCES[i].snippet,
+  publisher: SLICE_SOURCES[i].publisher,
+  publishedAt: SLICE_SOURCES[i].publishedAt,
+  position: i + 1,
+});
+
+const FEED_ROWS = {
+  "slice-0": sliceRow(0),
+  "slice-1": sliceRow(1),
+  "slice-2": sliceRow(2),
+  "slice-3": sliceRow(3),
+
+  "news-0": {
+    family: "news", title: "Milwaukee Neighborhood News Service publishes in-depth retrospective on Sherman Park uprising",
+    url: "https://today.marquette.edu/2026/08/milwaukee-neighborhood-news-service-publishes-in-depth-retrospective-on-sherman-park-uprising/",
+    snippet: "", publisher: "Marquette Today",
+    publishedAt: Date.parse("2026-08-20T16:42:03Z"), position: 1,
+  },
+  "news-2": {
+    family: "news", title: "Milwaukee neighborhood conducts food audit walk to address grocery deserts",
+    url: "https://spectrumnews1.com/wi/milwaukee/news/2026/08/19/milwaukee-audit-walk-food-deserts-grocery-stores",
+    snippet: "", publisher: "Spectrum News",
+    publishedAt: Date.parse("2026-08-19T17:45:00Z"), position: 3,
+  },
+  "news-3": {
+    family: "news", title: "10 years after uprising, stubborn challenges persist in Milwaukee’s Sherman Park neighborhood",
+    url: "https://wisconsinwatch.org/2026/08/milwaukee-sherman-park-neighborhood-10-years-after-uprising-challenges-poverty-housing/",
+    snippet: "", publisher: "Wisconsin Watch",
+    publishedAt: Date.parse("2026-08-21T11:00:00Z"), position: 4,
+  },
+  "news-4": {
+    family: "news", title: "Pope Leo Village brings affordable housing to Milwaukee's Harambee neighborhood",
+    url: "https://www.wisn.com/article/pope-leo-village-brings-affordable-housing-to-milwaukees-harambee-neighborhood/73496330",
+    snippet: "", publisher: "WISN",
+    publishedAt: Date.parse("2026-08-21T23:46:00Z"), position: 5,
+  },
+  "news-6": {
+    family: "news", title: "After Milwaukee veto, affordable housing bonds advance through different conduit",
+    url: "https://www.bondbuyer.com/news/conduit-change-advances-milwaukee-affordable-housing-bonds",
+    snippet: "", publisher: "Bond Buyer",
+    publishedAt: Date.parse("2026-08-19T12:00:00Z"), position: 7,
+  },
+  "news-8": {
+    family: "news", title: "FHLBank Chicago and WHEDA Recognize Housing Counseling Grants Supporting Milwaukee-Area Homebuyers",
+    url: "https://uk.finance.yahoo.com/news/fhlbank-chicago-wheda-recognize-housing-181600023.html",
+    snippet: "", publisher: "Yahoo Finance UK",
+    publishedAt: Date.parse("2026-08-20T18:16:00Z"), position: 9,
+  },
+  "news-9": {
+    family: "news", title: "The uprising in Sherman Park: 10 years later",
+    url: "https://milwaukeenns.org/the-uprising-in-sherman-park-10-years-later/",
+    snippet: "", publisher: "Milwaukee Neighborhood News Service",
+    publishedAt: Date.parse("2026-08-18T12:32:42Z"), position: 10,
+  },
+  "news-11": {
+    family: "news", title: "Op Ed: Lessons From Milwaukee’s Flooding",
+    url: "https://urbanmilwaukee.com/2026/08/20/op-ed-lessons-from-milwaukees-flooding/",
+    snippet: "", publisher: "Urban Milwaukee",
+    publishedAt: Date.parse("2026-08-20T14:13:00Z"), position: 12,
+  },
+  "news-12": {
+    family: "news", title: "Travis Landry builds communities by building people",
+    url: "https://milwaukeenns.org/2026/08/19/travis-landry-builds-communities-by-building-people/",
+    snippet: "", publisher: "Milwaukee Neighborhood News Service",
+    publishedAt: Date.parse("2026-08-19T22:15:00Z"), position: 13,
+  },
+  "news-13": {
+    family: "news", title: "Investments changed Milwaukee’s Sherman Park after 2016 uprising, but who benefited remains unclear",
+    url: "https://wisconsinwatch.org/2026/08/milwaukee-sherman-park-investments-uprising-change-improvements-residents-benefit/",
+    snippet: "", publisher: "Wisconsin Watch",
+    publishedAt: Date.parse("2026-08-21T14:00:00Z"), position: 14,
+  },
+  "news-17": {
+    family: "news", title: "5 things to know and do the week of Aug. 17",
+    url: "https://milwaukeenns.org/2026/08/16/5-things-to-know-and-do-the-week-of-aug-17/",
+    snippet: "", publisher: "Milwaukee Neighborhood News Service",
+    publishedAt: Date.parse("2026-08-16T21:00:00Z"), position: 18,
+  },
+  "news-20": {
+    family: "news", title: "Kenosha moves to turn former McKinley school site into 28-home neighborhood",
+    url: "https://www.bizjournals.com/milwaukee/news/2026/08/18/kenosha-mckinley-school-redevelopment.html",
+    snippet: "", publisher: "The Business Journals",
+    publishedAt: Date.parse("2026-08-18T20:00:00Z"), position: 21,
+  },
+  "news-21": {
+    family: "news", title: "Post From Community: Sixteenth Street Ranks Among Top 10% of Health Centers Nationwide",
+    url: "https://milwaukeenns.org/2026/08/20/post-from-community-sixteenth-street-ranks-among-top-10-of-health-centers-nationwide/",
+    snippet: "", publisher: "Milwaukee Neighborhood News Service",
+    publishedAt: Date.parse("2026-08-21T02:23:25Z"), position: 22,
+  },
+  "news-23": {
+    family: "news", title: "First-time homebuilders Tim and Mandy Vandeville want to disrupt the market",
+    url: "https://www.bizjournals.com/milwaukee/news/2026/08/18/whitewater-stonehaven-development-vandeville.html",
+    snippet: "", publisher: "The Business Journals",
+    publishedAt: Date.parse("2026-08-18T11:27:00Z"), position: 24,
+  },
+  "news-24": {
+    family: "news", title: "Milwaukee art therapists find new ways to help residents deal with emotions",
+    url: "https://onmilwaukee.com/articles/art-therapy-mental-health-milwaukee-nns",
+    snippet: "", publisher: "OnMilwaukee",
+    publishedAt: Date.parse("2026-08-16T12:01:00Z"), position: 25,
+  },
+  "news-29": {
+    family: "news", title: "Three nonprofits receive $350,000 in grant funding to support homeowner education",
+    url: "https://www.jsonline.com/story/news/local/milwaukee/neighborhoods/2026/08/20/local-homebuyer-education-agencies-receive-350000-in-grant-funding/91372992007/",
+    snippet: "", publisher: "Milwaukee Journal Sentinel",
+    publishedAt: Date.parse("2026-08-20T10:07:00Z"), position: 30,
+  },
+  "news-30": {
+    family: "news", title: "Wisconsin Homelessness Rises Again in 2026",
+    url: "https://urbanmilwaukee.com/2026/08/19/wisconsin-homelessness-rises-again-in-2026/",
+    snippet: "", publisher: "Urban Milwaukee",
+    publishedAt: Date.parse("2026-08-19T16:53:00Z"), position: 31,
+  },
+  "news-33": {
+    family: "news", title: "One goal for every Milwaukee Bucks player: Kasparas Jakucionis’s development",
+    url: "https://dairylandexpress.com/one-goal-for-every-milwaukee-bucks-player-kasparas-jakucionis-s-development-01m0800ndrm5",
+    snippet: "", publisher: "Dairyland Express",
+    publishedAt: Date.parse("2026-08-18T13:00:02Z"), position: 34,
+  },
+  "news-36": {
+    family: "news", title: "A scar, not a wound: Faith leaders reflect on the next 10 years for Sherman Park",
+    url: "https://milwaukeenns.org/2026/08/16/faith-leaders-reflect-on-10-year-anniversary-of-sherman-park-uprising/",
+    snippet: "", publisher: "Milwaukee Neighborhood News Service",
+    publishedAt: Date.parse("2026-08-16T22:00:00Z"), position: 37,
+  },
+  "news-41": {
+    family: "news", title: "Abandoned motorcycles will now help facilitate youth STEM/STEAM development",
+    url: "https://communityjournal.net/abandoned-motorcycles-will-now-help-facilitate-youth-stem-steam-development/",
+    snippet: "", publisher: "Milwaukee Community Journal -",
+    publishedAt: Date.parse("2026-08-18T23:20:39Z"), position: 42,
+  },
+  "news-42": {
+    family: "news", title: "In the works since 2022, 310W conversion unlocked by city incentives",
+    url: "https://www.bizjournals.com/milwaukee/news/2026/08/21/310w-conversion-incentives.html",
+    snippet: "", publisher: "The Business Journals",
+    publishedAt: Date.parse("2026-08-21T11:47:00Z"), position: 43,
+  },
+  "news-47": {
+    family: "news", title: "Passenger train upgrades heading to Wisconsin, neighboring states",
+    url: "https://milwaukeecourier.com/news/2026/08/20/passenger-train-upgrades-heading-to-wisconsin-neighboring-states",
+    snippet: "", publisher: "The Milwaukee Courier",
+    publishedAt: Date.parse("2026-08-20T16:06:00Z"), position: 48,
+  },
+  "news-48": {
+    family: "news", title: "Midtown apartment development getting $1 million city loan",
+    url: "https://www.jsonline.com/story/money/real-estate/commercial/2026/08/21/milwaukee-midtown-apartment-project-gets-city-loan-for-environmental-cleanup/91401808007/",
+    snippet: "", publisher: "Milwaukee Journal Sentinel",
+    publishedAt: Date.parse("2026-08-21T15:48:00Z"), position: 49,
+  },
+  "news-49": {
+    family: "news", title: "FHLBank Chicago and WHEDA Recognize Housing Counseling Grants Supporting Milwaukee-Area Homebuyers",
+    url: "https://www.eagletribune.com/region/fhlbank-chicago-and-wheda-recognize-housing-counseling-grants-supporting-milwaukee-area-homebuyers/article_7a3efc6b-7d78-56c1-a9fa-20572c966746.html",
+    snippet: "", publisher: "Eagle-Tribune",
+    publishedAt: Date.parse("2026-08-20T18:16:57Z"), position: 50,
+  },
+
+  "official-0": {
+    family: "official", title: "Homes MKE - City of Milwaukee",
+    url: "https://city.milwaukee.gov/DCD/NIDC/Homes-MKE",
+    snippet: "The goals of Homes MKE are to: sell, renovate and reoccupy up to 150 vacant foreclosed City owned houses. prioritize the development of the houses (414) 708- ...",
+    position: 1,
+  },
+  "official-1": {
+    family: "official", title: "City of Milwaukee - Calendar",
+    url: "https://milwaukee.legistar.com/",
+    snippet: "ZONING, NEIGHBORHOODS & DEVELOPMENT COMMITTEE. NEIGHBORHOOD IMPROVEMENT DEVELOPMENT CORPORATION ・ 526 E Concordia Ave ・ 1:00 PM Room 301-A, Third Floor, City ...",
+    position: 2,
+  },
+  "official-5": {
+    family: "official", title: "Mayor's \"Back to School\" Bike Ride",
+    url: "https://city.milwaukee.gov/City-Events/Public-Works/Mayors-Back-to-School-Bike-Ride.htm?Occurrence=2026-08-29T10:00:00",
+    snippet: "Housing & Home Ownership. Join Mayor Cavalier Johnson and the City of Milwaukee for a fun, slow-roll ride through the East Side of Milwaukee! Riverside Park ...",
+    position: 6,
+  },
+  "official-7": {
+    family: "official", title: "16th Street Bridge over the Menomonee River",
+    url: "https://city.milwaukee.gov/City-Events/Public-Works/Public-Involvement-Meeting-16th-Street-Bridge-over-the-Menomonee-River.htm?Occurrence=2026-12-04T16:00:00",
+    snippet: "The rehabilitation project is for the 384-foot-long Unit 14 over the Menomonee River. It is proposed to permanently fix the two movable leaves of the bascule ...",
+    position: 8,
+  },
+
+  "reddit-0": {
+    family: "community_discussion", title: "Getting an apartment in Bayview : r/milwaukee",
+    url: "https://www.reddit.com/r/milwaukee/comments/1vsaa36/getting_an_apartment_in_bayview/",
+    snippet: "How hard is it to get a two-bedroom apartment in Bayview right now? If I were to start looking now, is there a realistic possibility that I could…",
+    position: 1,
+  },
+  "reddit-1": {
+    family: "community_discussion", title: "What is the State Fair Fight? What happened? : r/milwaukee",
+    url: "https://www.reddit.com/r/milwaukee/comments/1vrfx2c/what_is_the_state_fair_fight_what_happened/",
+    snippet: "I skip the State Fair ONCE. what happened Sunday?",
+    position: 2,
+  },
+  "reddit-2": {
+    family: "community_discussion", title: "River Woods Condos on Randolph Ct (Riverwest)",
+    url: "https://www.reddit.com/r/milwaukee/comments/1vrpng6/river_woods_condos_on_randolph_ct_riverwest/",
+    snippet: "Considering buying a unit at River Woods Condos on Randolph Ct. Anyone live there or have experience with the building management?",
+    position: 3,
+  },
+  "reddit-8": {
+    family: "community_discussion", title: "Local fabric store suggestions : r/milwaukee",
+    url: "https://www.reddit.com/r/milwaukee/comments/1vtlaa3/local_fabric_store_suggestions/",
+    snippet: "I'm looking for a local store with a large fabric selection, please! My mom is still distraught over Joann's closing, and it's unimpressed with the Hobby ...",
+    position: 9,
+  },
+} satisfies Record<string, FeedRow>;
+
+type FeedRowKey = keyof typeof FEED_ROWS;
+
+type FeedRole = "initiating" | "corroborating" | "coverage" | "enrichment";
+
+/**
+ * One lead. `question` and `beat` are OURS — the product's own output — and are
+ * the only written fields here; everything else points at a captured row or is
+ * a judgment the classifier would have made about it.
+ *
+ * Nothing on this type names a status, a label, a score or an exclusion reason.
+ * Those are `internal.candidates.evaluate.evaluate`'s to write, and it is called
+ * once per lead at the end of the seeder. To move a lead's verdict, change the
+ * EVIDENCE SHAPE below and let the rules reach a different conclusion.
+ */
+type FeedLead = {
+  slug: string;
+  question: string;
+  beat: "housing" | "transportation" | "culture";
+  locality: "direct_city" | "county_city_effect" | "area_city_consequence" | "none";
+  relevance: "policy_service_change" | "community_cultural_impact" | "emerging_question" | "promotion_only";
+  sources: Array<{ row: FeedRowKey; role: FeedRole; unreachable?: true }>;
+  speculative?: true;
+  duplicate?: true;
+  /** The classifier could not put it in a covered beat -> `no_beat_relevance`. */
+  noBeat?: true;
+  /** Classification failed outright: no judgment at all -> `unreadable_evidence`. */
+  unjudged?: true;
+  /** The coverage stage reached this lead. Only ten leads per scan ever can. */
+  coverageTerms?: string[];
+};
+
+const src = (row: FeedRowKey, role: FeedRole, unreachable?: true) => ({ row, role, ...(unreachable ? { unreachable } : {}) });
+
+const FEED_LEADS: FeedLead[] = [
+  {
+    slug: "metcalfe-park-hub", beat: "housing", locality: "direct_city", relevance: "policy_service_change",
+    question: "Who is behind the Metcalfe Park Liberation Hub, and what did the city promise it?",
+    sources: [src("slice-0", "initiating"), src("slice-1", "corroborating"), src("slice-2", "corroborating"), src("slice-3", "enrichment")],
+  },
+  {
+    slug: "midtown-apartment-city-loan", beat: "housing", locality: "direct_city", relevance: "policy_service_change",
+    question: "What is the $1 million city loan for the Midtown apartment project paying for?",
+    sources: [src("news-48", "initiating")],
+  },
+  {
+    // The coverage stage reached this one, so its verdict carries a real prior-
+    // report count: Wisconsin Watch (general) and NNS (community), two groups.
+    slug: "sherman-park-ten-years", beat: "culture", locality: "direct_city", relevance: "community_cultural_impact",
+    question: "Ten years after the Sherman Park uprising, what has changed for the people who live there?",
+    sources: [src("news-0", "initiating"), src("news-3", "coverage"), src("news-9", "coverage")],
+    coverageTerms: ["Sherman Park"],
+  },
+  {
+    slug: "passenger-train-upgrades", beat: "transportation", locality: "area_city_consequence", relevance: "policy_service_change",
+    question: "Which passenger train upgrades reach Wisconsin, and do any of them serve Milwaukee?",
+    sources: [src("news-47", "initiating")],
+  },
+  {
+    slug: "310w-conversion-incentives", beat: "housing", locality: "direct_city", relevance: "policy_service_change",
+    question: "Which city incentives unlocked the 310W conversion, and what do they cost the city?",
+    sources: [src("news-42", "initiating")],
+  },
+  {
+    // The one source in this fixture seeded with a FAILED ACCESS CHECK. That is
+    // the scan's own observation, not a claim about the publisher — but it is
+    // the only field here a reader could check today and find different.
+    slug: "sixteenth-street-bridge", beat: "transportation", locality: "direct_city", relevance: "policy_service_change",
+    question: "What does the 16th Street Bridge rehabilitation involve, and when does the work start?",
+    sources: [src("official-7", "initiating", true)],
+  },
+  {
+    slug: "pope-leo-village-harambee", beat: "housing", locality: "direct_city", relevance: "community_cultural_impact",
+    question: "How many affordable homes does Pope Leo Village add in Harambee, and who can rent them?",
+    sources: [src("news-4", "initiating")],
+  },
+  {
+    slug: "art-therapists-milwaukee", beat: "culture", locality: "direct_city", relevance: "community_cultural_impact",
+    question: "How are Milwaukee art therapists reaching residents who would not walk into a clinic?",
+    sources: [src("news-24", "initiating")],
+  },
+  {
+    slug: "homeowner-education-grants", beat: "housing", locality: "direct_city", relevance: "policy_service_change",
+    question: "Which three nonprofits share the $350,000 for homeowner education, and what will it pay for?",
+    sources: [src("news-29", "initiating")],
+    coverageTerms: ["homeowner education grant"],
+  },
+  {
+    // The same press release under two mastheads, minutes apart — real
+    // syndication, and the same story the Journal Sentinel lead above tells.
+    slug: "wheda-counseling-grants", beat: "housing", locality: "area_city_consequence", relevance: "policy_service_change",
+    question: "Which Milwaukee-area homebuyer agencies did FHLBank Chicago and WHEDA recognize?",
+    sources: [src("news-8", "initiating"), src("news-49", "corroborating")],
+    duplicate: true,
+  },
+  {
+    slug: "kenosha-mckinley-school", beat: "housing", locality: "none", relevance: "policy_service_change",
+    question: "What will replace the former McKinley school site in Kenosha?",
+    sources: [src("news-20", "initiating")],
+  },
+  {
+    slug: "abandoned-motorcycles-stem", beat: "culture", locality: "direct_city", relevance: "community_cultural_impact",
+    question: "Who is turning abandoned motorcycles into youth STEM projects in Milwaukee?",
+    sources: [src("news-41", "initiating")],
+  },
+  {
+    slug: "affordable-housing-bonds", beat: "housing", locality: "direct_city", relevance: "policy_service_change",
+    question: "Which conduit is issuing Milwaukee's affordable housing bonds after the veto?",
+    sources: [src("news-6", "initiating")],
+  },
+  {
+    slug: "mayors-bike-ride", beat: "transportation", locality: "direct_city", relevance: "community_cultural_impact",
+    question: "What route does the Mayor's Back to School Bike Ride take, and who can join it?",
+    sources: [src("official-5", "initiating")],
+  },
+  {
+    slug: "flooding-lessons-oped", beat: "housing", locality: "direct_city", relevance: "emerging_question",
+    question: "What flood-control changes does the Urban Milwaukee op-ed argue the city should make?",
+    sources: [src("news-11", "initiating")],
+    speculative: true,
+  },
+  {
+    slug: "state-fair-fight-thread", beat: "culture", locality: "direct_city", relevance: "emerging_question",
+    question: "What happened in the State Fair fight that r/milwaukee is asking about?",
+    sources: [src("reddit-1", "enrichment")],
+    noBeat: true,
+  },
+  {
+    slug: "homes-mke-vacant-houses", beat: "housing", locality: "direct_city", relevance: "policy_service_change",
+    question: "How many of the up-to-150 vacant city-owned houses in Homes MKE have been sold and reoccupied?",
+    sources: [src("official-0", "initiating")],
+  },
+  {
+    slug: "sherman-park-investments", beat: "culture", locality: "direct_city", relevance: "community_cultural_impact",
+    question: "Who benefited from the investments that changed Sherman Park after 2016?",
+    sources: [src("news-13", "initiating")],
+  },
+  {
+    slug: "wisconsin-homelessness-2026", beat: "housing", locality: "area_city_consequence", relevance: "policy_service_change",
+    question: "How much of the 2026 rise in Wisconsin homelessness is in Milwaukee?",
+    sources: [src("news-30", "initiating")],
+  },
+  {
+    slug: "faith-leaders-sherman-park", beat: "culture", locality: "direct_city", relevance: "community_cultural_impact",
+    question: "What do Sherman Park faith leaders expect from the next ten years?",
+    sources: [src("news-36", "initiating")],
+  },
+  {
+    slug: "bayview-apartment-thread", beat: "housing", locality: "direct_city", relevance: "emerging_question",
+    question: "How hard is it to find a two-bedroom apartment in Bay View right now?",
+    sources: [src("reddit-0", "enrichment")],
+  },
+  {
+    slug: "whitewater-stonehaven", beat: "housing", locality: "none", relevance: "emerging_question",
+    question: "What are the Vandevilles building at Stonehaven, and how would it change the market?",
+    sources: [src("news-23", "initiating")],
+    speculative: true,
+  },
+  {
+    slug: "legistar-znd-calendar", beat: "housing", locality: "direct_city", relevance: "policy_service_change",
+    question: "What is the Zoning, Neighborhoods and Development Committee taking up at 526 E Concordia Ave?",
+    sources: [src("official-1", "initiating")],
+    unjudged: true,
+  },
+  {
+    slug: "food-audit-walk", beat: "culture", locality: "direct_city", relevance: "community_cultural_impact",
+    question: "Which Milwaukee neighborhood walked its own food audit, and what did it find?",
+    sources: [src("news-2", "initiating")],
+  },
+  {
+    slug: "bucks-jakucionis", beat: "culture", locality: "direct_city", relevance: "emerging_question",
+    question: "What is the Bucks' development plan for Kasparas Jakucionis this season?",
+    sources: [src("news-33", "initiating")],
+    noBeat: true,
+  },
+  {
+    slug: "travis-landry-profile", beat: "culture", locality: "direct_city", relevance: "community_cultural_impact",
+    question: "How does Travis Landry's work build Milwaukee communities?",
+    sources: [src("news-12", "initiating")],
+  },
+  {
+    slug: "five-things-week-aug-17", beat: "culture", locality: "direct_city", relevance: "promotion_only",
+    question: "What did NNS pick for its five things to know the week of Aug. 17?",
+    sources: [src("news-17", "initiating")],
+  },
+  {
+    slug: "sixteenth-street-health-centers", beat: "culture", locality: "direct_city", relevance: "promotion_only",
+    question: "What put Sixteenth Street in the top 10% of health centers nationwide?",
+    sources: [src("news-21", "initiating")],
+  },
+  {
+    slug: "river-woods-condos-thread", beat: "housing", locality: "direct_city", relevance: "emerging_question",
+    question: "What do residents say about management at the River Woods Condos in Riverwest?",
+    sources: [src("reddit-2", "enrichment")],
+  },
+  {
+    slug: "fabric-store-thread", beat: "culture", locality: "direct_city", relevance: "emerging_question",
+    question: "Where do Milwaukee sewers buy fabric now that Joann's has closed?",
+    sources: [src("reddit-8", "enrichment")],
+  },
+];
+
+const aiValue = (value: string) => ({ value, basis: "ai_suggested" as const, reason: "suggested by the model from the supplied sources" });
+const aiFlag = (value: boolean) => ({ value, basis: "ai_suggested" as const, reason: "flagged by the model" });
+
+const feedJudgment = (lead: FeedLead) => ({
+  localityBand: aiValue(lead.locality),
+  relevanceBand: aiValue(lead.relevance),
+  beat: lead.noBeat ? null : aiValue(lead.beat),
+  isSpeculative: aiFlag(lead.speculative === true),
+  isRoutineCrime: aiFlag(false),
+  isDuplicateOfCandidate: aiFlag(lead.duplicate === true),
+  hasMaterialConflict: aiFlag(false),
+});
+
+type FeedVerdict =
+  | { status: "eligible" | "excluded"; label: string; scoreTotal: number | null; reasons: string[] }
+  | { rejected: "candidate_not_found" };
+
+export const seedFeedFixture = internalMutation({
+  args: { clerkUserId: v.string() },
+  returns: v.object({ scanId: v.id("scans"), eligibleCount: v.number(), excludedCount: v.number() }),
+  handler: async (ctx, { clerkUserId }): Promise<{ scanId: Id<"scans">; eligibleCount: number; excludedCount: number }> => {
+    const now = FEED_NOW;
+
+    const existingUser = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_user_id", (q) => q.eq("clerkUserId", clerkUserId))
+      .unique();
+    const ownerId = existingUser?._id
+      ?? (await ctx.db.insert("users", { clerkUserId, createdAt: now, updatedAt: now }));
+
+    // Re-running must leave a clean deployment, not a doubled one. Prior rows
+    // are found by FINGERPRINT PREFIX, not by scan: a run whose scan has already
+    // been deleted elsewhere still leaves candidates behind, and orphans make
+    // the e2e first-run assertions read a dirty deployment as clean.
+    const priorScanIds = new Set<Id<"scans">>();
+    const priors = await ctx.db
+      .query("candidates")
+      .withIndex("by_owner_fingerprint", (q) =>
+        q.eq("ownerId", ownerId).gte("fingerprint", FEED_PREFIX).lt("fingerprint", `${FEED_PREFIX}￿`))
+      .collect();
+    for (const prior of priors) {
+      for (const appearance of await ctx.db.query("candidateAppearances").withIndex("by_candidate_scan", (q) => q.eq("candidateId", prior._id)).collect()) {
+        priorScanIds.add(appearance.scanId);
+        await ctx.db.delete(appearance._id);
+      }
+      for (const membership of await ctx.db.query("candidateSources").withIndex("by_candidate_scan", (q) => q.eq("candidateId", prior._id)).collect()) {
+        await ctx.db.delete(membership._id);
+      }
+      for (const item of await ctx.db.query("evidenceItems").withIndex("by_candidate_version", (q) => q.eq("candidateId", prior._id)).collect()) {
+        await ctx.db.delete(item._id);
+      }
+      for (const brief of await ctx.db.query("briefVersions").withIndex("by_candidate_version", (q) => q.eq("candidateId", prior._id)).collect()) {
+        await ctx.db.delete(brief._id);
+      }
+      await ctx.db.delete(prior._id);
+    }
+    for (const scanId of priorScanIds) {
+      if (await ctx.db.get(scanId)) await purgeScan(ctx, scanId);
+    }
+
+    const scanId = await ctx.db.insert("scans", {
+      ownerId, marketKey: MARKET_KEY,
+      rulesetVersion: RULESET_VERSION, queryCatalogVersion: QUERY_CATALOG_VERSION,
+      status: "completed", stage: "briefs", startedAt: now - 300_000, completedAt: now,
+      searchBudgetLimit: SEARCH_BUDGET.hardCap,
+      searchesReserved: 0, searchesSucceeded: 0, searchesFailed: 0,
+      eligibleCount: 0, excludedCount: 0, processingCount: 0,
+      failureSummaries: [], isSavedDemo: false,
+    });
+
+    // One searchRun per DISTINCT captured search, and one sourceResult per
+    // DISTINCT captured row — the same discipline seedSliceFixture applies, so
+    // the ledger never overstates how many paid calls the scan made.
+    const runByFamily = new Map<FeedFamily, Id<"searchRuns">>();
+    let runCount = 0;
+    for (const family of Object.keys(FEED_SEARCHES) as FeedFamily[]) {
+      const search = FEED_SEARCHES[family];
+      runByFamily.set(family, await ctx.db.insert("searchRuns", {
+        scanId, ownerId,
+        idempotencyKey: `${scanId}:discovery:${search.templateId}:feed-fixture`,
+        templateId: search.templateId, queryCatalogVersion: QUERY_CATALOG_VERSION,
+        purpose: "discovery", engine: search.engine, query: search.query,
+        parameters: { gl: "us", hl: "en" }, language: "en",
+        status: "succeeded", attemptCount: 1, resultCount: 10, durationMs: 700 + runCount * 80,
+        reservedAt: now - 250_000 + runCount * 1_000, completedAt: now - 249_000 + runCount * 1_000,
+      }));
+      runCount += 1;
+    }
+
+    const sourceIdByRow = new Map<FeedRowKey, Id<"sourceResults">>();
+    const usedRows = new Set<FeedRowKey>();
+    for (const lead of FEED_LEADS) for (const s of lead.sources) usedRows.add(s.row);
+    const unreachableRows = new Set<FeedRowKey>();
+    for (const lead of FEED_LEADS) for (const s of lead.sources) if (s.unreachable) unreachableRows.add(s.row);
+
+    for (const rowKey of usedRows) {
+      const row: FeedRow = FEED_ROWS[rowKey];
+      const search = FEED_SEARCHES[row.family];
+      const searchRunId = runByFamily.get(row.family);
+      if (!searchRunId) throw new Error(`no search run for family ${row.family}`);
+      sourceIdByRow.set(rowKey, await ctx.db.insert("sourceResults", {
+        scanId, searchRunId, ownerId,
+        canonicalKey: `${search.engine}:${row.url}`, canonicalUrl: row.url, originalUrl: row.url,
+        engine: search.engine, sourceFamily: row.family,
+        sourceType: row.family === "community_discussion" ? "discussion" : row.family === "official" ? "primary" : "unknown",
+        title: row.title, snippet: row.snippet, publisher: row.publisher,
+        originalLanguage: "en",
+        publishedAt: row.publishedAt, discoveredAt: now, position: row.position,
+        isAccessible: !unreachableRows.has(rowKey), contentHash: `feed-${rowKey}`,
+        ...(unreachableRows.has(rowKey) ? { accessCheckedAt: now - 120_000 } : {}),
+      }));
+    }
+
+    let eligibleCount = 0;
+    let excludedCount = 0;
+    let coverageRuns = 0;
+
+    for (const [i, lead] of FEED_LEADS.entries()) {
+      const first: FeedRow = FEED_ROWS[lead.sources[0].row];
+      // Discovery order, a second apart, so the feed's freshness tiebreak is
+      // deterministic across re-runs instead of falling back to the row id.
+      // Every lead here scores null, so this ordering IS the feed's order, and
+      // the array above therefore reads top-to-bottom the way the page does.
+      const firstSeenAt = now - i * 1_000;
+
+      const candidateId = await ctx.db.insert("candidates", {
+        ownerId, fingerprint: `${FEED_PREFIX}${lead.slug}`,
+        currentTitle: first.title,
+        reportingQuestion: lead.question,
+        beat: lead.beat, status: "processing", primaryLabel: "Worth a look", disposition: "new",
+        latestEvidenceVersion: 0, independentCategoryCount: 0, coverageOriginalCount: 0,
+        coveragePassStatus: "pending",
+        // Per-partition state is an INPUT the coverage stage writes; the derived
+        // `coveragePassStatus` above is evaluate's to overwrite. At most ten
+        // leads per scan can ever have theirs completed — coverage affords two
+        // searches each out of twenty — which is why most of these stay pending.
+        coveragePartitions: lead.coverageTerms
+          ? { general: "succeeded", community: "succeeded" }
+          : { general: "pending", community: "pending" },
+        firstSeenAt, lastSeenAt: now, updatedAt: now,
+        ...(lead.unjudged ? {} : { judgment: feedJudgment(lead) }),
+      });
+
+      if (lead.coverageTerms) {
+        for (const templateId of ["coverage-general-01", "coverage-community-01"] as const) {
+          const group = templateId === "coverage-general-01" ? "general" : "community";
+          await ctx.db.insert("searchRuns", {
+            scanId, ownerId, candidateId,
+            idempotencyKey: `${scanId}:coverage:${templateId}:${lead.slug}`,
+            templateId, queryCatalogVersion: QUERY_CATALOG_VERSION,
+            purpose: "coverage", engine: "google",
+            query: `${group} coverage outlets ${lead.coverageTerms.map((t) => `"${t}"`).join(" ")}`,
+            parameters: { gl: "us", hl: "en" }, language: "en",
+            status: "succeeded", attemptCount: 1, resultCount: 10, durationMs: 820,
+            reservedAt: now - 200_000 + coverageRuns * 1_000, completedAt: now - 199_000 + coverageRuns * 1_000,
+          });
+          coverageRuns += 1;
+        }
+      }
+
+      for (const s of lead.sources) {
+        const sourceResultId = sourceIdByRow.get(s.row);
+        const row: FeedRow = FEED_ROWS[s.row];
+        if (!sourceResultId) throw new Error(`no source result for row ${s.row}`);
+        await ctx.db.insert("candidateSources", {
+          candidateId, scanId, sourceResultId,
+          role: s.role,
+          independenceGroup: `host:${new URL(row.url).hostname.replace(/^www\./, "")}`,
+          signalCategory: row.family === "news" ? "original_news" : row.family === "official" ? "official_record" : "community_discussion",
+          addedBy: "ai_suggestion",
+        });
+      }
+
+      await ctx.db.insert("candidateAppearances", {
+        candidateId, scanId, ownerId,
+        statusAtScan: "processing", labelAtScan: "Worth a look", dispositionAtScan: "new", rank: i + 1,
+      });
+
+      // Every verdict on this screen is the rules engine's. Nothing above wrote
+      // status, primaryLabel, scoreTotal or a single exclusion reason.
+      const verdict: FeedVerdict = await ctx.runMutation(internal.candidates.evaluate.evaluate, { scanId, candidateId, now });
+      if ("status" in verdict && verdict.status === "eligible") eligibleCount += 1;
+      else excludedCount += 1;
+    }
+
+    await ctx.db.patch(scanId, {
+      searchesReserved: runCount + coverageRuns,
+      searchesSucceeded: runCount + coverageRuns,
+      eligibleCount, excludedCount, processingCount: 0,
+    });
+
+    // ponytail: no evidenceItems and no briefVersions. The feed card reads none
+    // of them, and a lead that did not qualify never gets a brief generated for
+    // it anyway. seedSliceFixture is still the fixture for the evidence page.
+    return { scanId, eligibleCount, excludedCount };
+  },
+});
