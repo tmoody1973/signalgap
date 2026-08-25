@@ -1,8 +1,9 @@
+import { type Infer } from "convex/values";
 import { Beat, BEAT_TEXT, ProductLabel, PRODUCT_LABELS } from "./source-labels";
+import { vDisposition } from "../../convex/lib/validators";
 
-// Extracted from convex/lib/validators.ts vDisposition union.
-// Mirrors the server-side validators for type safety at the boundary.
-export type Disposition = "new" | "rejected" | "monitoring" | "assigned";
+// Disposition type derived from server-side vDisposition validator.
+export type Disposition = Infer<typeof vDisposition>;
 
 export type FeedFilters = {
   view: "eligible" | "excluded";
@@ -14,7 +15,7 @@ export type FeedFilters = {
 // Valid vocabulary sets for validation.
 const VALID_BEATS = new Set(Object.keys(BEAT_TEXT)) as Set<string>;
 const VALID_LABELS = new Set(Object.values(PRODUCT_LABELS)) as Set<string>;
-const VALID_DISPOSITIONS = new Set<string>(["new", "rejected", "monitoring", "assigned"]);
+const VALID_DISPOSITIONS = new Set<string>(vDisposition.members.map((m) => m.value));
 
 // Type guards: validates that a string is in the vocabulary and narrows to the correct type.
 function isBeat(value: unknown): value is Beat {
@@ -29,13 +30,6 @@ function isDisposition(value: unknown): value is Disposition {
   return typeof value === "string" && VALID_DISPOSITIONS.has(value);
 }
 
-/**
- * Parses a URLSearchParams into a FeedFilters object.
- *
- * This is a trust boundary: the input is a URL a person can type or edit.
- * Unknown values are silently dropped to defaults, never passed downstream.
- * This function is total — it never throws.
- */
 /**
  * Parses a URLSearchParams into a FeedFilters object.
  *

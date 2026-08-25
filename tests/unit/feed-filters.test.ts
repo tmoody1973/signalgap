@@ -42,4 +42,22 @@ describe("feed filters", () => {
     });
     expect(params.toString()).toBe("");
   });
+
+  it("survives the round trip a browser address bar actually performs", () => {
+    const filters = {
+      view: "excluded",
+      beat: "housing",
+      label: "Coverage gap",
+      disposition: "monitoring",
+    } as const;
+    // Through the STRING, not the object — this is what a shared link is.
+    const asUrl = feedFiltersToParams(filters).toString();
+    expect(parseFeedFilters(new URLSearchParams(asUrl))).toEqual(filters);
+  });
+
+  it("accepts either encoding of a label with a space", () => {
+    // A link pasted from one client may arrive %20-encoded and from another +-encoded.
+    expect(parseFeedFilters(new URLSearchParams("label=Coverage%20gap")).label).toBe("Coverage gap");
+    expect(parseFeedFilters(new URLSearchParams("label=Coverage+gap")).label).toBe("Coverage gap");
+  });
 });
