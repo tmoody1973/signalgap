@@ -52,8 +52,13 @@ export function LeadFeed({
   // Narrowing to one beat should put an editor back at the first 25 of THAT
   // list. Derived during render rather than reset in an effect: no second pass
   // and no frame showing the old page size against the new filters.
-  const [paging, setPaging] = useState({ key: filterKey, limit: PAGE_SIZE });
-  const limit = paging.key === filterKey ? paging.limit : PAGE_SIZE;
+  // `prev` is the page size that was on screen before the current one was
+  // asked for. It is what the pinned query below reads, so the fallback is
+  // always the list the reader is actually looking at.
+  const [paging, setPaging] = useState({ key: filterKey, limit: PAGE_SIZE, prev: PAGE_SIZE });
+  const sameFilters = paging.key === filterKey;
+  const limit = sameFilters ? paging.limit : PAGE_SIZE;
+  const pinned = sameFilters ? paging.prev : PAGE_SIZE;
 
   // One growing page rather than a stack of accumulated ones: `listForScan`
   // sorts a bounded in-memory set and its cursor is a plain offset, so asking
@@ -70,21 +75,23 @@ export function LeadFeed({
 
   // Two subscriptions, on purpose. A Convex query reads `undefined` until its
   // NEW arguments land, so growing the page size on its own would blank the
-  // twenty-five already on screen and throw the reader back to the top. The
-  // first-page query never changes its arguments, so it is already in the
-  // client's cache and holds the list steady while the wider one arrives.
+  // rows already on screen and throw the reader back to the top. The pinned
+  // query asks for the PREVIOUS page size, which is the one the reader is
+  // looking at and is therefore already in the client's cache — so it holds
+  // that exact list steady while the wider one arrives, on the second click
+  // and every one after it, not only the first.
   // On a filter change both go undefined together — which is right, because
   // the previous list is then the wrong answer, not a stale one.
-  const firstPage = useQuery(api.candidates.list.listForScan, {
+  const pinnedPage = useQuery(api.candidates.list.listForScan, {
     ...args,
-    paginationOpts: { numItems: PAGE_SIZE, cursor: null },
+    paginationOpts: { numItems: pinned, cursor: null },
   });
   const widerPage = useQuery(
     api.candidates.list.listForScan,
-    limit > PAGE_SIZE ? { ...args, paginationOpts: { numItems: limit, cursor: null } } : "skip",
+    limit > pinned ? { ...args, paginationOpts: { numItems: limit, cursor: null } } : "skip",
   );
-  const result = widerPage ?? firstPage;
-  const loadingMore = limit > PAGE_SIZE && widerPage === undefined;
+  const result = widerPage ?? pinnedPage;
+  const loadingMore = limit > pinned && widerPage === undefined;
 
   const hrefFor = (next: LeadFilters) => {
     const params = feedFiltersToParams(next).toString();
@@ -128,11 +135,21 @@ export function LeadFeed({
           Earlier stages can have real work in flight against three zeroes, so
           an unfinished scan says so in words rather than letting those zeroes
           read as "nothing is happening". */}
-      {!isFinished(scan) && (
+      {/* A stopped scan needs its own sentence. Its counts are never a whole
+          picture: a cancel before the last stage leaves all three at their
+          initial zeroes, and a cancel during it freezes a mid-walk snapshot
+          that can read "3 still working" forever. Saying "still running" there
+          would be false, and saying nothing lets a partial count read as final. */}
+      {!isFinished(scan) ? (
         <p className="mt-1 text-sm text-muted">
           The scan is still running. These counts only cover leads that have reached the last stage.
         </p>
-      )}
+      ) : scan.status === "canceled" ? (
+        <p className="mt-1 text-sm text-muted">
+          You stopped this scan. These counts cover only the leads it judged before it stopped — anything
+          left as still working never reached a verdict.
+        </p>
+      ) : null}
 
       {/* Exactly one reset on screen: it lives with the filters while there is
           a list to reset, and moves into the empty state when there is not. */}
@@ -167,7 +184,7 @@ export function LeadFeed({
               size="sm"
               className="mt-4"
               isLoading={loadingMore}
-              onPress={() => setPaging({ key: filterKey, limit: limit + PAGE_SIZE })}
+              onPress={() => setPaging({ key: filterKey, limit: limit + PAGE_SIZE, prev: limit })}
             >
               Load next {PAGE_SIZE}
             </Button>
@@ -242,6 +259,36 @@ function EmptyState({
             ? "No leads have qualified yet. The scan is still running."
             : "Nothing has been ruled out yet. The scan is still running."}
         </p>
+      </div>
+    );
+  }
+
+  // A stopped scan gets its own sentence, before the two that speak for a scan
+  // that ran to the end. Both of those state something this scan cannot know:
+  // it was cut off, so an empty list here means "not judged", never "judged and
+  // found nothing". The candidates it had already formed are real; they simply
+  // never reached a verdict.
+  if (scan.status === "canceled") {
+    return (
+      <div className="mt-5 border-t border-rule pt-4">
+        <p className="text-sm">
+          {view === "eligible"
+            ? "No leads qualified before you stopped this scan."
+            : "Nothing was ruled out before you stopped this scan."}
+        </p>
+        <p className="mt-2 max-w-prose text-sm text-muted">
+          The scan stopped before it judged everything it found, so this list is not the whole picture.
+        </p>
+        <div className="mt-3 flex flex-wrap items-center gap-4">
+          {view === "eligible" && scan.excludedCount > 0 && (
+            <Link href={excludedHref} className="text-sm font-semibold text-accent hover:underline">
+              See what did not qualify
+            </Link>
+          )}
+          <Button color="secondary" size="sm" onPress={onRunNewScan} isDisabled={runNewScanDisabled}>
+            Run new scan
+          </Button>
+        </div>
       </div>
     );
   }

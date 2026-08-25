@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
+import { vProductLabel } from "../../convex/lib/validators";
+import { isLeadLabel } from "@/components/feed/feed-filters";
 import { parseFeedFilters, feedFiltersToParams } from "@/lib/feed-filters";
+import { PRODUCT_LABELS } from "@/lib/source-labels";
 
 describe("feed filters", () => {
   it("defaults to the eligible view with no filters", () => {
@@ -59,5 +62,38 @@ describe("feed filters", () => {
     // A link pasted from one client may arrive %20-encoded and from another +-encoded.
     expect(parseFeedFilters(new URLSearchParams("label=Coverage%20gap")).label).toBe("Coverage gap");
     expect(parseFeedFilters(new URLSearchParams("label=Coverage+gap")).label).toBe("Coverage gap");
+  });
+});
+
+/**
+ * `parseFeedFilters` validates a label against PRODUCT_LABELS; `listForScan`
+ * argues against vProductLabel, which is a strict subset. `isLeadLabel` is the
+ * guard across that gap, so the expectations are derived from the two
+ * vocabularies rather than typed out — if either one changes, the test moves
+ * with it instead of rotting.
+ */
+describe("isLeadLabel", () => {
+  const serverLabels = vProductLabel.members.map((member) => member.value);
+  const scanOnlyLabels = Object.values(PRODUCT_LABELS).filter(
+    (label) => !serverLabels.includes(label as (typeof serverLabels)[number]),
+  );
+
+  it("accepts every label the server query will actually take", () => {
+    for (const label of serverLabels) expect(isLeadLabel(label)).toBe(true);
+  });
+
+  it("rejects the scan-level labels that parse clean but the server would refuse", () => {
+    // These describe a SCAN, not a lead. Each one survives parseFeedFilters and
+    // would reach listForScan's own argument validator, which throws.
+    expect(scanOnlyLabels).toEqual(["Incomplete scan", "Stopped early", "Outdated", "Saved copy"]);
+    for (const label of scanOnlyLabels) {
+      expect(parseFeedFilters(new URLSearchParams(`label=${label}`)).label).toBe(label);
+      expect(isLeadLabel(label)).toBe(false);
+    }
+  });
+
+  it("rejects an absent label and a made-up one", () => {
+    expect(isLeadLabel(null)).toBe(false);
+    expect(isLeadLabel("BREAKING")).toBe(false);
   });
 });
