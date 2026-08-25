@@ -94,6 +94,32 @@ export default defineSchema({
     isAccessible: v.boolean(),
     accessCheckedAt: v.optional(v.number()),
     contentHash: v.string(),
+    // What analyzeResults extracted, kept in ONE nested field so model-derived
+    // data is never mistaken for the deterministic fields above it. Optional
+    // because a row ingested before analysis ran — or whose analysis failed —
+    // is a valid row; `analysis === undefined` is the single "never analysed"
+    // check. Written only by `ai/analyzeResults.persistAnalysis`.
+    analysis: v.optional(v.object({
+      // The five entity categories the model returns, flattened and deduplicated.
+      // Every consumer (candidateFingerprint, clusterSignals, blocking) wants one
+      // flat key list, so the split is collapsed once here instead of five times
+      // downstream.
+      entityKeys: v.array(v.string()),
+      // The first extracted claim, falling back to the model's reason. This is
+      // what clustering and blocking read; the fallback rule lives here so no
+      // consumer has to reinvent it.
+      claimSummary: v.string(),
+      claims: v.array(v.object({
+        text: v.string(),
+        // Already checked word-for-word against the stored title or snippet by
+        // `validateAgainstSources` before it could be written.
+        exactExcerpt: v.optional(v.string()),
+      })),
+      dates: v.array(v.string()),
+      // Which paid call produced this, the same provenance rule evidenceItems
+      // uses. It is what makes "we already paid for this" auditable.
+      modelRunId: v.id("modelRuns"),
+    })),
   })
     .index("by_scan", ["scanId"])
     .index("by_search_run", ["searchRunId"])

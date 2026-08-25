@@ -41,15 +41,23 @@ export const loadInput = internalQuery({
 
 export const persistAnalysis = internalMutation({
   args: {
+    /** The run that produced these items, stored so the extraction is traceable. */
+    modelRunId: v.id("modelRuns"),
     items: v.array(v.object({
       sourceResultId: v.id("sourceResults"),
       translatedTitle: v.union(v.string(), v.null()),
       translatedSnippet: v.union(v.string(), v.null()),
       sourceTypeSuggestion: V.vSourceType,
+      analysis: v.object({
+        entityKeys: v.array(v.string()),
+        claimSummary: v.string(),
+        claims: v.array(v.object({ text: v.string(), exactExcerpt: v.union(v.string(), v.null()) })),
+        dates: v.array(v.string()),
+      }),
     })),
   },
   returns: v.object({ translated: v.number(), typed: v.number() }),
-  handler: async (ctx, { items }) => {
+  handler: async (ctx, { items, modelRunId }) => {
     let translated = 0;
     let typed = 0;
     for (const item of items) {
@@ -71,11 +79,53 @@ export const persistAnalysis = internalMutation({
         patch.sourceType = item.sourceTypeSuggestion;
         typed++;
       }
+
+      // The extraction we already paid for. Replaced wholesale, never merged —
+      // a second analysis of the same row must not leave two competing entity
+      // lists behind. It sits in its own field, so it can never reach `title`,
+      // `snippet` or `sourceType` above.
+      patch.analysis = {
+        ...item.analysis,
+        claims: item.analysis.claims.map((c) => ({
+          text: c.text,
+          ...(c.exactExcerpt === null ? {} : { exactExcerpt: c.exactExcerpt }),
+        })),
+        modelRunId,
+      };
+
       if (Object.keys(patch).length > 0) await ctx.db.patch(item.sourceResultId, patch);
     }
     return { translated, typed };
   },
 });
+
+/**
+ * The half of an analysed item worth keeping.
+ *
+ * `entities` arrives split five ways; every consumer wants one flat key list, so
+ * it is flattened and deduplicated once, here. `claimSummary` is the first claim
+ * with the model's `reason` as the fallback — the same rule the measurement used
+ * to produce the three correct merges in task-1-report.md.
+ *
+ * Deliberately dropped: `detectedLanguage` (the row already carries
+ * `originalLanguage` from ingest), `originalTitle`/`originalSnippet` (the row
+ * already holds the verbatim text; storing the model's echo of it invites
+ * disagreement about which one is true) and `potentialHumanSources`
+ * (`classifyEvidence` already emits source-bound `potential_source` evidence,
+ * which is what the brief reads).
+ */
+function toStoredAnalysis(item: AnalyzeResultsOutput["items"][number]) {
+  const { people, organizations, streets, neighborhoods, agencies } = item.entities;
+  const keys = [...people, ...organizations, ...streets, ...neighborhoods, ...agencies]
+    .map((k) => k.trim())
+    .filter((k) => k.length > 0);
+  return {
+    entityKeys: [...new Set(keys)],
+    claimSummary: item.claims[0]?.text ?? item.reason,
+    claims: item.claims,
+    dates: item.dates,
+  };
+}
 
 export type AnalyzeArgs = { scanId: Id<"scans">; sourceResultIds: Id<"sourceResults">[] };
 export type AnalyzeOutcome =
@@ -115,11 +165,13 @@ export async function runAnalyzeResults(
   if (!result.ok) return { ok: false, reason: result.reason, errors: result.errors };
 
   const { translated, typed } = await ctx.runMutation(internal.ai.analyzeResults.persistAnalysis, {
+    modelRunId: result.modelRunId,
     items: result.value.items.map((i) => ({
       sourceResultId: i.sourceResultId as Id<"sourceResults">,
       translatedTitle: i.translatedTitle,
       translatedSnippet: i.translatedSnippet,
       sourceTypeSuggestion: i.sourceTypeSuggestion,
+      analysis: toStoredAnalysis(i),
     })),
   });
 
