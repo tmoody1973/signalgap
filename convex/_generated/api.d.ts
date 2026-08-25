@@ -24,6 +24,7 @@ import type * as candidates_evaluate from "../candidates/evaluate.js";
 import type * as candidates_fingerprint from "../candidates/fingerprint.js";
 import type * as candidates_form from "../candidates/form.js";
 import type * as candidates_judgment from "../candidates/judgment.js";
+import type * as candidates_list from "../candidates/list.js";
 import type * as candidates_snapshot from "../candidates/snapshot.js";
 import type * as candidates_toEngineSource from "../candidates/toEngineSource.js";
 import type * as config_beats from "../config/beats.js";
@@ -89,6 +90,7 @@ declare const fullApi: ApiFromModules<{
   "candidates/fingerprint": typeof candidates_fingerprint;
   "candidates/form": typeof candidates_form;
   "candidates/judgment": typeof candidates_judgment;
+  "candidates/list": typeof candidates_list;
   "candidates/snapshot": typeof candidates_snapshot;
   "candidates/toEngineSource": typeof candidates_toEngineSource;
   "config/beats": typeof config_beats;
