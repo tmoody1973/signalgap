@@ -52,6 +52,14 @@ export function LeadCard({ lead }: { lead: LeadCardView }) {
   // this shape carries for "never checked" — every eligible lead's coverage
   // pass completed by construction, so this only ever fires on the excluded list.
   const coverageChecked = !lead.exclusionReasons.includes("coverage_pass_incomplete");
+  // A blank `reportingQuestion` is a real state: `formFromCluster` writes it
+  // blank and only a brief fills it in, so any lead whose brief failed or was
+  // never attempted has none. Falling back to the working title matches
+  // `components/evidence/lead-card.tsx`, but this surface says so out loud —
+  // the working title is a source's own headline, and the slot it lands in
+  // otherwise reads as a question this product wrote.
+  const question = lead.reportingQuestion || lead.currentTitle;
+  const isWorkingTitle = lead.reportingQuestion === "";
 
   return (
     <article className="flex flex-col gap-2 border-t border-rule py-3.5 first:border-t-0">
@@ -60,7 +68,8 @@ export function LeadCard({ lead }: { lead: LeadCardView }) {
         <span className="text-xs text-muted">{BEAT_TEXT[lead.beat]}</span>
       </div>
 
-      <h3 className="font-editorial text-lg leading-snug text-pretty">{lead.reportingQuestion}</h3>
+      <h3 className="font-editorial text-lg leading-snug text-pretty">{question}</h3>
+      {isWorkingTitle && <p className="text-xs text-muted">Working title — no reporting question yet.</p>}
 
       {reasons && <p className="text-sm text-muted">{reasons}</p>}
 

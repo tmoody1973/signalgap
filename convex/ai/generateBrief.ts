@@ -127,7 +127,15 @@ export const persistBrief = internalMutation({
       candidateId, scanId, ownerId: candidate.ownerId, version, modelRunId,
       ...body, createdAt: Date.now(),
     });
-    await ctx.db.patch(candidateId, { latestBriefVersion: version, updatedAt: Date.now() });
+    // The candidate row carries the question too, because the feed card reads
+    // THIS row and `candidates/list.ts` must not fan out into briefs for a
+    // whole scan. `formFromCluster` writes it blank; the brief is what makes it
+    // true. Not one of the fields `candidates/evaluate.ts` owns.
+    await ctx.db.patch(candidateId, {
+      latestBriefVersion: version,
+      reportingQuestion: body.reportingQuestion,
+      updatedAt: Date.now(),
+    });
     return briefId;
   },
 });

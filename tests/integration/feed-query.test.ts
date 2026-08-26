@@ -43,6 +43,7 @@ async function seedLead(
     firstSeenAt?: number;
     exclusionReasons?: ExclusionReason[];
     fingerprint?: string;
+    reportingQuestion?: string;
   },
 ): Promise<Id<"candidates">> {
   const beat = opts.beat ?? "housing";
@@ -54,7 +55,7 @@ async function seedLead(
       ownerId: opts.ownerId,
       fingerprint: opts.fingerprint ?? `fp-${Math.random()}`,
       currentTitle: "A lead",
-      reportingQuestion: "What happened here?",
+      reportingQuestion: opts.reportingQuestion ?? "What happened here?",
       beat, status: opts.status, primaryLabel: label, disposition,
       latestEvidenceVersion: 0,
       scoreTotal: opts.scoreTotal,
@@ -107,6 +108,18 @@ describe("candidates.list.listForScan", () => {
     // alice cannot read bob's scan by guessing its id.
     const aliceOnBobScan = await page(t, "alice", { scanId: bobScan, view: "eligible" });
     expect(aliceOnBobScan).toEqual({ page: [], isDone: true, continueCursor: "", counts: { eligible: 0, excluded: 0, processing: 0 } });
+  });
+
+  it("still gives the card a headline when no brief ever wrote a question", async () => {
+    const t = setup();
+    const { ownerId, scanId } = await seedOwnerAndScan(t, "owner", { eligibleCount: 1 });
+    // What `formFromCluster` writes, and what a candidate keeps when its brief
+    // failed — the live scan had one real `brief: invalid_output`.
+    await seedLead(t, { ownerId, scanId, status: "eligible", reportingQuestion: "" });
+
+    const eligible = await page(t, "owner", { scanId, view: "eligible" });
+    // The card must carry the working title, or it renders an empty heading.
+    expect(eligible.page[0].currentTitle).toBe("A lead");
   });
 
   it("defaults to eligible leads only when view is eligible", async () => {

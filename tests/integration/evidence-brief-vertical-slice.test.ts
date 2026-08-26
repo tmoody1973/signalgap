@@ -107,6 +107,20 @@ describe("evidence-to-brief vertical slice", () => {
     expect(brief.confirmedFacts[0].text).toMatch(/independently confirmed/i);
   });
 
+  it("carries the brief's reporting question onto the candidate row the feed card reads", async () => {
+    const t = setup();
+    const { scanId, ids } = await seedScan(t);
+    await t.action(async (ctx) =>
+      await runSliceForScan(ctx, { scanId, sourceResultIds: Object.values(ids), now: NOW }, scriptedModel(sliceModelAnswers(ids))));
+
+    const brief = (await t.run(async (ctx) => (await ctx.db.query("briefVersions").collect())[0])) as Doc<"briefVersions">;
+    const candidate = (await t.run(async (ctx) => (await ctx.db.query("candidates").collect())[0])) as Doc<"candidates">;
+    // `candidates/list.ts` reads this row directly and must never fan out into
+    // briefs, so a blank here is a blank headline on the feed itself.
+    expect(candidate.reportingQuestion).toBe(brief.reportingQuestion);
+    expect(candidate.reportingQuestion).not.toBe("");
+  });
+
   it("keeps the Spanish original beside its translation all the way into the snapshot", async () => {
     const t = setup();
     const { scanId, ids } = await seedScan(t);

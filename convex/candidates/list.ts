@@ -22,6 +22,12 @@ import * as V from "../lib/validators";
 const vLeadCard = v.object({
   candidateId: v.id("candidates"),
   reportingQuestion: v.string(),
+  // The working title we clustered under. Empty `reportingQuestion` is a real
+  // state, not a bug: `formFromCluster` writes it blank and only a brief fills
+  // it in, so a candidate whose brief never landed has none. The card falls
+  // back to this rather than rendering an empty heading. Already on the row —
+  // no extra read, so the no-fan-out rule above still holds.
+  currentTitle: v.string(),
   beat: V.vBeat,
   label: V.vProductLabel,
   // Matches evidence.forCandidate's convention: excluded means no score, not
@@ -49,6 +55,7 @@ function toCard(candidate: Doc<"candidates">): typeof vLeadCard.type {
   return {
     candidateId: candidate._id,
     reportingQuestion: candidate.reportingQuestion,
+    currentTitle: candidate.currentTitle,
     beat: candidate.beat,
     label: candidate.primaryLabel,
     scoreTotal: candidate.scoreTotal ?? null,
