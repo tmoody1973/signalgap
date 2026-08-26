@@ -1,0 +1,203 @@
+{
+ "provenance": "The 39 same-story verdicts from the ONE real adjudication call Task 6 made over the 89 ambiguous pairs of scan k1781cvj03wmdd2bgz4ks2rzbh8d4ze8 (claude-sonnet-5, 22.1 s, $0.1134, 2026-08-26; see task-6-report.md §3). Captured so the full pipeline can be scored offline, with no model and no spend.",
+ "derivedFrom": "buildAdjudicationRequest(scan-294.json) joined to .eval-runs/adjudicate/verdicts.json by pairId; all 89 verdicts re-matched their source titles exactly, so the join is verified rather than assumed.",
+ "sameStoryCount": 39,
+ "adjudicatedPairs": 89,
+ "links": [
+  {
+   "pair": "k974ht5h84f1w8xve46ap8bxjs8d58k3|k976swhak0wceq2nkszmsch0ds8d50wx",
+   "a": "Online registration now open for 2026 Back to School Festival",
+   "b": "Online registration now open for 2026 Back to School Festival"
+  },
+  {
+   "pair": "k972zdpf97pdqrtmr5d511ctj18d47vf|k97c83scydftafweyktk000wqd8d5fb7",
+   "a": "Free admission days at Milwaukee museums in September 2026",
+   "b": "Free admission days at Milwaukee museums in September 2026"
+  },
+  {
+   "pair": "k9743nc6f9783e7761pe1pmvcx8d5smy|k97et2gcc6r2hk5gkr4syn45wn8d5hpz",
+   "a": "Feds to probe whether Milwaukee Public Schools considers race in student discipline",
+   "b": "US Education Department investigates Milwaukee Public Schools over race-conscious discipline practices"
+  },
+  {
+   "pair": "k97574vpc4b7aprssm2vhkzsj98d5an0|k97bpm1crcnwnq2rjzjp7aa8198d41tx",
+   "a": "Bradley Tech/Milwaukee Arts vs Catholic Memorial Live Free Wisconsin High School Football 2026",
+   "b": "Bradley Tech/Milwaukee Arts vs Catholic Memorial Live Free Wisconsin High School Football 2026"
+  },
+  {
+   "pair": "k974b5wkybd1j0vgydr8hx4hzs8d4fs4|k97bpm1crcnwnq2rjzjp7aa8198d41tx",
+   "a": "Catholic Memorial vs Bradley Tech/Milwaukee Arts Live Free Wisconsin High School Football 2026",
+   "b": "Bradley Tech/Milwaukee Arts vs Catholic Memorial Live Free Wisconsin High School Football 2026"
+  },
+  {
+   "pair": "k978h3m8d2vnv249ekjdyh63sh8d4fwc|k97bpm1crcnwnq2rjzjp7aa8198d41tx",
+   "a": "Catholic Memorial vs Bradley Tech/Milwaukee Arts Live Free Wisconsin High School Football 2026",
+   "b": "Bradley Tech/Milwaukee Arts vs Catholic Memorial Live Free Wisconsin High School Football 2026"
+  },
+  {
+   "pair": "k97501py9sf1r3hp6tr9grnspd8d55qd|k97bpm1crcnwnq2rjzjp7aa8198d41tx",
+   "a": "Bradley Tech/Milwaukee Arts vs Catholic Memorial Live Free Wisconsin High School Football 2026",
+   "b": "Bradley Tech/Milwaukee Arts vs Catholic Memorial Live Free Wisconsin High School Football 2026"
+  },
+  {
+   "pair": "k974b5wkybd1j0vgydr8hx4hzs8d4fs4|k97574vpc4b7aprssm2vhkzsj98d5an0",
+   "a": "Catholic Memorial vs Bradley Tech/Milwaukee Arts Live Free Wisconsin High School Football 2026",
+   "b": "Bradley Tech/Milwaukee Arts vs Catholic Memorial Live Free Wisconsin High School Football 2026"
+  },
+  {
+   "pair": "k97574vpc4b7aprssm2vhkzsj98d5an0|k978h3m8d2vnv249ekjdyh63sh8d4fwc",
+   "a": "Bradley Tech/Milwaukee Arts vs Catholic Memorial Live Free Wisconsin High School Football 2026",
+   "b": "Catholic Memorial vs Bradley Tech/Milwaukee Arts Live Free Wisconsin High School Football 2026"
+  },
+  {
+   "pair": "k97501py9sf1r3hp6tr9grnspd8d55qd|k97574vpc4b7aprssm2vhkzsj98d5an0",
+   "a": "Bradley Tech/Milwaukee Arts vs Catholic Memorial Live Free Wisconsin High School Football 2026",
+   "b": "Bradley Tech/Milwaukee Arts vs Catholic Memorial Live Free Wisconsin High School Football 2026"
+  },
+  {
+   "pair": "k974b5wkybd1j0vgydr8hx4hzs8d4fs4|k978h3m8d2vnv249ekjdyh63sh8d4fwc",
+   "a": "Catholic Memorial vs Bradley Tech/Milwaukee Arts Live Free Wisconsin High School Football 2026",
+   "b": "Catholic Memorial vs Bradley Tech/Milwaukee Arts Live Free Wisconsin High School Football 2026"
+  },
+  {
+   "pair": "k974b5wkybd1j0vgydr8hx4hzs8d4fs4|k97501py9sf1r3hp6tr9grnspd8d55qd",
+   "a": "Catholic Memorial vs Bradley Tech/Milwaukee Arts Live Free Wisconsin High School Football 2026",
+   "b": "Bradley Tech/Milwaukee Arts vs Catholic Memorial Live Free Wisconsin High School Football 2026"
+  },
+  {
+   "pair": "k97501py9sf1r3hp6tr9grnspd8d55qd|k978h3m8d2vnv249ekjdyh63sh8d4fwc",
+   "a": "Bradley Tech/Milwaukee Arts vs Catholic Memorial Live Free Wisconsin High School Football 2026",
+   "b": "Catholic Memorial vs Bradley Tech/Milwaukee Arts Live Free Wisconsin High School Football 2026"
+  },
+  {
+   "pair": "k97bjp8abqaagkyaf3s42exrwx8d57br|k97dj67yj7vf5q91ghqz23t08d8d5sj9",
+   "a": "West Allis-West Milwaukee DPW fire, building under construction",
+   "b": "West Allis-West Milwaukee DPW fire, building under construction"
+  },
+  {
+   "pair": "k979h3e30pwvk3bk49s4zm59x18d5be2|k97dj67yj7vf5q91ghqz23t08d8d5sj9",
+   "a": "West Allis-West Milwaukee DPW fire, building under construction",
+   "b": "West Allis-West Milwaukee DPW fire, building under construction"
+  },
+  {
+   "pair": "k9798gx9kbgcahk3pjv0rnn2xn8d5kdy|k97dj67yj7vf5q91ghqz23t08d8d5sj9",
+   "a": "West Allis-West Milwaukee DPW fire, building under construction",
+   "b": "West Allis-West Milwaukee DPW fire, building under construction"
+  },
+  {
+   "pair": "k979h3e30pwvk3bk49s4zm59x18d5be2|k97bjp8abqaagkyaf3s42exrwx8d57br",
+   "a": "West Allis-West Milwaukee DPW fire, building under construction",
+   "b": "West Allis-West Milwaukee DPW fire, building under construction"
+  },
+  {
+   "pair": "k9798gx9kbgcahk3pjv0rnn2xn8d5kdy|k97bjp8abqaagkyaf3s42exrwx8d57br",
+   "a": "West Allis-West Milwaukee DPW fire, building under construction",
+   "b": "West Allis-West Milwaukee DPW fire, building under construction"
+  },
+  {
+   "pair": "k9798gx9kbgcahk3pjv0rnn2xn8d5kdy|k979h3e30pwvk3bk49s4zm59x18d5be2",
+   "a": "West Allis-West Milwaukee DPW fire, building under construction",
+   "b": "West Allis-West Milwaukee DPW fire, building under construction"
+  },
+  {
+   "pair": "k977m0f4jg7f0ezr23j0vebtw98d4h2j|k97ezvj2pyepwd6pjg3rvkycds8d49m5",
+   "a": "Milwaukee business owner hit by third break-in in two months",
+   "b": "Milwaukee's 38th Street Mart Hit by Third Break-In in 2 Months"
+  },
+  {
+   "pair": "k973t11d69tqsdw9qa0cfbes2h8d4xj2|k97c9v3cpj9eekwnmdgg3fe4rs8d50w4",
+   "a": "Milwaukee NNS examines what's changed since the 2016 Sherman Park Uprising",
+   "b": "Investments Changed Sherman Park Neighborhood After 2016 Uprising"
+  },
+  {
+   "pair": "k973t11d69tqsdw9qa0cfbes2h8d4xj2|k97f05bj758m1z56mahtd6y2q98d5vxg",
+   "a": "Milwaukee NNS examines what's changed since the 2016 Sherman Park Uprising",
+   "b": "Investments changed Milwaukee’s Sherman Park after 2016 uprising, but who benefited remains unclear"
+  },
+  {
+   "pair": "k972x9mxsdmnme4zd5mjqkvfph8d5kwg|k973m6bs9hg1dxd817jsr2enz98d55wk",
+   "a": "Milwaukee County Transit System, highways get $13.9M federal boost",
+   "b": "Milwaukee County Transit System, highways get $13.9M federal boost"
+  },
+  {
+   "pair": "k976wpr3k50xbatm8whc0b8g118d5wjc|k97esczebggs8ztf18ft4btamx8d4r83",
+   "a": "AFTERLIGHT brings free arts event to Milwaukee Riverwalk",
+   "b": "AFTERLIGHT brings free arts event to Milwaukee Riverwalk"
+  },
+  {
+   "pair": "k971vngy6aepjrzp7394f06g318d4scf|k9774gyt3arcn6m2gk0yc936bs8d4q3m",
+   "a": "The Milwaukee County Zoo's annual \"A la Carte\" festival is ...",
+   "b": "A La Carte at the Zoo"
+  },
+  {
+   "pair": "k9743nc6f9783e7761pe1pmvcx8d5smy|k97ey7vv4j5damwzeys6dc6z398d4g3b",
+   "a": "Feds to probe whether Milwaukee Public Schools considers race in student discipline",
+   "b": "Leaders react to federal investigation into whether MPS considers race when disciplining students"
+  },
+  {
+   "pair": "k973xyw5rbph5bd1p54nprhrtn8d56v8|k97dj67yj7vf5q91ghqz23t08d8d5sj9",
+   "a": "Fire damages nearly completed West Allis Public Works facility under construction",
+   "b": "West Allis-West Milwaukee DPW fire, building under construction"
+  },
+  {
+   "pair": "k973xyw5rbph5bd1p54nprhrtn8d56v8|k97bjp8abqaagkyaf3s42exrwx8d57br",
+   "a": "Fire damages nearly completed West Allis Public Works facility under construction",
+   "b": "West Allis-West Milwaukee DPW fire, building under construction"
+  },
+  {
+   "pair": "k973xyw5rbph5bd1p54nprhrtn8d56v8|k979h3e30pwvk3bk49s4zm59x18d5be2",
+   "a": "Fire damages nearly completed West Allis Public Works facility under construction",
+   "b": "West Allis-West Milwaukee DPW fire, building under construction"
+  },
+  {
+   "pair": "k973xyw5rbph5bd1p54nprhrtn8d56v8|k9798gx9kbgcahk3pjv0rnn2xn8d5kdy",
+   "a": "Fire damages nearly completed West Allis Public Works facility under construction",
+   "b": "West Allis-West Milwaukee DPW fire, building under construction"
+  },
+  {
+   "pair": "k970eyy56kn0eyz4gj3qag7ep18d4csh|k9716sxmbvv1088msngnyd07f98d44tr",
+   "a": "Koss opens new store and museum attached to Milwaukee headquarters",
+   "b": "Koss Reopens Milwaukee Factory Store as a Museum for Its Headphone Legacy"
+  },
+  {
+   "pair": "k9716sxmbvv1088msngnyd07f98d44tr|k97ba2j4pv5h0vj02d4jyjbtpn8d4ksn",
+   "a": "Koss Reopens Milwaukee Factory Store as a Museum for Its Headphone Legacy",
+   "b": "Koss opens new store and museum attached to Milwaukee headquarters"
+  },
+  {
+   "pair": "k971etr9ek2m2dw61nc2x16d6s8d5snw|k97cp4yf7x290h4s1sjktg10sx8d51qx",
+   "a": "At the Asian Street Food Festival : r/milwaukee",
+   "b": "Ka Vang's Asian street food festival expands to Milwaukee ..."
+  },
+  {
+   "pair": "k977pdqkeqhx7e78rk5c98cwax8d4qve|k978yjjeb581s2xm5xnvh68fd18d55tz",
+   "a": "Mexican Fiesta returns to Milwaukee for 53rd annual celebration",
+   "b": "Mexican Fiesta Returns to Milwaukee's Lakefront, Funding Nearly $2M in Scholarships"
+  },
+  {
+   "pair": "k970xy12xevah5bg0k6zxwk4f98d47wg|k97awza15dcgc17sy9dx4m0e6n8d5brv",
+   "a": "What belongs on the front page of the Journal Sentinel? Here's what kids drew",
+   "b": "What belongs on the front page? See what Metcalfe Park youth think"
+  },
+  {
+   "pair": "k973bjpsvtrwj3k8jr3ffma8858d57bx|k97672wk5zze14frwc323090n58d4x98",
+   "a": "Gov. Evers: Joins Milwaukee County Executive Crowley and local leaders to celebrate the official reopening of the Clinton & Bernice Rose Senior Center",
+   "b": "Governor Evers and County Executive Crowley Officially ..."
+  },
+  {
+   "pair": "k971qjbpt9n9zcv5k3fwjxyg858d47t6|k97cstafqd0bg4cc7kj1n7knm98d4kdj",
+   "a": "Walter Street at Milwaukee Street to close August 24–26 for Utility Work",
+   "b": "Walter at Milwaukee Street closing August 24-26 for utility installation"
+  },
+  {
+   "pair": "k9760a49tp10phwh1mavcqeqyx8d4p6w|k97a1591avveb6431gexn0r5cn8d572y",
+   "a": "Milwaukee’s The Garage responds to online backlash over ‘NO PLAY LIST’",
+   "b": "Milwaukee bar responds after 'No Milwaukee Rap' list goes viral"
+  },
+  {
+   "pair": "k970ak911q89bxmyfxd930vmxh8d5m06|k97c2kb0vbe3eybzt38bw8ca818d59k8",
+   "a": "Severe storms knock trees on to cars in Milwaukee",
+   "b": "‘It’s insane’: Storms tear through Milwaukee, crushing cars and damaging homes"
+  }
+ ]
+}

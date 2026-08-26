@@ -84,6 +84,36 @@ describe("the two objective evaluation packets, as free unit tests", () => {
     const [a, b] = syndicatedPacket.expected.mustMergeIntoOneCluster;
     expect(sameCluster(outcome, a, b)).toBe(true);
     expect(outcome.clusters).toHaveLength(1);
+    // It AUTO-LINKS at 10. It does not merely reach the ambiguous band, so no
+    // adjudicator is what saves it.
+    expect(outcome.pairs[0].verdict).toBe("linked");
+  });
+
+  /**
+   * Both packets carry two signals, and two is inside `BLOCK_MAX_DF`, so on
+   * their own they run the DEGENERATE branch of `cutoffsFor` — document
+   * frequency is discarded and every shared key counts full. That is not the
+   * code production runs. Dropping the same two signals into the real 294 puts
+   * them past the cliff and scores them the way a real scan would.
+   */
+  it("cluster-distinct-01 still does not merge inside a real 296-source scan", () => {
+    const outcome = groupSignals([...SCAN, ...fromPacket(distinctPacket)]);
+    const [a, b] = distinctPacket.expected.mustNotMergeIntoOneCluster;
+    expect(sameCluster(outcome, a, b)).toBe(false);
+    // Stronger than "scored low": blocking never proposes the pair at all.
+    expect(pairVerdict(outcome, a, b)).toBe("rejected");
+  });
+
+  it("cluster-syndicated-01 still auto-links inside a real 296-source scan, with no margin", () => {
+    const outcome = groupSignals([...SCAN, ...fromPacket(syndicatedPacket)]);
+    const [a, b] = syndicatedPacket.expected.mustMergeIntoOneCluster;
+    expect(sameCluster(outcome, a, b)).toBe(true);
+    // In a real corpus `milwaukee`, `news`, `neighborhood`, `park` and `sherman`
+    // are common enough to be dropped or discounted; `depth, publishes,
+    // retrospective, service, uprising` are what is left. The pair lands exactly
+    // ON `LINK_THRESHOLD`, which is what makes this a drift canary rather than a
+    // comfortable pass — raise the threshold at all and this packet fails.
+    expect(outcome.pairs.find((p) => p.a === a && p.b === b)?.score).toBe(4);
   });
 });
 
@@ -131,10 +161,29 @@ describe("the traps the real 294 handed us", () => {
 describe("whole-scan canaries on the real 294", () => {
   const outcome = groupSignals(SCAN);
 
-  it("clusters the scan into more than one story and fewer than one per source", () => {
-    // 1 cluster is the over-merge disaster. 294 is today's bug on `main`.
+  it("clusters the scan into a plausible band, not one story and not one per source", () => {
+    // 1 cluster is the over-merge disaster. 294 is today's bug on `main`. The
+    // band holds for the deterministic layer alone (279) and for the full
+    // pipeline with Task 6's measured 39 adjudicated links (254).
     expect(outcome.clusters.length).toBeGreaterThan(1);
     expect(outcome.clusters.length).toBeLessThan(SCAN.length);
+    expect(outcome.clusters.length).toBeGreaterThanOrEqual(150);
+    expect(outcome.clusters.length).toBeLessThanOrEqual(290);
+  });
+
+  /**
+   * The exact numbers every report in this task series quotes, pinned so that
+   * "the deterministic numbers are unmoved" is something a test says rather than
+   * something a person re-measures. Deliberately brittle: a threshold, weight or
+   * cutoff change moves these, and the change should have to say so out loud —
+   * update this test and the report together, exactly like the KNOWN MISS tests.
+   */
+  it("decides 15 links, 89 ambiguous and 1,102 rejections on the real 294", () => {
+    expect(outcome.stats.blockedPairs).toBe(1206);
+    expect(outcome.stats.linkedPairs).toBe(15);
+    expect(outcome.stats.ambiguousPairs).toBe(89);
+    expect(outcome.stats.rejectedPairs).toBe(1102);
+    expect(outcome.clusters).toHaveLength(279);
   });
 
   it("keeps the largest cluster under the transitivity ceiling", () => {
