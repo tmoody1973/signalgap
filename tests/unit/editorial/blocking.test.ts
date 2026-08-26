@@ -3,7 +3,7 @@ import distinctPacket from "../../fixtures/evaluation/cluster-distinct-01.json";
 import syndicatedPacket from "../../fixtures/evaluation/cluster-syndicated-01.json";
 import scan294 from "../../fixtures/clustering/scan-294.json";
 import datedSignals from "../../fixtures/clustering/dated-signals.json";
-import { type ClusterSignal, groupSignals } from "../../../convex/editorial/blocking";
+import { type ClusterSignal, groupSignals, pairLinkKey } from "../../../convex/editorial/blocking";
 
 /**
  * The deterministic half of clustering, tested against the two objective
@@ -382,5 +382,101 @@ describe("grouping", () => {
     const outcome = groupSignals(SCAN);
     const placed = new Set(outcome.clusters.flatMap((c) => c.sourceResultIds));
     expect(placed.size).toBe(SCAN.length);
+  });
+});
+
+/**
+ * The line this whole project is about, drawn in one function.
+ *
+ * Task 6 adds an AI adjudicator over the ambiguous band. What it hands back is a
+ * set of pair keys and nothing else — it does not group, and `groupSignals` will
+ * only honour a key for a pair IT put in the band. A yes about a pair the code
+ * linked is redundant; a yes about a pair the code rejected does nothing at all.
+ */
+describe("adjudicated links are a suggestion the rule consumes, not the rule", () => {
+  // Twelve signals, so this runs the production branch of `cutoffsFor` and not
+  // the degenerate one. "a" and "b" share exactly two full-weight tokens, which
+  // scores 2 — the floor of the ambiguous band. "c" shares nothing with either.
+  const fillers: ClusterSignal[] = Array.from({ length: 9 }, (_, i) => ({
+    sourceResultId: `filler-${i}`, title: `Ward ${i} budget hearing`, snippet: "",
+    entityKeys: [], claimSummary: "", dates: [],
+  }));
+  const signals: ClusterSignal[] = [
+    { sourceResultId: "a", title: "Harambee rezoning delayed", snippet: "", entityKeys: [], claimSummary: "", dates: [] },
+    { sourceResultId: "b", title: "Harambee rezoning proceeds", snippet: "", entityKeys: [], claimSummary: "", dates: [] },
+    { sourceResultId: "c", title: "Ferry timetable trimmed", snippet: "", entityKeys: [], claimSummary: "", dates: [] },
+    ...fillers,
+  ];
+
+  it("leaves an ambiguous pair unlinked when nothing adjudicates it", () => {
+    const outcome = groupSignals(signals);
+    expect(pairVerdict(outcome, "a", "b")).toBe("ambiguous");
+    expect(sameCluster(outcome, "a", "b")).toBe(false);
+  });
+
+  it("puts an adjudicated pair through union-find and changes the grouping", () => {
+    const outcome = groupSignals(signals, [pairLinkKey("a", "b")]);
+    expect(sameCluster(outcome, "a", "b")).toBe(true);
+    expect(outcome.clusters).toHaveLength(signals.length - 1);
+    expect(outcome.stats.adjudicatedLinks).toBe(1);
+    // The code's own verdict on the pair is unchanged and still legible.
+    expect(pairVerdict(outcome, "a", "b")).toBe("ambiguous");
+    expect(outcome.pairs.find((p) => p.a === "a" && p.b === "b")?.adjudicatedSameStory).toBe(true);
+  });
+
+  it("ignores an adjudicated yes about a pair the code rejected", () => {
+    // "a" and "c" share nothing; blocking never proposes them, so they are never
+    // scored. A model cannot merge what the score refused to consider.
+    const outcome = groupSignals(signals, [pairLinkKey("a", "c")]);
+    expect(sameCluster(outcome, "a", "c")).toBe(false);
+    expect(outcome.stats.adjudicatedLinks).toBe(0);
+    // The stronger case: a pair blocking DID compare and the score rejected. The
+    // adjudicator is never shown it, and a yes about it must still do nothing.
+    const rejected: ClusterSignal[] = [
+      { sourceResultId: "a", title: "Harambee rezoning delayed", snippet: "", entityKeys: [], claimSummary: "", dates: [] },
+      { sourceResultId: "b", title: "Harambee festival returns", snippet: "", entityKeys: [], claimSummary: "", dates: [] },
+      ...fillers,
+    ];
+    const scored = groupSignals(rejected);
+    expect(scored.stats.rejectedPairs).toBe(1);
+    expect(pairVerdict(scored, "a", "b")).toBe("rejected");
+    const withYes = groupSignals(rejected, [pairLinkKey("a", "b")]);
+    expect(sameCluster(withYes, "a", "b")).toBe(false);
+    expect(withYes.stats.adjudicatedLinks).toBe(0);
+  });
+
+  it("does not double-count an adjudicated yes about a pair the code already linked", () => {
+    const linked: ClusterSignal[] = [
+      { sourceResultId: "a", title: "", snippet: "", entityKeys: ["Sherman Park", "Vel Phillips Avenue"], claimSummary: "", dates: [] },
+      { sourceResultId: "b", title: "", snippet: "", entityKeys: ["Sherman Park", "Vel Phillips Avenue"], claimSummary: "", dates: [] },
+    ];
+    const outcome = groupSignals(linked, [pairLinkKey("a", "b")]);
+    expect(pairVerdict(outcome, "a", "b")).toBe("linked");
+    expect(outcome.stats.adjudicatedLinks).toBe(0);
+    expect(outcome.stats.linkedPairs).toBe(1);
+    // The field means "the model settled one the code left open". A pair the code
+    // decided is not one the code left open, whatever the model said about it.
+    expect(outcome.pairs[0].adjudicatedSameStory).toBe(false);
+  });
+});
+
+/**
+ * KNOWN MISS #2 reaches the adjudicator once a real shared event date is
+ * present. Task 5's fix report §1 measured this: the committed 294 fixture
+ * carries no dates at all, so the shipped `KNOWN MISS` test above is unaffected
+ * and stays exactly as it is — but production, where `analyzeResults` fills
+ * `analysis.dates`, puts this pair in front of Task 6.
+ */
+describe("KNOWN MISS #2, with the date production would have", () => {
+  it("lifts the two Homes MKE reports into the band the adjudicator sees", () => {
+    const dated = SCAN.map((s) =>
+      s.sourceResultId === ID.homesMke || s.sourceResultId === ID.southSideSpanish
+        ? { ...s, dates: ["2026-10-01"] }
+        : s);
+    const outcome = groupSignals(dated);
+    expect(pairVerdict(outcome, ID.homesMke, ID.southSideSpanish)).toBe("ambiguous");
+    // And an adjudicated yes is what turns it into a merge — nothing else does.
+    const adjudicated = groupSignals(dated, [pairLinkKey(ID.homesMke, ID.southSideSpanish)]);
+    expect(sameCluster(adjudicated, ID.homesMke, ID.southSideSpanish)).toBe(true);
   });
 });

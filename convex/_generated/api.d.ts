@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as ai_adjudicatePairs from "../ai/adjudicatePairs.js";
 import type * as ai_analyzeResults from "../ai/analyzeResults.js";
 import type * as ai_classifyEvidence from "../ai/classifyEvidence.js";
 import type * as ai_clusterSignals from "../ai/clusterSignals.js";
@@ -75,6 +76,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  "ai/adjudicatePairs": typeof ai_adjudicatePairs;
   "ai/analyzeResults": typeof ai_analyzeResults;
   "ai/classifyEvidence": typeof ai_classifyEvidence;
   "ai/clusterSignals": typeof ai_clusterSignals;

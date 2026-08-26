@@ -206,6 +206,11 @@ const stubModel = (packet: Packet): GenerateFn => async () => {
         sourceResultIds: [s.sourceResultId], similarityBasis: "dry run", entityKeys: [], suggestedExistingCandidateId: null,
       })),
     },
+    adjudicatePairs: {
+      verdicts: (packet.input.pairs as { pairId: string }[] ?? []).map((p) => ({
+        pairId: p.pairId, sameStory: false, reason: "dry run",
+      })),
+    },
     classifyEvidence: {
       beatSuggestion: null, localityBandSuggestion: "none", relevanceBandSuggestion: "emerging_question",
       flags: { isSpeculative: false, isRoutineCrime: false, isDuplicateOfCandidate: false, hasMaterialConflict: false },

@@ -29,9 +29,9 @@ const validClassify = {
 };
 
 describe("operation schemas", () => {
-  it("covers exactly the five approved operations", () => {
+  it("covers exactly the six approved operations", () => {
     expect(Object.keys(OPERATION_SCHEMAS).sort()).toEqual([
-      "analyzeResults", "classifyEvidence", "clusterSignals", "generateBrief", "planFollowUp",
+      "adjudicatePairs", "analyzeResults", "classifyEvidence", "clusterSignals", "generateBrief", "planFollowUp",
     ]);
   });
 

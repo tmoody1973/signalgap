@@ -499,15 +499,24 @@ describe("slice split at the coverage boundary", () => {
           usage: {},
         };
       }
+      if (/do these two describe the SAME underlying story/.test(system)) {
+        // The ambiguous band is adjudicated once, before the cluster loop. Every
+        // pair gets a no, so grouping is exactly what the deterministic score said.
+        const ids = [...prompt.matchAll(/"pairId":\s*"([^"]+)"/g)].map((m) => m[1]);
+        return { object: { verdicts: ids.map((pairId) => ({ pairId, sameStory: false, reason: "Different stories." })) }, usage: {} };
+      }
       throw new Error("unexpected prompt in cancellation test");
     };
 
-    // A fake, not the real scan-status plumbing: true for the first cluster,
-    // false from then on. What it proves is that the loop CALLS this between
-    // clusters and stops when told to — `convex/stages/evidence.ts` wires the
-    // real check (the same `getForWorkflow` every other stage uses).
+    // A fake, not the real scan-status plumbing. Two checks run before the first
+    // cluster is classified: one guarding the ambiguous-band adjudication call
+    // (an editor who cancelled must not pay for it) and one at the top of the
+    // cluster loop. So this returns true for those two and false from then on.
+    // What it proves is that the loop CALLS this between clusters and stops when
+    // told to — `convex/stages/evidence.ts` wires the real check (the same
+    // `getForWorkflow` every other stage uses).
     let shouldContinueCalls = 0;
-    const shouldContinue = async () => { shouldContinueCalls++; return shouldContinueCalls === 1; };
+    const shouldContinue = async () => { shouldContinueCalls++; return shouldContinueCalls <= 2; };
 
     const formed = await t.action(async (ctx) =>
       runCandidateFormation(ctx, { scanId, sourceResultIds: [sourceIdA, sourceIdB] }, model, shouldContinue));

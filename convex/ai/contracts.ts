@@ -102,6 +102,60 @@ export const clusterSignalsOutput = z.object({
   })).min(1),
 });
 
+// --- adjudicatePairs ----------------------------------------------------------
+
+/**
+ * The ceiling on one adjudication call, and the one number in this file that is
+ * a spend and latency bound rather than a content rule.
+ *
+ * CHOSEN: 200 — the top of the measured expectation in
+ * `research-clustering.md` §3 ("order 50 to 200 pairs"). The real 294-source
+ * scan produces 89. At 200 the output is roughly 200 x 30 = 6,000 tokens, which
+ * measured at 55.7 s in `task-1-report.md` — inside `TIMEOUT_MS` (120 s) with
+ * most of a factor of two to spare.
+ *
+ * PAST IT: `buildAdjudicationRequest` sends the 200 highest-scoring ambiguous
+ * pairs and reports the rest as `overCeiling`. Those pairs keep the verdict the
+ * deterministic layer already gave them — unlinked — which is exactly what every
+ * ambiguous pair got before this operation existed. They are counted, recorded
+ * on the scan as a failure summary, and never silently discarded.
+ */
+export const MAX_ADJUDICATED_PAIRS = 200;
+
+/**
+ * Two sources the deterministic scorer could not decide between, with the terms
+ * it matched them on. There is no sourceResultId here on purpose: the only
+ * handle the model is given is `pairId`, a token this code minted, so it has
+ * nothing with which to cite a source or compose a pair it was not shown.
+ */
+export const adjudicatePairsInput = z.object({
+  pairs: z.array(z.object({
+    pairId: z.string().min(1),
+    sharedTerms: z.array(z.string()),
+    first: z.object({ title: z.string(), snippet: z.string(), claimSummary: z.string() }),
+    second: z.object({ title: z.string(), snippet: z.string(), claimSummary: z.string() }),
+  })).min(1).max(MAX_ADJUDICATED_PAIRS),
+});
+
+/**
+ * One yes/no per pair, and nothing wider.
+ *
+ * A GROUPING ANSWER IS NOT EXPRESSIBLE, by construction. There is no array of
+ * source ids anywhere in this schema, no cluster object, and no field in which
+ * more than one pair can be named — the widest true statement the model can make
+ * is "these two are the same story". Union-find in `convex/editorial/blocking.ts`
+ * is the only thing that turns a set of yeses into groups, and it honours a yes
+ * only for a pair its own score put in the ambiguous band. That is the
+ * "AI suggests, code decides" line, drawn in a type.
+ */
+export const adjudicatePairsOutput = z.object({
+  verdicts: z.array(z.object({
+    pairId: z.string().min(1),
+    sameStory: z.boolean(),
+    reason,
+  })).min(1).max(MAX_ADJUDICATED_PAIRS),
+});
+
 // --- classifyEvidence ---------------------------------------------------------
 
 export const classifyEvidenceInput = z.object({
@@ -214,6 +268,7 @@ export const generateBriefOutput = z.object({
 export const OPERATION_SCHEMAS = {
   analyzeResults: { input: analyzeResultsInput, output: analyzeResultsOutput },
   clusterSignals: { input: clusterSignalsInput, output: clusterSignalsOutput },
+  adjudicatePairs: { input: adjudicatePairsInput, output: adjudicatePairsOutput },
   classifyEvidence: { input: classifyEvidenceInput, output: classifyEvidenceOutput },
   planFollowUp: { input: planFollowUpInput, output: planFollowUpOutput },
   generateBrief: { input: generateBriefInput, output: generateBriefOutput },
@@ -221,6 +276,8 @@ export const OPERATION_SCHEMAS = {
 
 export type AnalyzeResultsOutput = z.infer<typeof analyzeResultsOutput>;
 export type ClusterSignalsOutput = z.infer<typeof clusterSignalsOutput>;
+export type AdjudicatePairsInput = z.infer<typeof adjudicatePairsInput>;
+export type AdjudicatePairsOutput = z.infer<typeof adjudicatePairsOutput>;
 export type ClassifyEvidenceOutput = z.infer<typeof classifyEvidenceOutput>;
 export type PlanFollowUpOutput = z.infer<typeof planFollowUpOutput>;
 export type GenerateBriefOutput = z.infer<typeof generateBriefOutput>;

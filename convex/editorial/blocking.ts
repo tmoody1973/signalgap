@@ -22,11 +22,13 @@ import { normalizeEntityKey } from "../candidates/fingerprint";
  * and testable: the blocking keys, the score, and both thresholds. A pair at or
  * above `LINK_THRESHOLD` is the same story; below `REJECT_THRESHOLD` it is not;
  * neither verdict is a model's to make or to override. Pairs BETWEEN the two
- * thresholds are the only thing a model will ever be asked about (Task 6), and
- * even then it answers one bounded yes/no per pair — it cannot merge what the
- * score rejected, cannot split what the score accepted, and never sees the whole
- * partition. Until Task 6 lands, an ambiguous pair is simply left unlinked and
- * counted in `stats.ambiguousPairs`.
+ * thresholds are the only thing a model will ever be asked about
+ * (`convex/ai/adjudicatePairs.ts`), and even then it answers one bounded yes/no
+ * per pair — it cannot merge what the score rejected, cannot split what the score
+ * accepted, and never sees the whole partition. What comes back is a set of pair
+ * keys handed to `groupSignals`' second argument, and each one is honoured only
+ * if THIS function's own score put that pair in the band. An unadjudicated
+ * ambiguous pair stays unlinked, which is the conservative default.
  *
  * Known and accepted cost, from the record-linkage literature: blocking trades
  * recall for precision. Two reports on the same zoning vote that share no
@@ -57,6 +59,14 @@ export type ScoredPair = {
   sharedTokens: string[];
   sharedEntityKeys: string[];
   sharedDates: string[];
+  /**
+   * True only when BOTH are true: the score put this pair in the ambiguous band,
+   * AND `convex/ai/adjudicatePairs.ts`'s model call said the two are the same
+   * story. It is never true for a pair the code linked or rejected on its own —
+   * a suggestion cannot overturn a deterministic verdict, only settle one the
+   * code deliberately left open.
+   */
+  adjudicatedSameStory: boolean;
 };
 
 export type SignalCluster = {
@@ -79,6 +89,8 @@ export type GroupingStats = {
   blockedPairs: number;
   linkedPairs: number;
   ambiguousPairs: number;
+  /** Ambiguous pairs the adjudicator turned into links. Zero when it did not run. */
+  adjudicatedLinks: number;
   rejectedPairs: number;
   largestCluster: number;
   /**
@@ -329,6 +341,15 @@ function pairKey(a: number, b: number): string {
   return a < b ? `${a}:${b}` : `${b}:${a}`;
 }
 
+/**
+ * How an adjudicated pair is named, so `convex/ai/adjudicatePairs.ts` and this
+ * file cannot disagree about it. Order-independent: the two source ids are
+ * sorted, exactly as `ScoredPair.a`/`b` already are.
+ */
+export function pairLinkKey(a: string, b: string): string {
+  return [a, b].sort().join("|");
+}
+
 class UnionFind {
   private parent: number[];
   constructor(size: number) {
@@ -355,8 +376,16 @@ class UnionFind {
  * the model call this replaces returned a schema-valid answer covering 22 of 294
  * sources and nothing noticed (task-1-report.md §B3). Code cannot lose a source.
  */
-export function groupSignals(signals: ClusterSignal[]): GroupingOutcome {
+export function groupSignals(
+  signals: ClusterSignal[],
+  adjudicatedLinks: Iterable<string> = [],
+): GroupingOutcome {
   const n = signals.length;
+  // A SUGGESTION, consumed by a rule two lines below — never the rule itself. A
+  // key in here does nothing unless this function's own score put that pair in
+  // the ambiguous band, so the model can neither merge what the score rejected
+  // nor split what it accepted.
+  const adjudicated = new Set(adjudicatedLinks);
   const tokensPerSignal = signals.map((s) =>
     tokenize(s.title, s.snippet, s.translatedTitle, s.translatedSnippet, s.claimSummary));
   const entityKeysPerSignal = signals.map((s) => normalizedEntityKeys(s.entityKeys));
@@ -386,6 +415,7 @@ export function groupSignals(signals: ClusterSignal[]): GroupingOutcome {
   const links: [number, number][] = [];
   let rejectedPairs = 0;
   let ambiguousCount = 0;
+  let adjudicatedCount = 0;
   for (const key of candidates) {
     const [i, j] = key.split(":").map(Number);
     const sharedEntityKeys = [...entityKeysPerSignal[i]]
@@ -412,10 +442,20 @@ export function groupSignals(signals: ClusterSignal[]): GroupingOutcome {
       continue;
     }
     const verdict: PairVerdict = score >= LINK_THRESHOLD ? "linked" : "ambiguous";
-    if (verdict === "linked") links.push([i, j]);
-    else ambiguousCount++;
     const [a, b] = [signals[i].sourceResultId, signals[j].sourceResultId].sort();
-    pairs.push({ a, b, score, verdict, sharedTokens, sharedEntityKeys, sharedDates });
+    // The rule that consumes the suggestion: an adjudicated yes counts ONLY for a
+    // pair this function scored into the band. Anything else in `adjudicated` —
+    // a pair the code linked, rejected, or never even compared — is ignored.
+    const adjudicatedSameStory = verdict === "ambiguous" && adjudicated.has(pairLinkKey(a, b));
+    if (verdict === "linked") links.push([i, j]);
+    else {
+      ambiguousCount++;
+      if (adjudicatedSameStory) {
+        links.push([i, j]);
+        adjudicatedCount++;
+      }
+    }
+    pairs.push({ a, b, score, verdict, sharedTokens, sharedEntityKeys, sharedDates, adjudicatedSameStory });
   }
 
   // 3. GROUP — union-find over the linked pairs only. An ambiguous pair does not
@@ -465,8 +505,9 @@ export function groupSignals(signals: ClusterSignal[]): GroupingOutcome {
       signals: n,
       possiblePairs: (n * (n - 1)) / 2,
       blockedPairs: candidates.size,
-      linkedPairs: links.length,
+      linkedPairs: links.length - adjudicatedCount,
       ambiguousPairs: ambiguousCount,
+      adjudicatedLinks: adjudicatedCount,
       rejectedPairs,
       largestCluster,
       clustersWithoutEntityKeys,
@@ -486,7 +527,8 @@ function describeBasis(group: number[], pairs: ScoredPair[], signals: ClusterSig
   const ids = new Set(group.map((i) => signals[i].sourceResultId));
   const shared = new Set<string>();
   for (const pair of pairs) {
-    if (pair.verdict !== "linked" || !ids.has(pair.a) || !ids.has(pair.b)) continue;
+    const isLink = pair.verdict === "linked" || pair.adjudicatedSameStory;
+    if (!isLink || !ids.has(pair.a) || !ids.has(pair.b)) continue;
     for (const key of pair.sharedEntityKeys) shared.add(key);
     for (const token of pair.sharedTokens) shared.add(token);
   }

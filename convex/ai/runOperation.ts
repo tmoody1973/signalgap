@@ -25,6 +25,16 @@ export type RunAiOperationArgs<T> = {
   outputSchema: z.ZodType<T>;
   schemaVersion: string;
   validation: ValidationContext;
+  /**
+   * An operation-specific check on the parsed value, run in the same place as the
+   * source-binding guard and with the same consequence: the run is marked invalid
+   * and nothing is persisted. It exists because `validateAgainstSources` walks a
+   * tree and so cannot see COMPLETENESS — that a batched answer covers every item
+   * it was asked about. A model answering about fewer items than it was shown was
+   * silently a success once (task-1-report.md §B3) and must never be again.
+   * Returns the errors, or an empty array.
+   */
+  verify?: (value: T) => string[];
   /** Injected in tests so no test reaches a real model. */
   generate?: GenerateFn;
 };
@@ -42,7 +52,7 @@ export async function runAiOperation<T>(
   ctx: ActionCtx,
   args: RunAiOperationArgs<T>,
 ): Promise<RunAiOperationResult<T>> {
-  const { scanId, candidateId, operation, input, outputSchema, schemaVersion, validation, generate } = args;
+  const { scanId, candidateId, operation, input, outputSchema, schemaVersion, validation, verify, generate } = args;
 
   const primaryModel = process.env.AI_PRIMARY_MODEL;
   if (!primaryModel) return { ok: false, reason: "provider_error", errors: ["AI_PRIMARY_MODEL is not configured"] };
@@ -111,12 +121,14 @@ export async function runAiOperation<T>(
   // The schema said the shape is right. This says the CONTENT is ours: real
   // source IDs, real quotations, nothing promoted, no URL smuggled back.
   const bound = validateAgainstSources(outcome.value, validation);
-  if (!bound.ok) {
+  const verifyErrors = bound.ok ? (verify?.(outcome.value) ?? []) : [];
+  if (!bound.ok || verifyErrors.length > 0) {
+    const errors = bound.ok ? verifyErrors : bound.errors;
     await ctx.runMutation(internal.modelRuns.invalidate, {
-      runId, status: "invalid", validationErrors: bound.errors, durationMs: outcome.durationMs,
+      runId, status: "invalid", validationErrors: errors, durationMs: outcome.durationMs,
       inputTokens: outcome.usage.inputTokens, outputTokens: outcome.usage.outputTokens,
     });
-    return { ok: false, reason: "invalid_output", errors: bound.errors, modelRunId: runId };
+    return { ok: false, reason: "invalid_output", errors, modelRunId: runId };
   }
 
   await ctx.runMutation(internal.modelRuns.complete, {

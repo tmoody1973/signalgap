@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { internal } from "../../convex/_generated/api";
 import type { Doc, Id } from "../../convex/_generated/dataModel";
+import { MAX_ADJUDICATED_PAIRS } from "../../convex/ai/contracts";
 import type { GenerateFn } from "../../convex/ai/provider";
 import { candidateFingerprint, clusterIdentityKeys } from "../../convex/candidates/fingerprint";
 import { runCandidateFormation } from "../../convex/slice";
@@ -361,5 +362,168 @@ describe("the source-id identity fallback is not silent", () => {
       candidateFingerprint(["Common Council"], "housing"),
       candidateFingerprint(["Harambee"], "housing"),
     ].sort());
+  });
+});
+
+/**
+ * The ambiguous band, on the production path.
+ *
+ * `runCandidateFormation` asks a model exactly one question about grouping — one
+ * yes/no per pair the deterministic score left in `[REJECT_THRESHOLD,
+ * LINK_THRESHOLD)` — and the answer is a suggestion `groupSignals` re-checks
+ * against its own score. These tests pin the two things that must hold when that
+ * call goes wrong: the scan still produces clusters, and the scan says so.
+ */
+describe("adjudicating the ambiguous band from formation", () => {
+  /**
+   * Nine sources, so `cutoffsFor` runs its production branch. The first two share
+   * exactly two full-weight tokens and score 2 — the floor of the band, so the
+   * code deliberately declines to decide. The other seven share nothing.
+   */
+  async function seedBandScan(t: ReturnType<typeof setup>) {
+    return await t.run(async (ctx) => {
+      const now = Date.now();
+      const ownerId = await ctx.db.insert("users", { clerkUserId: "owner", createdAt: now, updatedAt: now });
+      const scanId = await ctx.db.insert("scans", scanDoc(ownerId) as never);
+      const searchRunId = await ctx.db.insert("searchRuns", searchRunDoc(scanId, ownerId));
+      const source = (title: string, key: string) => ctx.db.insert("sourceResults", {
+        scanId, searchRunId, ownerId,
+        canonicalKey: key, canonicalUrl: `https://example.com/${key}`, originalUrl: `https://example.com/${key}`,
+        engine: "google" as const, sourceFamily: "news" as const, sourceType: "unknown" as const,
+        title, snippet: "", originalLanguage: "en", discoveredAt: now, isAccessible: true, contentHash: key,
+      });
+      const a = await source("Harambee rezoning delayed", "k-a");
+      const b = await source("Harambee rezoning proceeds", "k-b");
+      const rest: Id<"sourceResults">[] = [];
+      for (let i = 0; i < 7; i++) rest.push(await source(`Ward ${i} budget hearing`, `k-r${i}`));
+      return { scanId, ids: [a, b, ...rest] };
+    });
+  }
+
+  const failures = async (t: ReturnType<typeof setup>, scanId: Id<"scans">) =>
+    ((await t.run(async (ctx) => await ctx.db.get(scanId))) as Doc<"scans">).failureSummaries;
+
+  it("still produces clusters from the auto-links when adjudication fails", async () => {
+    process.env.AI_PRIMARY_MODEL = "claude-sonnet-5";
+    process.env.AI_FALLBACK_ENABLED = "false";
+    const t = setup();
+    const { scanId, ids } = await seedBandScan(t);
+    const classify = classifyOnlyModel();
+    // Only the adjudication call fails. Everything downstream is untouched.
+    const model: GenerateFn = async (args) => {
+      if (/do these two describe the SAME underlying story/.test(args.system)) {
+        throw Object.assign(new Error("upstream is down"), { statusCode: 503 });
+      }
+      return classify(args);
+    };
+
+    const formed = await t.action(async (ctx) =>
+      runCandidateFormation(ctx, { scanId, sourceResultIds: ids }, model));
+
+    expect(formed.ok).toBe(true);
+    if (!formed.ok) return;
+    // The deterministic layer's answer stands: nine singletons, nothing lost.
+    expect(formed.candidates).toHaveLength(9);
+    // And the scan says the band went unadjudicated rather than swallowing it.
+    const summaries = await failures(t, scanId);
+    expect(summaries.map((f) => f.code)).toContain("adjudicate_failed");
+    expect(summaries.find((f) => f.code === "adjudicate_failed")?.message).toContain("1 ambiguous pairs");
+  });
+
+  it("merges the pair when the adjudicator says same story", async () => {
+    process.env.AI_PRIMARY_MODEL = "claude-sonnet-5";
+    process.env.AI_FALLBACK_ENABLED = "false";
+    const t = setup();
+    const { scanId, ids } = await seedBandScan(t);
+    const classify = classifyOnlyModel();
+    const model: GenerateFn = async (args) => {
+      if (/do these two describe the SAME underlying story/.test(args.system)) {
+        const pairIds = [...args.prompt.matchAll(/"pairId": "([^"]+)"/g)].map((m) => m[1]);
+        return {
+          object: { verdicts: pairIds.map((pairId) => ({ pairId, sameStory: true, reason: "One rezoning decision, reported twice." })) },
+          usage: {},
+        };
+      }
+      return classify(args);
+    };
+
+    const formed = await t.action(async (ctx) =>
+      runCandidateFormation(ctx, { scanId, sourceResultIds: ids }, model));
+
+    expect(formed.ok).toBe(true);
+    if (!formed.ok) return;
+    // Eight, not nine: the adjudicated pair is one candidate carrying two sources.
+    expect(formed.candidates).toHaveLength(8);
+    expect(formed.candidates.filter((c) => c.sourceResultIds.length === 2)).toHaveLength(1);
+    expect(await failures(t, scanId)).toHaveLength(0);
+  });
+
+  /**
+   * The ceiling, end to end. 402 sources in 201 disjoint two-token pairs, so the
+   * band is 201 and exactly one pair is past `MAX_ADJUDICATED_PAIRS`. What must
+   * NOT happen is the thing this project keeps getting caught by: the extra pair
+   * disappearing without a word.
+   *
+   * `shouldContinue` returns true for the adjudication check and false at the top
+   * of the cluster loop, so the test stops after the call it is about rather than
+   * forming 401 candidates.
+   */
+  it("stops at the ceiling and says how many pairs it could not send", async () => {
+    process.env.AI_PRIMARY_MODEL = "claude-sonnet-5";
+    process.env.AI_FALLBACK_ENABLED = "false";
+    const t = setup();
+    const word = (n: number, suffix: string) => `zq${n.toString(36)}${suffix}`;
+    const { scanId, ids } = await t.run(async (ctx) => {
+      const now = Date.now();
+      const ownerId = await ctx.db.insert("users", { clerkUserId: "owner", createdAt: now, updatedAt: now });
+      const scanId = await ctx.db.insert("scans", scanDoc(ownerId) as never);
+      const searchRunId = await ctx.db.insert("searchRuns", searchRunDoc(scanId, ownerId));
+      const ids: Id<"sourceResults">[] = [];
+      for (let n = 0; n < MAX_ADJUDICATED_PAIRS + 1; n++) {
+        const title = `${word(n, "aa")} ${word(n, "bb")}`;
+        for (const half of ["x", "y"]) {
+          ids.push(await ctx.db.insert("sourceResults", {
+            scanId, searchRunId, ownerId,
+            canonicalKey: `k${n}${half}`, canonicalUrl: `https://example.com/${n}${half}`, originalUrl: `https://example.com/${n}${half}`,
+            engine: "google" as const, sourceFamily: "news" as const, sourceType: "unknown" as const,
+            title, snippet: "", originalLanguage: "en", discoveredAt: now, isAccessible: true, contentHash: `${n}${half}`,
+          }));
+        }
+      }
+      return { scanId, ids };
+    });
+
+    let sentPairs = 0;
+    const model: GenerateFn = async ({ system, prompt }) => {
+      expect(system).toMatch(/do these two describe the SAME underlying story/);
+      const pairIds = [...prompt.matchAll(/"pairId": "([^"]+)"/g)].map((m) => m[1]);
+      sentPairs = pairIds.length;
+      return { object: { verdicts: pairIds.map((pairId) => ({ pairId, sameStory: false, reason: "Different stories." })) }, usage: {} };
+    };
+    let calls = 0;
+    const shouldContinue = async () => { calls++; return calls === 1; };
+
+    await t.action(async (ctx) =>
+      runCandidateFormation(ctx, { scanId, sourceResultIds: ids }, model, shouldContinue));
+
+    expect(sentPairs).toBe(MAX_ADJUDICATED_PAIRS);
+    const summaries = await failures(t, scanId);
+    expect(summaries.map((f) => f.code)).toContain("adjudicate_capped");
+    expect(summaries.find((f) => f.code === "adjudicate_capped")?.message)
+      .toBe(`1 ambiguous pairs were past the per-call ceiling of ${MAX_ADJUDICATED_PAIRS} and stay unlinked`);
+  });
+
+  it("does not pay for the call when the editor has already cancelled", async () => {
+    process.env.AI_PRIMARY_MODEL = "claude-sonnet-5";
+    const t = setup();
+    const { scanId, ids } = await seedBandScan(t);
+    let calls = 0;
+    const model: GenerateFn = async () => { calls++; return { object: {}, usage: {} }; };
+
+    await t.action(async (ctx) =>
+      runCandidateFormation(ctx, { scanId, sourceResultIds: ids }, model, async () => false));
+
+    expect(calls).toBe(0);
+    expect(await t.run(async (ctx) => await ctx.db.query("modelRuns").collect())).toHaveLength(0);
   });
 });

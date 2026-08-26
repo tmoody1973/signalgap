@@ -4,7 +4,7 @@ import { NoObjectGeneratedError, streamObject } from "ai";
 import type { LanguageModel } from "ai";
 import type { z } from "zod";
 
-export type AiOperation = "analyzeResults" | "clusterSignals" | "classifyEvidence" | "planFollowUp" | "generateBrief";
+export type AiOperation = "analyzeResults" | "clusterSignals" | "adjudicatePairs" | "classifyEvidence" | "planFollowUp" | "generateBrief";
 
 export type AiProvider = "anthropic" | "openai";
 

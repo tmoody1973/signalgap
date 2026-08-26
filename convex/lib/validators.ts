@@ -41,7 +41,7 @@ export const vSourceRole = v.union(v.literal("initiating"), v.literal("corrobora
 export const vAddedBy = v.union(v.literal("ai_suggestion"), v.literal("deterministic_rule"), v.literal("editor"));
 export const vEvidenceKind = v.union(v.literal("confirmed_fact"), v.literal("unverified_signal"), v.literal("conflicting_claim"), v.literal("existing_coverage"), v.literal("potential_source"));
 export const vEditorEventType = v.union(v.literal("disposition_changed"), v.literal("note_added"), v.literal("question_edited"), v.literal("correction_added"), v.literal("source_flagged"));
-export const vModelOperation = v.union(v.literal("analyzeResults"), v.literal("clusterSignals"), v.literal("classifyEvidence"), v.literal("planFollowUp"), v.literal("generateBrief"));
+export const vModelOperation = v.union(v.literal("analyzeResults"), v.literal("clusterSignals"), v.literal("adjudicatePairs"), v.literal("classifyEvidence"), v.literal("planFollowUp"), v.literal("generateBrief"));
 export const vModelRunStatus = v.union(v.literal("running"), v.literal("succeeded"), v.literal("invalid"), v.literal("failed"));
 
 export const vScoreComponent = v.object({

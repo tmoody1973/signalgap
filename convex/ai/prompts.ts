@@ -37,6 +37,16 @@ const OPERATION_INSTRUCTIONS: Record<AiOperation, string> = {
     "The deterministic layer may split your clusters afterwards. Do not try to pre-empt it.",
   ].join("\n"),
 
+  adjudicatePairs: [
+    "You are given PAIRS of search results. Deterministic code has already scored every pair in the scan; the ones it could decide on its own were linked or rejected without you. These are the ones it could not decide.",
+    "For each pair, answer exactly one question: do these two describe the SAME underlying story?",
+    "Same story means the same event, the same decision, the same document, or the same incident. The same TOPIC is not the same story — two different restaurant openings, two different bus routes, two crashes on different days, two listings from the same calendar are separate stories however many words they share.",
+    "A shared neighborhood, a shared city, a shared date or a shared beat is not on its own enough. If the supplied text does not show one shared event, answer no.",
+    "Answer every pairId you are given, exactly once. Do not answer a pairId you were not given, do not skip one, and do not invent one.",
+    "You are not grouping anything. Code takes your per-pair answers and does the grouping, and it will ignore an answer about any pair it did not ask you about.",
+    "Give a short reason naming the shared event, or naming what differs.",
+  ].join("\n"),
+
   classifyEvidence: [
     "For one candidate, suggest how each piece of evidence should be classified.",
     "You may suggest: unverified_signal, conflicting_claim, existing_coverage, potential_source. You may NOT suggest that anything is a confirmed fact — confirmation is computed from qualifying sources by rules you do not run.",

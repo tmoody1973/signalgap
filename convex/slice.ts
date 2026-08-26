@@ -3,6 +3,7 @@ import { internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import type { ActionCtx } from "./_generated/server";
 import { internalAction } from "./_generated/server";
+import { runAdjudicatePairs } from "./ai/adjudicatePairs";
 import { runClassifyEvidence } from "./ai/classifyEvidence";
 import { runGenerateBrief } from "./ai/generateBrief";
 import type { GenerateFn } from "./ai/provider";
@@ -75,12 +76,49 @@ export async function runCandidateFormation(
   shouldContinue?: () => Promise<boolean>,
 ): Promise<FormationOutcome> {
   // Grouping is deterministic. `convex/editorial/blocking.ts` blocks, scores and
-  // groups in code; no model is asked which of these sources are the same story.
-  // It reads what `analyzeResults` already extracted and persisted — entity keys,
-  // the claim summary, the translations — so a re-run does not re-pay for it.
+  // groups in code. It reads what `analyzeResults` already extracted and
+  // persisted — entity keys, the claim summary, the translations — so a re-run
+  // does not re-pay for it. A model is consulted about ONE thing, below, and only
+  // about the pairs the score could not decide.
   const signals = await ctx.runQuery(internal.sourceResults.clusteringSignalsFor, { scanId, sourceResultIds });
   if (signals.length === 0) return { ok: false, reason: "no_signals", errors: ["nothing to cluster"] };
-  const grouped = groupSignals(signals);
+  const scored = groupSignals(signals);
+
+  // The one place a model is asked anything about grouping, and the whole of
+  // what it is asked. `scored` already decided two of the three rows on its own
+  // — on the real 294 that is 15 links and 1,102 rejections, no model involved.
+  // Only `stats.ambiguousPairs` is put to `adjudicatePairs`, one yes/no per
+  // pair, and what comes back is a set of pair keys that `groupSignals` re-checks
+  // against its OWN score before union-find sees any of it. A yes about a pair
+  // the code linked or rejected does nothing.
+  //
+  // Every failure path here leaves `grouped` as `scored`: the scan still produces
+  // clusters from the auto-links alone. Coarser clusters beat a dead scan, and
+  // the reason is recorded on the scan rather than swallowed.
+  let grouped = scored;
+  if (scored.stats.ambiguousPairs > 0) {
+    // Checked BEFORE the call, not after: an editor who cancelled must not pay
+    // for it. `formFromCluster` below re-checks per cluster.
+    if (!shouldContinue || (await shouldContinue())) {
+      const adjudicated = await runAdjudicatePairs(ctx, { scanId, signals, pairs: scored.pairs }, generate);
+      if (adjudicated.links.length > 0) grouped = groupSignals(signals, adjudicated.links);
+      if (adjudicated.failure) {
+        await ctx.runMutation(internal.scans.recordFailure, {
+          scanId, purpose: "discovery", code: "adjudicate_failed",
+          message: `${adjudicated.sent} ambiguous pairs went unadjudicated: ${adjudicated.failure}`,
+        });
+      }
+      if (adjudicated.overCeiling > 0) {
+        // The ceiling is a bound on one call, not a licence to lose pairs. These
+        // keep the verdict the code already gave them — unlinked — and say so.
+        await ctx.runMutation(internal.scans.recordFailure, {
+          scanId, purpose: "discovery", code: "adjudicate_capped",
+          message: `${adjudicated.overCeiling} ambiguous pairs were past the per-call ceiling of ${adjudicated.sent} and stay unlinked`,
+        });
+      }
+    }
+  }
+
   const titleById = new Map(signals.map((s) => [s.sourceResultId as string, s.title]));
 
   const candidates: FormedCandidate[] = [];
