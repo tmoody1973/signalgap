@@ -48,10 +48,22 @@ function parseLabelSheet(markdown: string): Map<string, Label> {
     const id = block.slice(0, block.indexOf("\n")).trim();
     const key = /<!-- pair: (\S+) -->/.exec(block)?.[1];
     if (!key) continue;
-    const answer = (/\*\*Answer:\*\*(.*)/.exec(block)?.[1] ?? "").replace(/[`*_]/g, "").trim().toLowerCase();
-    if (answer.length === 0) continue;
-    if (answer !== "same" && answer !== "different" && answer !== "unsure") {
-      throw new Error(`${id}: answer "${answer}" is not one of same / different / unsure`);
+    const raw = (/\*\*Answer:\*\*(.*)/.exec(block)?.[1] ?? "").replace(/[`*_]/g, "").trim().toLowerCase();
+    if (raw.length === 0) continue;
+    // A human filled this in by hand, so read the verdict the way a human would:
+    // the FIRST word decides, and anything after it is the labeller's reasoning.
+    // "Different, but B mentions A" is a `different` with a note worth keeping in
+    // the sheet — it is not a parse error.
+    const first = raw.split(/[\s,.;:]+/)[0];
+    // Observed misspellings from the real labelling pass, listed explicitly rather
+    // than fuzzy-matched: a typo we have actually seen is safe to accept, a typo we
+    // are guessing at is how a wrong label gets read as a right one.
+    const TYPOS: Record<string, Label> = { differnt: "different", diffeern: "different", diferent: "different", sme: "same" };
+    const answer = (["same", "different", "unsure"] as const).includes(first as Label)
+      ? (first as Label)
+      : TYPOS[first];
+    if (!answer) {
+      throw new Error(`${id}: answer "${raw}" does not start with same / different / unsure`);
     }
     labels.set(key, answer);
   }
@@ -77,14 +89,27 @@ const UNLABELED = `docs/evaluation/clustering-pair-labels.md has no answers in i
   + ` clustering against them. Skipping rather than failing: unlabeled is not a regression.`;
 
 /**
- * PLACEHOLDER FLOORS — deliberately not tuned, because nothing has been labeled.
- * Set them once the sheet comes back: high enough that the measured value has
- * little headroom, or the test cannot fail when a threshold drifts.
+ * FLOORS, set from Tarik's labels on 2026-08-26. He labeled all 107 pairs;
+ * 60 of them "same".
+ *
+ * Measured at the time they were set:
+ *   deterministic layer  15 correct merges, 0 wrong, 45 missed -> precision 1.00, recall 0.25
+ *   whole pipeline       54 correct merges, 0 wrong,  6 missed -> precision 1.00, recall 0.90
+ *
+ * These are exact computations over a committed fixture, not samples — the same
+ * input gives the same answer every run, so there is no noise to leave headroom
+ * for. The floors therefore sit AT the measured value, and any drift fails.
+ *
+ * Precision is pinned at 1.00 deliberately. A wrong merge is the one error no
+ * later stage can undo: it feeds `independentCategoryCount`, which decides
+ * whether a lead qualifies. One wrong merge should fail the build and name the
+ * pair. Recall is the side to trade if a trade is ever needed — lower it
+ * consciously, in a commit that says why, rather than discovering it moved.
  */
-const DETERMINISTIC_PRECISION_FLOOR = 0.85;
-const DETERMINISTIC_RECALL_FLOOR = 0.1;
-const PIPELINE_PRECISION_FLOOR = 0.85;
-const PIPELINE_RECALL_FLOOR = 0.5;
+const DETERMINISTIC_PRECISION_FLOOR = 1.0;
+const DETERMINISTIC_RECALL_FLOOR = 0.25;
+const PIPELINE_PRECISION_FLOOR = 1.0;
+const PIPELINE_RECALL_FLOOR = 0.9;
 
 function scoreAgainstLabels(linked: ReadonlySet<string>) {
   let truePositives = 0;

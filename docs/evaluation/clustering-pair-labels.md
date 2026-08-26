@@ -65,7 +65,7 @@ red if anyone drifts a clustering threshold.
 **B.** Ka Vang's Asian street food festival expands to Milwaukee ...
 > Ka Vang's Asian street food festival debuts in Milwaukee this weekend with 50 vendors and cultural performances at Veterans Park.
 
-**Answer:** 
+**Answer:**  Same
 
 ---
 
@@ -79,7 +79,7 @@ red if anyone drifts a clustering threshold.
 **B.** A La Carte at the Zoo
 > This four-day summer staple features national headliners, local and regional entertainment across six stages, more than 30 popular Milwaukee restaurants, and of ...
 
-**Answer:** 
+**Answer:** Same
 
 ---
 
@@ -93,7 +93,7 @@ red if anyone drifts a clustering threshold.
 **B.** The Weekend Trend with Sandy Maxx: Mexican Fiesta, Fresh Coast Jazz, Zoo A La Carte and More
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** Different, but b does mention a la carte as one of the events
 
 ---
 
@@ -107,7 +107,7 @@ red if anyone drifts a clustering threshold.
 **B.** Ka Vang's Asian street food festival expands to Milwaukee ...
 > Ka Vang's Asian street food festival debuts in Milwaukee this weekend with 50 vendors and cultural performances at Veterans Park.
 
-**Answer:** 
+**Answer:** different
 
 ---
 
@@ -121,7 +121,7 @@ red if anyone drifts a clustering threshold.
 **B.** City Commission Approves Metcalfe Park Development ...
 > The first phase would include renovating two apartments in the 3,400-square-foot building as affordable housing. It would also include a bookstore, a cafe, and ...
 
-**Answer:** 
+**Answer:**  different
 
 ---
 
@@ -135,7 +135,7 @@ red if anyone drifts a clustering threshold.
 **B.** City Commission Approves Metcalfe Park Development ...
 > The first phase would include renovating two apartments in the 3,400-square-foot building as affordable housing. It would also include a bookstore, a cafe, and ...
 
-**Answer:** 
+**Answer:**  different but could be related
 
 ---
 
@@ -151,7 +151,7 @@ red if anyone drifts a clustering threshold.
 **B.** Lo más importante del lado sur de Milwaukee ...
 > Cada casa se venderá a aproximadamente $125,000, y solo se venderán a familias ganando por debajo del 80% del ingreso medio del área. Vecinos pueden aplicar ...
 
-**Answer:** 
+**Answer:**  Same
 
 ---
 
@@ -165,7 +165,7 @@ red if anyone drifts a clustering threshold.
 **B.** Mayor's "Back to School" Bike Ride
 > Housing & Home Ownership. Join Mayor Cavalier Johnson and the City of Milwaukee for a fun, slow-roll ride through the East Side of Milwaukee! Riverside Park ...
 
-**Answer:** 
+**Answer:** Different, but related topic of housing
 
 ---
 
@@ -179,7 +179,7 @@ red if anyone drifts a clustering threshold.
 **B.** Online registration now open for 2026 Back to School Festival
 > At the festival, attendees can enjoy a number of positive activities for children, including a bounce house, a bike raffle, a live DJ, free food and much more.
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -195,7 +195,7 @@ red if anyone drifts a clustering threshold.
 **B.** Mayor's "Back to School" Bike Ride
 > Housing & Home Ownership. Join Mayor Cavalier Johnson and the City of Milwaukee for a fun, slow-roll ride through the East Side of Milwaukee! Riverside Park ...
 
-**Answer:** 
+**Answer:** different
 
 ---
 
@@ -209,7 +209,7 @@ red if anyone drifts a clustering threshold.
 **B.** Washington Park Wednesdays at the Bandshell
 > Washington Park Wednesdays is a weekly concert series at Washington Park and is an event of the Washington Park Neighbors.
 
-**Answer:** 
+**Answer:** different
 
 ---
 
@@ -223,7 +223,7 @@ red if anyone drifts a clustering threshold.
 **B.** Entertainment: Summer’s At Its Peak With Lots of Outdoor Festivals
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** different, but related 
 
 ---
 
@@ -237,7 +237,7 @@ red if anyone drifts a clustering threshold.
 **B.** 4th Annual Back to School Festival
 > Enjoy a number of positive activities for children, including a bounce house, a bike raffle, a live DJ, free food and much more. Free hair haircuts are also ...
 
-**Answer:** 
+**Answer:** Same
 
 ---
 
@@ -251,7 +251,7 @@ red if anyone drifts a clustering threshold.
 **B.** District 3 Community Bike Ride
 > Details: Join us on Saturday, August 22, 2026, for a bike ride around the 3rd Aldermanic District — perfect for most ages and skill levels!
 
-**Answer:** 
+**Answer:** Different
 
 ---
 
@@ -265,7 +265,7 @@ red if anyone drifts a clustering threshold.
 **B.** The Weekend Trend with Sandy Maxx: Mexican Fiesta, Fresh Coast Jazz, Zoo A La Carte and More
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** Different, but B, mentions A
 
 ---
 
@@ -279,7 +279,7 @@ red if anyone drifts a clustering threshold.
 **B.** Entertainment: Summer’s At Its Peak With Lots of Outdoor Festivals
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** Different,  but both related to festivals
 
 ---
 
@@ -293,7 +293,7 @@ red if anyone drifts a clustering threshold.
 **B.** 2026 Fresh Coast Jazz Festival
 > Get ready to groove at the 7th Annual Fresh Coast Jazz Festival! August 20–22, 2026 | Pabst Theater | Downtown Milwaukee. The Fresh Coast Jazz Festival is ...
 
-**Answer:** 
+**Answer:**  different
 
 ---
 
@@ -307,7 +307,7 @@ red if anyone drifts a clustering threshold.
 **B.** Mayor's "Back to School" Bike Ride
 > Housing & Home Ownership. Join Mayor Cavalier Johnson and the City of Milwaukee for a fun, slow-roll ride through the East Side of Milwaukee! Riverside Park ...
 
-**Answer:** 
+**Answer:** Diffeern even thought they are bike rides
 
 ---
 
@@ -321,7 +321,7 @@ red if anyone drifts a clustering threshold.
 **B.** Ka Vang's Asian street food festival expands to Milwaukee ...
 > Ka Vang's Asian street food festival debuts in Milwaukee this weekend with 50 vendors and cultural performances at Veterans Park.
 
-**Answer:** 
+**Answer:** different
 
 ---
 
@@ -335,7 +335,7 @@ red if anyone drifts a clustering threshold.
 **B.** Lo más importante del lado sur de Milwaukee ...
 > Cada casa se venderá a aproximadamente $125,000, y solo se venderán a familias ganando por debajo del 80% del ingreso medio del área. Vecinos pueden aplicar ...
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -351,7 +351,7 @@ red if anyone drifts a clustering threshold.
 **B.** Mayor's "Back to School" Bike Ride
 > Housing & Home Ownership. Join Mayor Cavalier Johnson and the City of Milwaukee for a fun, slow-roll ride through the East Side of Milwaukee! Riverside Park ...
 
-**Answer:** 
+**Answer:** different
 
 ---
 
@@ -367,7 +367,7 @@ red if anyone drifts a clustering threshold.
 **B.** Freshwater Food & Wine Festival, Sept 19 - 20, Milwaukee
 > Freshwater Food & Wine Festival celebrates world-class wines, craft beverages, and culinary artistry with stunning waterfront views.
 
-**Answer:** 
+**Answer:** different
 
 ---
 
@@ -383,7 +383,7 @@ red if anyone drifts a clustering threshold.
 **B.** Best Jamaican restaurant for a date? Uppa yard or Mobay ...
 > Uppa yard got the better vibe for a date, more cozy and not so loud like Mobay.
 
-**Answer:** 
+**Answer:**  Different, one mentions new restaurant while the other is a discussion of which of the restauarnts are better inlcuindg the one mentioned in A
 
 ---
 
@@ -397,7 +397,7 @@ red if anyone drifts a clustering threshold.
 **B.** Enjoyed a trip to Milwaukee, but...
 > Assuming he's BIPOC, he was probably sensitive to being profiled and got irrationally angry when you crossed the street because of him. I did this once and had
 
-**Answer:** 
+**Answer:** Different
 
 ---
 
@@ -411,7 +411,7 @@ red if anyone drifts a clustering threshold.
 **B.** Are my restaurant choices ok? : r/milwaukee
 > I'm coming to Milwaukee this weekend and I have a couple of meals to myself to account for. I have reservations going to Avli for dinner and the Knick.
 
-**Answer:** 
+**Answer:** Different
 
 ---
 
@@ -425,7 +425,7 @@ red if anyone drifts a clustering threshold.
 **B.** Midtown apartment development getting $1 million city loan
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** Different
 
 ---
 
@@ -439,7 +439,7 @@ red if anyone drifts a clustering threshold.
 **B.** Dumpster Rental : r/milwaukee
 > Hello all, I have recently demoed my kitchen and am in need of a dumpster rental to dispose of said demolition debris. Looking for a recommendations…
 
-**Answer:** 
+**Answer:** Different
 
 ---
 
@@ -453,7 +453,7 @@ red if anyone drifts a clustering threshold.
 **B.** Need dining recommendations for a Sunday night near ...
 > Any recommendations for a nice dinner place with drinks? Favorite new(ish) bars/restaurants/cool stuff around town??
 
-**Answer:** 
+**Answer:** Same
 
 ---
 
@@ -467,7 +467,7 @@ red if anyone drifts a clustering threshold.
 **B.** Need dining recommendations for a Sunday night near ...
 > Any recommendations for a nice dinner place with drinks? Favorite new(ish) bars/restaurants/cool stuff around town??
 
-**Answer:** 
+**Answer:** Different
 
 ---
 
@@ -481,7 +481,7 @@ red if anyone drifts a clustering threshold.
 **B.** Pizzerias with dining rooms? : r/milwaukee
 > My husband is celebrating his 50th this weekend and he just wants a casual, sit-down pizza night with family. Any suggestions? Looking for a place that ...
 
-**Answer:** 
+**Answer:** Different
 
 ---
 
@@ -495,7 +495,7 @@ red if anyone drifts a clustering threshold.
 **B.** Local fabric store suggestions : r/milwaukee
 > I'm looking for a local store with a large fabric selection, please! My mom is still distraught over Joann's closing, and it's unimpressed with the Hobby ...
 
-**Answer:** 
+**Answer:** Different
 
 ---
 
@@ -509,7 +509,7 @@ red if anyone drifts a clustering threshold.
 **B.** Need dining recommendations for a Sunday night near ...
 > Any recommendations for a nice dinner place with drinks? Favorite new(ish) bars/restaurants/cool stuff around town??
 
-**Answer:** 
+**Answer:** Different
 
 ---
 
@@ -523,7 +523,7 @@ red if anyone drifts a clustering threshold.
 **B.** Rescue mission : r/milwaukee
 > Rescue mission. Does anyone know much about this place? Unfortunately I found myself homeless by Sunday and it seems to be the only option. Just curious if ...
 
-**Answer:** 
+**Answer:** Different
 
 ---
 
@@ -537,7 +537,7 @@ red if anyone drifts a clustering threshold.
 **B.** Pizzerias with dining rooms? : r/milwaukee
 > My husband is celebrating his 50th this weekend and he just wants a casual, sit-down pizza night with family. Any suggestions? Looking for a place that ...
 
-**Answer:** 
+**Answer:** Different but still looking for recommendations
 
 ---
 
@@ -551,7 +551,7 @@ red if anyone drifts a clustering threshold.
 **B.** Thinking of moving there : r/milwaukee
 > So I'm M40 and my husband (M40) are thinking of moving to Milwaukee. What are the pros and cons of living there? It came up on our radar after a lengthy ...
 
-**Answer:** 
+**Answer:** different
 
 ---
 
@@ -565,7 +565,7 @@ red if anyone drifts a clustering threshold.
 **B.** Local fabric store suggestions : r/milwaukee
 > I'm looking for a local store with a large fabric selection, please! My mom is still distraught over Joann's closing, and it's unimpressed with the Hobby ...
 
-**Answer:** 
+**Answer:** different
 
 ---
 
@@ -579,7 +579,7 @@ red if anyone drifts a clustering threshold.
 **B.** Local fabric store suggestions : r/milwaukee
 > I'm looking for a local store with a large fabric selection, please! My mom is still distraught over Joann's closing, and it's unimpressed with the Hobby ...
 
-**Answer:** 
+**Answer:** different
 
 ---
 
@@ -593,7 +593,7 @@ red if anyone drifts a clustering threshold.
 **B.** what is the turner ballroomroom like? : r/milwaukee
 > I've been to a few shows in mikwaukee and elsewhere but I've never been to this venue, I'll be seeing shakey graves in October and was just wondering if ...
 
-**Answer:** 
+**Answer:** different
 
 ---
 
@@ -607,7 +607,7 @@ red if anyone drifts a clustering threshold.
 **B.** Una escapada a Riverwest - Departamentos en renta ...
 > Alojamiento entero: vivienda rentada en Milwaukee, Wisconsin, Estados Unidos. 4 huéspedes ·; · 2 habitaciones ·; · 2 camas ·; · 1 baño. Anuncio nuevo. Nuevo.
 
-**Answer:** 
+**Answer:** different
 
 ---
 
@@ -621,7 +621,7 @@ red if anyone drifts a clustering threshold.
 **B.** Thinking of moving there : r/milwaukee
 > So I'm M40 and my husband (M40) are thinking of moving to Milwaukee. What are the pros and cons of living there? It came up on our radar after a lengthy ...
 
-**Answer:** 
+**Answer:** different 
 
 ---
 
@@ -635,7 +635,7 @@ red if anyone drifts a clustering threshold.
 **B.** Zilli Hospitality Wedding : r/milwaukee
 > Hi all, wondering if anyone has used a Zilli venue for their wedding within the last year and would be comfortable sharing their per person…
 
-**Answer:** 
+**Answer:** different, even both talk about venues, and Turner Hall does host weddings too
 
 ---
 
@@ -651,7 +651,7 @@ red if anyone drifts a clustering threshold.
 **B.** West Allis-West Milwaukee DPW fire, building under construction
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -665,7 +665,7 @@ red if anyone drifts a clustering threshold.
 **B.** West Allis-West Milwaukee DPW fire, building under construction
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -679,7 +679,7 @@ red if anyone drifts a clustering threshold.
 **B.** West Allis-West Milwaukee DPW fire, building under construction
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -693,7 +693,7 @@ red if anyone drifts a clustering threshold.
 **B.** West Allis-West Milwaukee DPW fire, building under construction
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -707,7 +707,7 @@ red if anyone drifts a clustering threshold.
 **B.** West Allis-West Milwaukee DPW fire, building under construction
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -721,7 +721,7 @@ red if anyone drifts a clustering threshold.
 **B.** West Allis-West Milwaukee DPW fire, building under construction
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -735,7 +735,7 @@ red if anyone drifts a clustering threshold.
 **B.** West Allis-West Milwaukee DPW fire, building under construction
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -749,7 +749,7 @@ red if anyone drifts a clustering threshold.
 **B.** West Allis-West Milwaukee DPW fire, building under construction
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -763,7 +763,7 @@ red if anyone drifts a clustering threshold.
 **B.** West Allis-West Milwaukee DPW fire, building under construction
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -772,12 +772,13 @@ red if anyone drifts a clustering threshold.
 <!-- pair: k97bjp8abqaagkyaf3s42exrwx8d57br|k97dj67yj7vf5q91ghqz23t08d8d5sj9 -->
 
 **A.** West Allis-West Milwaukee DPW fire, building under construction
+
 > _(no snippet captured)_
 
 **B.** West Allis-West Milwaukee DPW fire, building under construction
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -793,7 +794,7 @@ red if anyone drifts a clustering threshold.
 **B.** Bradley Tech/Milwaukee Arts vs Catholic Memorial Live Free Wisconsin High School Football 2026
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -807,7 +808,7 @@ red if anyone drifts a clustering threshold.
 **B.** Bradley Tech/Milwaukee Arts vs Catholic Memorial Live Free Wisconsin High School Football 2026
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -821,7 +822,7 @@ red if anyone drifts a clustering threshold.
 **B.** Catholic Memorial vs Bradley Tech/Milwaukee Arts Live Free Wisconsin High School Football 2026
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -835,7 +836,7 @@ red if anyone drifts a clustering threshold.
 **B.** Bradley Tech/Milwaukee Arts vs Catholic Memorial Live Free Wisconsin High School Football 2026
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -849,7 +850,7 @@ red if anyone drifts a clustering threshold.
 **B.** Bradley Tech/Milwaukee Arts vs Catholic Memorial Live Free Wisconsin High School Football 2026
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -863,7 +864,7 @@ red if anyone drifts a clustering threshold.
 **B.** Catholic Memorial vs Bradley Tech/Milwaukee Arts Live Free Wisconsin High School Football 2026
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -877,7 +878,7 @@ red if anyone drifts a clustering threshold.
 **B.** Bradley Tech/Milwaukee Arts vs Catholic Memorial Live Free Wisconsin High School Football 2026
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -891,7 +892,7 @@ red if anyone drifts a clustering threshold.
 **B.** Catholic Memorial vs Bradley Tech/Milwaukee Arts Live Free Wisconsin High School Football 2026
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -905,7 +906,7 @@ red if anyone drifts a clustering threshold.
 **B.** Bradley Tech/Milwaukee Arts vs Catholic Memorial Live Free Wisconsin High School Football 2026
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -919,7 +920,7 @@ red if anyone drifts a clustering threshold.
 **B.** Bradley Tech/Milwaukee Arts vs Catholic Memorial Live Free Wisconsin High School Football 2026
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -935,7 +936,7 @@ red if anyone drifts a clustering threshold.
 **B.** City of Milwaukee - Calendar
 > ZONING, NEIGHBORHOODS & DEVELOPMENT COMMITTEE. NEIGHBORHOOD IMPROVEMENT DEVELOPMENT CORPORATION ・ 526 E Concordia Ave ・ 1:00 PM Room 301-A, Third Floor, City ...
 
-**Answer:** 
+**Answer:** different
 
 ---
 
@@ -949,7 +950,7 @@ red if anyone drifts a clustering threshold.
 **B.** Licenses Committee - City of Milwaukee
 > Licenses Committee- Special- MEETING CANCELLED on 8/24/2026. Friday, September 4, 2026. 9:00 AM. City Hall, 200 E. Wells St. Milwaukee, WI, 53202, ...
 
-**Answer:** 
+**Answer:** different
 
 ---
 
@@ -963,7 +964,7 @@ red if anyone drifts a clustering threshold.
 **B.** Joint Review Board - City Event - Milwaukee.gov
 > City Development Community Development Grants. Zoning Appeals. Housing & Home Ownership. City Development, 809 N. Broadway, Milwaukee, WI, dmisky@milwaukee.gov ...
 
-**Answer:** 
+**Answer:** different
 
 ---
 
@@ -977,7 +978,7 @@ red if anyone drifts a clustering threshold.
 **B.** City of Milwaukee - Calendar
 > ZONING, NEIGHBORHOODS & DEVELOPMENT COMMITTEE. NEIGHBORHOOD IMPROVEMENT DEVELOPMENT CORPORATION ・ 526 E Concordia Ave ・ 1:00 PM Room 301-A, Third Floor, City ...
 
-**Answer:** 
+**Answer:** differnt
 
 ---
 
@@ -991,7 +992,7 @@ red if anyone drifts a clustering threshold.
 **B.** City of Milwaukee Meeting & Events Calendar
 > City Development Community Development Grants. Zoning Appeals. Housing & Home Ownership Homeownership Opportunities Housing Resources. Neighborhood Service ...
 
-**Answer:** 
+**Answer:** different
 
 ---
 
@@ -1005,7 +1006,7 @@ red if anyone drifts a clustering threshold.
 **B.** Licenses Committee - City of Milwaukee
 > Licenses Committee- Special- MEETING CANCELLED on 8/24/2026. Friday, September 4, 2026. 9:00 AM. City Hall, 200 E. Wells St. Milwaukee, WI, 53202, ...
 
-**Answer:** 
+**Answer:** different
 
 ---
 
@@ -1019,7 +1020,7 @@ red if anyone drifts a clustering threshold.
 **B.** City of Milwaukee Meeting & Events Calendar
 > City Development Community Development Grants. Zoning Appeals. Housing & Home Ownership Homeownership Opportunities Housing Resources. Neighborhood Service ...
 
-**Answer:** 
+**Answer:** different
 
 ---
 
@@ -1035,7 +1036,7 @@ red if anyone drifts a clustering threshold.
 **B.** Koss Reopens Milwaukee Factory Store as a Museum for Its Headphone Legacy
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1049,7 +1050,7 @@ red if anyone drifts a clustering threshold.
 **B.** Koss opens new store and museum attached to Milwaukee headquarters
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1063,7 +1064,7 @@ red if anyone drifts a clustering threshold.
 **B.** Koss opens new store and museum attached to Milwaukee headquarters
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1079,7 +1080,7 @@ red if anyone drifts a clustering threshold.
 **B.** Milwaukee Journal Sentinel
 > Agentes de ICE llegaron al lugar, rodearon la vivienda y procedieron a detener a los trabajadores. Testigos y el hecho documentado en video por uno de los ...
 
-**Answer:** 
+**Answer:** differnt
 
 ---
 
@@ -1093,7 +1094,7 @@ red if anyone drifts a clustering threshold.
 **B.** What belongs on the front page? See what Metcalfe Park youth think
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1107,7 +1108,7 @@ red if anyone drifts a clustering threshold.
 **B.** Harambee residents and youth draw the front page they want to see
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1123,7 +1124,7 @@ red if anyone drifts a clustering threshold.
 **B.** Investments Changed Sherman Park Neighborhood After 2016 Uprising
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1137,7 +1138,7 @@ red if anyone drifts a clustering threshold.
 **B.** Investments changed Milwaukee’s Sherman Park after 2016 uprising, but who benefited remains unclear
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1151,7 +1152,7 @@ red if anyone drifts a clustering threshold.
 **B.** Investments changed Milwaukee’s Sherman Park after 2016 uprising, but who benefited remains unclear
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1167,7 +1168,7 @@ red if anyone drifts a clustering threshold.
 **B.** Howard Fuller Collegiate Academy via RT 12
 > Due to construction, Route 12 & HF1 will detour off Teutonia Avenue from Keefe Avenue to 20th Street. The following NORTHBOUND TRIP bus stops will be INACTIVE ...
 
-**Answer:** 
+**Answer:** different
 
 ---
 
@@ -1181,7 +1182,7 @@ red if anyone drifts a clustering threshold.
 **B.** Howard Fuller Collegiate Academy via BLU & 30
 > Find detailed information on schedules & routes of the HF2 bus, Howard Fuller Collegiate Academy via BLU & 30, on Milwaukee County Transit System.
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1197,7 +1198,7 @@ red if anyone drifts a clustering threshold.
 **B.** Governor Evers and County Executive Crowley Officially ...
 > In 2024, Governor Tony Evers and the Wisconsin Department of Administration (DOA) awarded Milwaukee County a Flexible Facilities Program Grant for $3,967,737 in ...
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1211,7 +1212,7 @@ red if anyone drifts a clustering threshold.
 **B.** Gov. Evers Appoints Malinda Eskra to the Milwaukee County Circuit Court
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1227,7 +1228,7 @@ red if anyone drifts a clustering threshold.
 **B.** US Education Department investigates Milwaukee Public Schools over race-conscious discipline practices
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1241,7 +1242,7 @@ red if anyone drifts a clustering threshold.
 **B.** Leaders react to federal investigation into whether MPS considers race when disciplining students
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1257,7 +1258,7 @@ red if anyone drifts a clustering threshold.
 **B.** Library Now
 > Inspiration starts here. 814 W. Wisconsin Avenue, Milwaukee, WI 53233. (414) 286-3000 · Find your branch. Newsletter Signup. Sign up for our newsletter.
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1271,7 +1272,7 @@ red if anyone drifts a clustering threshold.
 **B.** Harambee NID #7
 > Harambee NID #7. Tuesday, August 25, 2026. 5:30 PM to 7:30 PM. Milwaukee Public Library, Dr. Martin Luther King Jr. Branch, 2901 N. MLK Dr. Milwaukee, WI, ...
 
-**Answer:** 
+**Answer:** different
 
 ---
 
@@ -1287,7 +1288,7 @@ red if anyone drifts a clustering threshold.
 **B.** Alex Klaus / Servicio de Noticias del Vecindario de ...
 > Según funcionarios gubernamentales, la política del distrito viola la ley federal. Los estudiantes negros de las Escuelas Públicas de Milwaukee (MPS) siguen ...
 
-**Answer:** 
+**Answer:** different
 
 ---
 
@@ -1301,7 +1302,7 @@ red if anyone drifts a clustering threshold.
 **B.** Alex Klaus / Servicio de Noticias del Vecindario de ...
 > Según funcionarios gubernamentales, la política del distrito viola la ley federal. Los estudiantes negros de las Escuelas Públicas de Milwaukee (MPS) siguen ...
 
-**Answer:** 
+**Answer:** different
 
 ---
 
@@ -1315,7 +1316,7 @@ red if anyone drifts a clustering threshold.
 **B.** Big Blue Building Joins Downtown Office-To-Housing Boom
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1329,7 +1330,7 @@ red if anyone drifts a clustering threshold.
 **B.** ‘It’s insane’: Storms tear through Milwaukee, crushing cars and damaging homes
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1343,7 +1344,7 @@ red if anyone drifts a clustering threshold.
 **B.** Milwaukee fatal road rage shooting, woman killed identified
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1357,7 +1358,7 @@ red if anyone drifts a clustering threshold.
 **B.** Walter at Milwaukee Street closing August 24-26 for utility installation
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1371,7 +1372,7 @@ red if anyone drifts a clustering threshold.
 **B.** Pope Leo Village brings affordable housing to Milwaukee's Harambee neighborhood
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1385,7 +1386,7 @@ red if anyone drifts a clustering threshold.
 **B.** Dodge County motorcycle crash; hit guardrail, driver seriously injured
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1399,7 +1400,7 @@ red if anyone drifts a clustering threshold.
 **B.** Milwaukee County Transit System, highways get $13.9M federal boost
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1413,7 +1414,7 @@ red if anyone drifts a clustering threshold.
 **B.** Free admission days at Milwaukee museums in September 2026
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1427,7 +1428,7 @@ red if anyone drifts a clustering threshold.
 **B.** New Milwaukee memorial honors civil rights leader Vel R. Phillips
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1441,7 +1442,7 @@ red if anyone drifts a clustering threshold.
 **B.** VIA CDC hopes new housing model will make homeownership more affordable
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1455,7 +1456,7 @@ red if anyone drifts a clustering threshold.
 **B.** Transportation: Federal Grant Will Help Modernize MCTS Buses
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1469,7 +1470,7 @@ red if anyone drifts a clustering threshold.
 **B.** Milwaukee County Executive David Crowley Announces $13.9m Grant to Modernize Bus Fleet, Grow Ridership and Improve Travel Times on Major County Trunk Highways
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1483,7 +1484,7 @@ red if anyone drifts a clustering threshold.
 **B.** Milwaukee bar responds after 'No Milwaukee Rap' list goes viral
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1497,7 +1498,7 @@ red if anyone drifts a clustering threshold.
 **B.** AFTERLIGHT brings free arts event to Milwaukee Riverwalk
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1511,7 +1512,7 @@ red if anyone drifts a clustering threshold.
 **B.** Milwaukee's 38th Street Mart Hit by Third Break-In in 2 Months
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1525,7 +1526,7 @@ red if anyone drifts a clustering threshold.
 **B.** Mexican Fiesta Returns to Milwaukee's Lakefront, Funding Nearly $2M in Scholarships
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1539,7 +1540,7 @@ red if anyone drifts a clustering threshold.
 **B.** SoapGirls concerts canceled, including in Milwaukee, after racism claims
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1553,7 +1554,7 @@ red if anyone drifts a clustering threshold.
 **B.** Residents have one more week to apply for federal assistance for April flooding
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1567,7 +1568,7 @@ red if anyone drifts a clustering threshold.
 **B.** FHLBank Chicago and WHEDA Recognize Housing Counseling Grants Supporting Milwaukee-Area Homebuyers
 > _(no snippet captured)_
 
-**Answer:** 
+**Answer:** same
 
 ---
 
@@ -1581,6 +1582,6 @@ red if anyone drifts a clustering threshold.
 **B.** Encuentre vuelos de Milwaukee a Nueva York
 > Busca vuelos de Milwaukee a Nueva York? Encuentre las mejores tarifas con American Airlines y disfrute de una experiencia inigualable a bordo!
 
-**Answer:** 
+**Answer:** different
 
 ---
