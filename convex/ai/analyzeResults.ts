@@ -163,7 +163,9 @@ export type AnalyzeBatchFailure = { batchIndex: number; reason: string; errors: 
  * success/failure union: a scan where 28 of 30 batches landed has both persisted
  * items and recorded failures, and a union would force one of them to be a lie.
  *
- * `ok` is true only when every batch succeeded. `reason`/`errors` mirror the
+ * `ok` is true only when every batch succeeded AND answered about every source
+ * it was shown — a batch that stayed silent about half its sources is a real
+ * failure even though the model call itself worked. `reason`/`errors` mirror the
  * FIRST failure so a single-batch caller reads exactly as it did before.
  */
 export type AnalyzeOutcome = {
@@ -214,7 +216,12 @@ export async function runAnalyzeResults(
   // It is not a big request; it is thirty requests wearing a trenchcoat.
   const batches = chunk(sources, ANALYZE_BATCH_SIZE);
   const results: Array<
-    | { ok: true; items: AnalyzeResultsOutput["items"]; modelRunId: Id<"modelRuns">; translated: number; typed: number }
+    | {
+        ok: true; items: AnalyzeResultsOutput["items"]; modelRunId: Id<"modelRuns">;
+        translated: number; typed: number;
+        /** Set when the model answered about only SOME of the sources in this batch. */
+        gap?: AnalyzeBatchFailure;
+      }
     | { ok: false; failure: AnalyzeBatchFailure }
     | undefined
   > = new Array(batches.length).fill(undefined);
@@ -265,7 +272,20 @@ export async function runAnalyzeResults(
       })),
     });
 
-    results[batchIndex] = { ok: true, items: result.value.items, modelRunId: result.modelRunId, translated, typed };
+    // `analyzeResultsOutput` is `.min(1)` and `validateAgainstSources` only checks
+    // that every id the model CITED is one we supplied. Neither notices the
+    // sources it stayed silent about — so ten answers to twenty questions used to
+    // come back `ok: true` with zero failures. A source we did not get an answer
+    // for is not analysed, and the outcome has to say so.
+    const answered = new Set(result.value.items.map((i) => i.sourceResultId));
+    const missing = batch.filter((s: LoadedSource) => !answered.has(s.sourceResultId));
+    const gap: AnalyzeBatchFailure | undefined = missing.length === 0 ? undefined : {
+      batchIndex, reason: "incomplete_coverage",
+      errors: [`batch ${batchIndex} answered about ${answered.size} of ${batch.length} sources; `
+        + `no answer for ${missing.map((s: LoadedSource) => s.sourceResultId).join(", ")}`],
+    };
+
+    results[batchIndex] = { ok: true, items: result.value.items, modelRunId: result.modelRunId, translated, typed, gap };
   };
 
   // A worker pool, not Promise.all: the cancel check has to sit BETWEEN batches,
@@ -289,8 +309,14 @@ export async function runAnalyzeResults(
   // Rebuilt in batch order, so N sources come back as N items in the order they
   // were supplied no matter which worker finished first.
   const done = results.filter((r) => r !== undefined);
-  const failures = done.filter((r) => !r.ok).map((r) => r.failure);
   const succeeded = done.filter((r) => r.ok);
+  // A partly-answered batch is BOTH: the items it did return are persisted and
+  // counted, and its gap is a failure. Sorted so the list still reads in batch
+  // order once the two kinds are merged.
+  const failures = [
+    ...done.filter((r) => !r.ok).map((r) => r.failure),
+    ...succeeded.flatMap((r) => (r.gap ? [r.gap] : [])),
+  ].sort((a, b) => a.batchIndex - b.batchIndex);
 
   return {
     ok: failures.length === 0 && succeeded.length > 0,

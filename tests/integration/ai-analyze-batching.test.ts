@@ -43,9 +43,11 @@ type BatchSeen = { sourceResultIds: string[] };
  * A fake model that answers whatever batch it is shown, echoing one item per
  * source. `failBatchesContaining` makes the batch holding that title answer with
  * a shape the schema rejects, which is how a single mid-run batch failure is
- * simulated without touching the others.
+ * simulated without touching the others. `answerFirst` makes it answer about
+ * only the first N sources of every batch — a model that quietly ignores half
+ * of what it was shown, which the schema's `.min(1)` happily accepts.
  */
-function echoModel(opts: { failTitle?: string; onCall?: () => void } = {}) {
+function echoModel(opts: { failTitle?: string; answerFirst?: number; onCall?: () => void } = {}) {
   const seen: BatchSeen[] = [];
   const fn: GenerateFn = async ({ prompt }) => {
     const input = JSON.parse(prompt.slice("Input:\n".length)) as {
@@ -56,9 +58,10 @@ function echoModel(opts: { failTitle?: string; onCall?: () => void } = {}) {
     if (opts.failTitle && input.sources.some((s) => s.title === opts.failTitle)) {
       return { object: { items: [{ sourceResultId: "nope", detectedLanguage: 42 }] }, usage: {} };
     }
+    const answered = opts.answerFirst === undefined ? input.sources : input.sources.slice(0, opts.answerFirst);
     return {
       object: {
-        items: input.sources.map((s) => ({
+        items: answered.map((s) => ({
           sourceResultId: s.sourceResultId,
           detectedLanguage: "en",
           originalTitle: null, translatedTitle: null, originalSnippet: null, translatedSnippet: null,
@@ -144,6 +147,35 @@ describe("analyzeResults batching", () => {
     expect(runs.filter((r) => r.status === "invalid")).toHaveLength(1);
   });
 
+  it("refuses a batch that answers about fewer sources than it was shown", async () => {
+    const t = setup();
+    const n = ANALYZE_BATCH_SIZE * 2;
+    const { scanId, ids } = await seedSources(t, n);
+    // Answers about the first half of every batch and stays silent about the rest.
+    // `analyzeResultsOutput` is `.min(1)`, and `validateAgainstSources` only checks
+    // that every id CITED is known — neither notices the sources left out.
+    const half = ANALYZE_BATCH_SIZE / 2;
+    const model = echoModel({ answerFirst: half });
+
+    const outcome = await t.action(async (ctx) => await runAnalyzeResults(ctx, { scanId, sourceResultIds: ids }, model.fn));
+
+    // Twenty sources in, ten items out, must NOT be a clean success.
+    expect(outcome.ok).toBe(false);
+    expect(outcome.failures.map((f) => f.batchIndex)).toEqual([0, 1]);
+    expect(outcome.failures.every((f) => f.reason === "incomplete_coverage")).toBe(true);
+    // Actionable: how many, and which ones went unanswered.
+    expect(outcome.failures[0].errors[0]).toContain(`answered about ${half} of ${ANALYZE_BATCH_SIZE} sources`);
+    expect(outcome.failures[0].errors[0]).toContain(ids[half]);
+
+    // The half it DID answer is still persisted — we already paid for it, and the
+    // run is `succeeded`, so `reopen` would refuse to ask again.
+    expect(outcome.items).toHaveLength(half * 2);
+    const rows = (await t.run(async (ctx) => await Promise.all(ids.map((id) => ctx.db.get(id))))) as Doc<"sourceResults">[];
+    expect(rows.filter((r) => r.analysis !== undefined)).toHaveLength(half * 2);
+    // The rule that matters: no row the model ignored claims to have been analysed.
+    expect(rows.slice(half, ANALYZE_BATCH_SIZE).every((r) => r.analysis === undefined)).toBe(true);
+  });
+
   it("stops the remaining batches when the scan is cancelled mid-run", async () => {
     const t = setup();
     const batches = ANALYZE_CONCURRENCY * 2;
@@ -166,6 +198,23 @@ describe("analyzeResults batching", () => {
     expect(runs).toHaveLength(model.calls);
     const rows = (await t.run(async (ctx) => await Promise.all(ids.map((id) => ctx.db.get(id))))) as Doc<"sourceResults">[];
     expect(rows.filter((r) => r.analysis !== undefined)).toHaveLength(model.calls * ANALYZE_BATCH_SIZE);
+  });
+
+  it("pays for NOTHING when the scan was already cancelled before analyze started", async () => {
+    const t = setup();
+    const { scanId, ids } = await seedSources(t, ANALYZE_BATCH_SIZE * ANALYZE_CONCURRENCY * 2);
+    const model = echoModel();
+
+    const outcome = await t.action(async (ctx) =>
+      await runAnalyzeResults(ctx, { scanId, sourceResultIds: ids }, model.fn, async () => false));
+
+    // This is what pins the PLACEMENT of the cancel check. Move it after
+    // `runBatch` and a scan cancelled before the stage began still pays for
+    // ANALYZE_CONCURRENCY batches; the mid-run test cannot tell the difference,
+    // because there all four workers evaluate the check before any call settles.
+    expect(model.calls).toBe(0);
+    expect(outcome.canceled).toBe(true);
+    expect(await allRuns(t)).toHaveLength(0);
   });
 });
 
