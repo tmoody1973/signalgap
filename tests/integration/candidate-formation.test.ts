@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { internal } from "../../convex/_generated/api";
 import type { Doc, Id } from "../../convex/_generated/dataModel";
-import { MAX_ADJUDICATED_PAIRS } from "../../convex/ai/contracts";
+import { MAX_ADJUDICATED_CLUSTER_SIZE, MAX_ADJUDICATED_PAIRS } from "../../convex/ai/contracts";
 import type { GenerateFn } from "../../convex/ai/provider";
 import { candidateFingerprint, clusterIdentityKeys } from "../../convex/candidates/fingerprint";
 import { runCandidateFormation } from "../../convex/slice";
@@ -511,6 +511,123 @@ describe("adjudicating the ambiguous band from formation", () => {
     expect(summaries.map((f) => f.code)).toContain("adjudicate_capped");
     expect(summaries.find((f) => f.code === "adjudicate_capped")?.message)
       .toBe(`1 ambiguous pairs were past the per-call ceiling of ${MAX_ADJUDICATED_PAIRS} and stay unlinked`);
+  });
+
+  /**
+   * A workflow retry, reproduced. `buildEvidence` is a `step.runAction`, so a
+   * step that fails after adjudication succeeded re-enters the WHOLE action:
+   * same signals, same band, same `inputSnapshotHash`. `modelRuns.create` finds
+   * the succeeded row, `reopen` refuses it, and `runAiOperation` returns
+   * `already_generated` — with no way to get the 39 verdicts back, because a
+   * `modelRuns` row stores the ledger and never the answer.
+   *
+   * The thing this test exists to prevent is the second pass quietly grouping
+   * from the auto-links alone and calling the result a success.
+   */
+  it("does not produce a different candidate set when the same formation runs twice", async () => {
+    process.env.AI_PRIMARY_MODEL = "claude-sonnet-5";
+    process.env.AI_FALLBACK_ENABLED = "false";
+    const t = setup();
+    const { scanId, ids } = await seedBandScan(t);
+    const classify = classifyOnlyModel();
+    const model: GenerateFn = async (args) => {
+      if (/do these two describe the SAME underlying story/.test(args.system)) {
+        const pairIds = [...args.prompt.matchAll(/"pairId": "([^"]+)"/g)].map((m) => m[1]);
+        return {
+          object: { verdicts: pairIds.map((pairId) => ({ pairId, sameStory: true, reason: "One rezoning decision, reported twice." })) },
+          usage: {},
+        };
+      }
+      return classify(args);
+    };
+
+    const first = await t.action(async (ctx) =>
+      runCandidateFormation(ctx, { scanId, sourceResultIds: ids }, model));
+    expect(first.ok).toBe(true);
+    if (!first.ok) return;
+    expect(first.candidates).toHaveLength(8);
+
+    const second = await t.action(async (ctx) =>
+      runCandidateFormation(ctx, { scanId, sourceResultIds: ids }, model));
+
+    // The second pass cannot recover the verdicts, so it must NOT pretend it
+    // grouped the same way. It stops and says why — what it may never do is
+    // hand back nine and call the difference a routine adjudication failure.
+    expect(second.ok).toBe(false);
+    if (second.ok) return;
+    expect(second.reason).toBe("adjudicate_unrecoverable: already_generated");
+    expect(second.errors[0]).toContain("cannot be read back");
+    // And it did not quietly record the coarser run as an ordinary failure.
+    expect((await failures(t, scanId)).map((f) => f.code)).not.toContain("adjudicate_failed");
+  });
+
+  /**
+   * The over-merge tell.
+   *
+   * Nine sources in a CHAIN, not a clique: source i shares two invented tokens
+   * with i-1 and two different ones with i+1, and shares nothing with anyone
+   * else. Each shared token therefore has df 2 — full weight — so each of the
+   * eight consecutive pairs scores exactly 2.0, the floor of the ambiguous band.
+   * (A clique would not work: nine sources sharing one token puts its df at 9,
+   * past `BLOCK_MAX_DF`, and blocking drops it before any pair is proposed.)
+   *
+   * A model answering yes to all eight chains them into one nine-source cluster
+   * having never been shown a pair further apart than one link. That is exactly
+   * the mechanism `task-6-review.md` §2 measured on the real 294 — an all-yes
+   * answer over the 89 band pairs yields a largest cluster of 18 — and until
+   * this guard existed nothing at runtime looked at the number.
+   */
+  it("says so on the scan when adjudication chains one cluster past the ceiling", async () => {
+    process.env.AI_PRIMARY_MODEL = "claude-sonnet-5";
+    process.env.AI_FALLBACK_ENABLED = "false";
+    const t = setup();
+    const { scanId, ids } = await t.run(async (ctx) => {
+      const now = Date.now();
+      const ownerId = await ctx.db.insert("users", { clerkUserId: "owner", createdAt: now, updatedAt: now });
+      const scanId = await ctx.db.insert("scans", scanDoc(ownerId) as never);
+      const searchRunId = await ctx.db.insert("searchRuns", searchRunDoc(scanId, ownerId));
+      const ids: Id<"sourceResults">[] = [];
+      // The two tokens shared by source i and source i+1, and nobody else.
+      const link = (i: number) => `zq${String.fromCharCode(97 + i)}p zq${String.fromCharCode(97 + i)}q`;
+      const size = MAX_ADJUDICATED_CLUSTER_SIZE + 1;
+      for (let i = 0; i < size; i++) {
+        const title = [i > 0 ? link(i - 1) : "", i < size - 1 ? link(i) : ""].filter(Boolean).join(" ");
+        ids.push(await ctx.db.insert("sourceResults", {
+          scanId, searchRunId, ownerId,
+          canonicalKey: `k${i}`, canonicalUrl: `https://example.com/${i}`, originalUrl: `https://example.com/${i}`,
+          engine: "google" as const, sourceFamily: "news" as const, sourceType: "unknown" as const,
+          title, snippet: "", originalLanguage: "en",
+          discoveredAt: now, isAccessible: true, contentHash: `c${i}`,
+        }));
+      }
+      return { scanId, ids };
+    });
+
+    const classify = classifyOnlyModel();
+    const model: GenerateFn = async (args) => {
+      if (/do these two describe the SAME underlying story/.test(args.system)) {
+        const pairIds = [...args.prompt.matchAll(/"pairId": "([^"]+)"/g)].map((m) => m[1]);
+        return {
+          object: { verdicts: pairIds.map((pairId) => ({ pairId, sameStory: true, reason: "Same rezoning decision." })) },
+          usage: {},
+        };
+      }
+      return classify(args);
+    };
+
+    const formed = await t.action(async (ctx) =>
+      runCandidateFormation(ctx, { scanId, sourceResultIds: ids }, model));
+
+    expect(formed.ok).toBe(true);
+    if (!formed.ok) return;
+    // One candidate carrying all nine sources — the over-merge itself.
+    expect(formed.candidates).toHaveLength(1);
+    expect(formed.candidates[0].sourceResultIds).toHaveLength(MAX_ADJUDICATED_CLUSTER_SIZE + 1);
+
+    const summaries = await failures(t, scanId);
+    expect(summaries.map((f) => f.code)).toContain("over_merged");
+    expect(summaries.find((f) => f.code === "over_merged")?.message)
+      .toContain(`largest cluster is ${MAX_ADJUDICATED_CLUSTER_SIZE + 1} sources`);
   });
 
   it("does not pay for the call when the editor has already cancelled", async () => {

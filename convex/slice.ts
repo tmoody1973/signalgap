@@ -5,9 +5,17 @@ import type { ActionCtx } from "./_generated/server";
 import { internalAction } from "./_generated/server";
 import { runAdjudicatePairs } from "./ai/adjudicatePairs";
 import { runClassifyEvidence } from "./ai/classifyEvidence";
+import { MAX_ADJUDICATED_CLUSTER_SIZE, MAX_ADJUDICATED_PAIRS } from "./ai/contracts";
 import { runGenerateBrief } from "./ai/generateBrief";
 import type { GenerateFn } from "./ai/provider";
 import { groupSignals } from "./editorial/blocking";
+
+/**
+ * `runAiOperation` reasons that mean "this exact question already has an answer
+ * we cannot read", as opposed to "there is no answer". The distinction matters
+ * exactly once, at the adjudication call; see the comment at its call site.
+ */
+const UNRECOVERABLE_ADJUDICATIONS = ["already_generated", "in_flight"] as const;
 
 /**
  * One captured scan, end to end: cluster the results, form candidates, classify
@@ -101,6 +109,35 @@ export async function runCandidateFormation(
     // for it. `formFromCluster` below re-checks per cluster.
     if (!shouldContinue || (await shouldContinue())) {
       const adjudicated = await runAdjudicatePairs(ctx, { scanId, signals, pairs: scored.pairs }, generate);
+
+      // Not every failure is the same kind of failure, and this one is not
+      // survivable. `buildEvidence` is a workflow step, so a step that fails
+      // AFTER adjudication succeeded re-enters this whole function with the
+      // same signals and the same `inputSnapshotHash`: `modelRuns.create`
+      // finds the succeeded row, `reopen` refuses it, and the answer comes
+      // back as `already_generated` — with the verdicts gone, because a
+      // `modelRuns` row is a ledger and never stores the output. `in_flight`
+      // is the same condition from a concurrent pass.
+      //
+      // Continuing here would not produce a COARSER version of the first
+      // attempt's answer. It would produce a DIFFERENT candidate set —
+      // grouped from the auto-links alone — and record it as a routine
+      // adjudication failure. A retry that quietly sees less is worse than one
+      // that stops, so this stops. `generateBrief` may treat
+      // `already_generated` as a success because the brief it refers to is
+      // persisted and readable; these verdicts are not.
+      //
+      // ponytail: persisting the adjudicated pair keys would let a retry
+      // reproduce the first attempt's set exactly and turn this into a real
+      // success. That is a schema change, not a guard.
+      if (adjudicated.failure && UNRECOVERABLE_ADJUDICATIONS.some((r) => adjudicated.failure!.startsWith(r))) {
+        return {
+          ok: false,
+          reason: `adjudicate_unrecoverable: ${adjudicated.failure}`,
+          errors: [`${adjudicated.sent} ambiguous pairs were already adjudicated on an earlier pass and the verdicts cannot be read back; grouping without them would change which candidates exist`],
+        };
+      }
+
       if (adjudicated.links.length > 0) grouped = groupSignals(signals, adjudicated.links);
       if (adjudicated.failure) {
         await ctx.runMutation(internal.scans.recordFailure, {
@@ -113,10 +150,29 @@ export async function runCandidateFormation(
         // keep the verdict the code already gave them — unlinked — and say so.
         await ctx.runMutation(internal.scans.recordFailure, {
           scanId, purpose: "discovery", code: "adjudicate_capped",
-          message: `${adjudicated.overCeiling} ambiguous pairs were past the per-call ceiling of ${adjudicated.sent} and stay unlinked`,
+          message: `${adjudicated.overCeiling} ambiguous pairs were past the per-call ceiling of ${MAX_ADJUDICATED_PAIRS} and stay unlinked`,
         });
       }
     }
+  }
+
+  // The runtime tell for an over-merge. `contracts.ts` explains why one is
+  // needed: the schema stops the model NAMING a group, not union-find BUILDING
+  // one from its answers, and the only bound on that chaining is the blocking
+  // graph. `largestCluster` is the single number that would show a degenerate
+  // run — on the real 294 it is 5 today, and 18 if the model answered yes to
+  // every band pair — and until now it was computed and thrown away.
+  //
+  // Nothing is undone: the clusters stand. Re-partitioning on a threshold would
+  // be this code settling an editorial question with a heuristic. What changes
+  // is that the scan says it happened, on the same channel `adjudicate_capped`
+  // uses, and names both link counts so an editor can see whether the model
+  // built it or the score did.
+  if (grouped.stats.largestCluster > MAX_ADJUDICATED_CLUSTER_SIZE) {
+    await ctx.runMutation(internal.scans.recordFailure, {
+      scanId, purpose: "discovery", code: "over_merged",
+      message: `largest cluster is ${grouped.stats.largestCluster} sources, past the ${MAX_ADJUDICATED_CLUSTER_SIZE} expected of one story (${grouped.stats.linkedPairs} scored links, ${grouped.stats.adjudicatedLinks} adjudicated) — read it before trusting the lead`,
+    });
   }
 
   const titleById = new Map(signals.map((s) => [s.sourceResultId as string, s.title]));

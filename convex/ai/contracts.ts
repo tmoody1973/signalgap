@@ -123,6 +123,33 @@ export const clusterSignalsOutput = z.object({
 export const MAX_ADJUDICATED_PAIRS = 200;
 
 /**
+ * The over-merge tell. Not a cap — nothing is truncated when a cluster passes
+ * it — but the one number that would show a degenerate adjudication run while
+ * it is still on the scan rather than in a test.
+ *
+ * WHY A NUMBER IS NEEDED AT ALL: the schema stops the model NAMING a group; it
+ * does not stop union-find BUILDING one out of its answers. yes(a,b) plus
+ * yes(b,c) puts a and c in one cluster the model never endorsed, and the only
+ * bound on how far that chains is the blocking graph.
+ *
+ * CHOSEN: 8, from three measurements on the real 294-source scan
+ * (`tests/fixtures/clustering/scan-294.json`).
+ *   - Today's run: 39 adjudicated links, largest cluster 5. A ceiling of 8
+ *     leaves 60% headroom, so a normal scan never trips it.
+ *   - Task 7's whole-scan canary uses the same "largest cluster <= 8", so the
+ *     runtime tell and the fixture test agree on one number instead of drifting.
+ *   - The degenerate case measured in `task-6-review.md` §2 — the model
+ *     answering yes to all 89 band pairs — yields a largest cluster of 18, every
+ *     r/milwaukee thread in the scan chained into one story. 8 catches that with
+ *     room to spare.
+ *
+ * PAST IT: nothing is undone. The clusters stand and the scan records
+ * `over_merged` naming the size, because silently repartitioning on a threshold
+ * would be this code deciding an editorial question on a heuristic.
+ */
+export const MAX_ADJUDICATED_CLUSTER_SIZE = 8;
+
+/**
  * Two sources the deterministic scorer could not decide between, with the terms
  * it matched them on. There is no sourceResultId here on purpose: the only
  * handle the model is given is `pairId`, a token this code minted, so it has
@@ -140,13 +167,23 @@ export const adjudicatePairsInput = z.object({
 /**
  * One yes/no per pair, and nothing wider.
  *
- * A GROUPING ANSWER IS NOT EXPRESSIBLE, by construction. There is no array of
- * source ids anywhere in this schema, no cluster object, and no field in which
- * more than one pair can be named — the widest true statement the model can make
- * is "these two are the same story". Union-find in `convex/editorial/blocking.ts`
- * is the only thing that turns a set of yeses into groups, and it honours a yes
- * only for a pair its own score put in the ambiguous band. That is the
- * "AI suggests, code decides" line, drawn in a type.
+ * THE MODEL CANNOT NAME A GROUP. There is no array of source ids anywhere in
+ * this schema, no cluster object, and no field in which more than one pair can
+ * be named — the widest true statement the model can make is "these two are the
+ * same story".
+ *
+ * IT CAN STILL BUILD ONE. Union-find in `convex/editorial/blocking.ts` composes
+ * its yes-answers and has no way to honour a no: yes(a,b) plus yes(b,c) puts a
+ * and c in one cluster the model never endorsed. What bounds that is not this
+ * schema but the blocking graph — only pairs blocking proposed and the score
+ * left ambiguous are ever asked about, and `groupSignals` honours a yes only for
+ * a pair its own score put in that band. Measured on the real 294-source scan:
+ * today's answers give a largest cluster of 5, and an all-yes answer over all 89
+ * band pairs would give 18 (`task-6-review.md` §2). `MAX_ADJUDICATED_CLUSTER_SIZE`
+ * above is the runtime tell for that.
+ *
+ * So the "AI suggests, code decides" line is drawn in a type AND in the graph —
+ * the type alone does not draw it.
  */
 export const adjudicatePairsOutput = z.object({
   verdicts: z.array(z.object({
