@@ -27,8 +27,21 @@ export function normalizeEntityKey(raw: string): string {
  *
  * Blank-ish entity keys count as none — `candidateFingerprint` drops them, so
  * `["  "]` would otherwise reach the same constant.
+ *
+ * Throws on an empty `sourceResultIds`, because with nothing to fall back to the
+ * result is `[]` and we are back at the constant. `formFromCluster` already
+ * returns `no_valid_sources` before it gets here, so this fires for nobody
+ * today; it is here so a second caller written without that guard fails loudly
+ * instead of quietly minting one fabricated mega-lead per scan.
+ *
+ * Caller-visible catch: the ids go through `normalizeEntityKey` downstream,
+ * which lowercases and strips punctuation. That makes the fallback depend on
+ * Convex ids being Crockford base32 — no uppercase, no non-alphanumerics — as
+ * they are today. Ids in any other encoding could normalize onto each other
+ * ("kg2ABc"/"kg2abc", "kg2-abc"/"kg2_abc" collide) and re-merge two clusters.
  */
 export function clusterIdentityKeys(entityKeys: string[], sourceResultIds: string[]): string[] {
+  if (sourceResultIds.length === 0) throw new Error("clusterIdentityKeys: a cluster with no sources has no identity");
   const keys = entityKeys.filter((k) => normalizeEntityKey(k).length > 0);
   return keys.length > 0 ? keys : sourceResultIds;
 }

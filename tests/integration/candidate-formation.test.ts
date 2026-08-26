@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { internal } from "../../convex/_generated/api";
 import type { Doc, Id } from "../../convex/_generated/dataModel";
 import type { GenerateFn } from "../../convex/ai/provider";
+import { candidateFingerprint, clusterIdentityKeys } from "../../convex/candidates/fingerprint";
 import { runCandidateFormation } from "../../convex/slice";
 import { scanDoc, searchRunDoc } from "../fixtures/factories";
 import { setup } from "./helpers";
@@ -131,6 +132,30 @@ describe("formFromCluster", () => {
       scanId, cluster: cluster([officialId, foreignId]), beat: "housing", workingTitle: "T",
     });
     expect("candidateId" in result && result.sourceCount).toBe(1);
+  });
+
+  it("builds identity from the sources that survived the re-read, not the ids the model proposed", async () => {
+    const t = setup();
+    const { scanId, officialId, foreignId } = await seed(t);
+
+    // `foreignId` belongs to another scan, so it is dropped at form.ts:41 and can
+    // never become evidence. Letting it into the fingerprint would mean two
+    // clusters with different unusable padding read as two different stories.
+    const first = await t.mutation(internal.candidates.form.formFromCluster, {
+      scanId, cluster: cluster([officialId, foreignId], []), beat: "housing", workingTitle: "T",
+    });
+
+    const candidates = await t.run(async (ctx) => await ctx.db.query("candidates").collect());
+    expect(candidates).toHaveLength(1);
+    expect(candidates[0].fingerprint).toBe(candidateFingerprint(clusterIdentityKeys([], [officialId]), "housing"));
+
+    // Same story, this time proposed without the dead id: same identity, so the
+    // existing candidate is reused rather than a near-duplicate created.
+    const second = await t.mutation(internal.candidates.form.formFromCluster, {
+      scanId, cluster: cluster([officialId], []), beat: "housing", workingTitle: "T",
+    });
+    expect("candidateId" in first && "candidateId" in second && second.candidateId === first.candidateId).toBe(true);
+    expect("created" in second && second.created).toBe(false);
   });
 
   it("refuses a cluster whose sources are all unusable rather than creating an empty candidate", async () => {

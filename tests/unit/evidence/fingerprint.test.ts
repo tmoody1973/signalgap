@@ -68,6 +68,14 @@ describe("clusterIdentityKeys", () => {
       .not.toBe(candidateFingerprint(clusterIdentityKeys([], ["src2"]), "housing"));
   });
 
+  it("refuses a cluster with nothing to identify it, rather than returning the constant", () => {
+    // `candidateFingerprint([], beat)` is the constant this whole helper exists
+    // to keep unreachable. form.ts guards it one file away; this keeps the
+    // helper honest for the next caller.
+    expect(() => clusterIdentityKeys([], [])).toThrow(/no identity/);
+    expect(() => clusterIdentityKeys(["Harambee"], [])).toThrow(/no identity/);
+  });
+
   it("gives the same entity-less cluster the same fingerprint on a re-run", () => {
     expect(candidateFingerprint(clusterIdentityKeys([], ["src1", "src2"]), "housing"))
       .toBe(candidateFingerprint(clusterIdentityKeys([], ["src2", "src1"]), "housing"));
