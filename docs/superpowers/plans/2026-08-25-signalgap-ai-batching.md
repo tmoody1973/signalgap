@@ -137,6 +137,26 @@ The single commit that is unambiguously an improvement, is independently useful,
 - [ ] `convex/slice.ts:92`'s hardcoded `beat: "housing"` is half the constant. Address it or state plainly why it must stay.
 - [ ] **A test that fails on `main`:** a scan of N clusters must produce more than one candidate. That single assertion would have caught this on day one, and nothing in 443 tests makes it.
 
+**Found while fixing this, deferred deliberately, and carrying a deadline.** `candidateFingerprint` folds in `beat`, but `saveJudgment` (`convex/candidates/judgment.ts:57-64`) corrects `candidate.beat` a moment after formation and **never recomputes the fingerprint** — a correctable field welded into an immutable identity. Removing `beat` from the fingerprint is the real fix, and it was deferred because it rewrites every existing fingerprint.
+
+**The deadline, which the original deferral did not state:** the bug is unreachable while `slice.ts` hardcodes `beat: "housing"` (the value never varies, so it contributes zero entropy) and **live immediately after that stops**. So removing `beat` from the fingerprint MUST land in the same change that stops hardcoding it. A decision doc that lands later ships the bug.
+
+---
+
+## Task 4b: A lead whose classification failed is filed under the wrong beat, forever
+
+**Files:** `convex/slice.ts`, `convex/lib/validators.ts`, `convex/schema.ts` — scope to be decided when this is planned.
+
+Found during Task 4's review and verified end to end there. **This is a live, user-visible mislabel, not a theoretical one.**
+
+`convex/slice.ts` passes `beat: "housing"` to every `formFromCluster` call. `saveJudgment` (`convex/candidates/judgment.ts:57-64`) corrects it a moment later from the classifier. But if classification **fails** (`convex/slice.ts:116`), the correction never runs and the candidate keeps `beat: "housing"` permanently.
+
+The feed filters on that column (`convex/candidates/list.ts`), so a transportation story whose classification failed sits in the housing filter forever, with nothing on the card saying the beat was never established.
+
+- [ ] `candidates.beat` is `V.vBeat` — exactly `housing | transportation | culture` (`convex/lib/validators.ts:4`). There is **no** "unassigned" member, so formation cannot currently record "beat not yet known". Decide whether to add one, and what it costs — a new vocabulary member touches the schema, the feed filter, the labels and the fixtures.
+- [ ] Whatever is chosen, **a card must never assert a beat the product never established.** The `no_beat_relevance` display wart carried from the feed plan is the same family of problem and should be settled with it.
+- [ ] **This is the change that must also remove `beat` from `candidateFingerprint`** — see the deadline recorded under Task 4. The fingerprint bug is unreachable while the value never varies and live the moment it does.
+
 ---
 
 ## Task 5: Replace the 294-item clustering call with blocking and scoring
@@ -162,6 +182,9 @@ The canopy pattern removes the need instead of working around it:
 - [ ] **Entity overlap alone is a recall net, not a decision — this was tested and it fails.** On 40 real analyzed signals it recovered **1 of the model's 3 merges**, and loosening to token overlap merged the *Asian Street Food Festival* with the *Freshwater Food & Wine Festival* on `food, festival`. Do not ship blocking as the whole system.
 - [ ] Block on the **translated** title and snippet too. Cross-lingual pairs share few tokens and this is the most likely quiet failure.
 - [ ] Both thresholds are named constants with a comment saying who owns them and how they were chosen.
+- [ ] **Populate `entityKeys` on every cluster from `sourceResults.analysis.entityKeys`** (Task 2 persisted them). If the grouper does not, every cluster silently takes Task 4's source-id fallback, cross-scan continuity is gone product-wide, and **all seven of Task 4's tests still pass.** That is a quiet product failure, so it needs a tell: count the fallback identities on the scan, or note them in `failures`. Add the tell and a test for it.
+- [ ] **Normalise before counting entity overlap.** Task 2 stores entity keys as the model wrote them; deduplication there is exact-string only, so `"Common Council"` and `"common council"` are two keys. Blocking must call `normalizeEntityKey` (`convex/candidates/fingerprint.ts`) before comparing.
+- [ ] **Watch `claimSummary` quality.** Task 3 set `effort: "low"`, and on one 10-source sample claims fell 4 → 2 while entities rose 11 → 14. `claimSummary` is a clustering input. n=10 is under-powered, so this is a flag not a finding — but it is free to check against the cached real sources before tuning any threshold.
 
 ---
 
