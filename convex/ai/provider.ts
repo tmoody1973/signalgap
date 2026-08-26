@@ -1,6 +1,7 @@
 import { anthropic } from "@ai-sdk/anthropic";
 import { openai } from "@ai-sdk/openai";
-import { generateObject, NoObjectGeneratedError } from "ai";
+import { NoObjectGeneratedError, streamObject } from "ai";
+import type { LanguageModel } from "ai";
 import type { z } from "zod";
 
 export type AiOperation = "analyzeResults" | "clusterSignals" | "classifyEvidence" | "planFollowUp" | "generateBrief";
@@ -49,17 +50,65 @@ export type GenerateOutcome<T> =
       provider: AiProvider; modelId: string; attempts: number; usedFallback: boolean; durationMs: number;
     };
 
+/**
+ * One streamed structured-output call.
+ *
+ * Streaming, not `generateObject`, because these requests carry `max_tokens:
+ * 128000` (the provider's model ceiling, since we never set `maxOutputTokens`)
+ * and a non-streaming request that large is the exact anti-pattern that produces
+ * "the signal has been aborted". A single 50-source batch died on an HTTP/2
+ * "stream timeout after 300000" during the Task 1 measurement.
+ *
+ * `effort: "low"` because omitting `thinking` runs ADAPTIVE thinking on Sonnet 5,
+ * and we were paying output rates for the model to reason its way through a
+ * mechanical extraction. "low" is the floor the provider exposes; `thinking:
+ * disabled` has documented leakage failure modes, so it is not used.
+ *
+ * `.object` and `.usage` are promises, so `GenerateResponse` is unchanged and
+ * `classifyError`, the ledger and the injected `GenerateFn` seam are untouched.
+ *
+ * Exported so `tests/unit/ai/streaming-object.test.ts` can pin the one behaviour
+ * the retry rule rests on — that a stream with no parsable object still rejects
+ * with `NoObjectGeneratedError` — against a mock model, never a real one.
+ */
+export async function streamStructuredObject(
+  model: LanguageModel,
+  { system, prompt, schema, abortSignal }: Omit<GenerateArgs, "provider" | "modelId">,
+): Promise<GenerateResponse> {
+  const result = streamObject({
+    model, schema, system, prompt, abortSignal, maxRetries: 0,
+    providerOptions: { anthropic: { effort: "low" } },
+  });
+
+  // `usage` gets its handler attached BEFORE anything can reject, or a failed
+  // call surfaces as an unhandled rejection instead of the error we classify.
+  const usage = result.usage.catch(() => undefined);
+
+  // The SDK's streams are PULL-based: `.object` never settles unless somebody
+  // reads the stream. Measured against a mock model — without this loop a
+  // perfectly valid response hangs until the 120 s abort fires. The text is
+  // discarded on purpose; `.object` is the value we want.
+  const reader = result.textStream.getReader();
+  try {
+    for (;;) {
+      const { done } = await reader.read();
+      if (done) break;
+    }
+  } catch {
+    // Whatever went wrong is re-reported by `.object` below, in the shape
+    // `classifyError` understands. Swallowing it here would lose that shape.
+  }
+
+  const object = await result.object;
+  const settled = await usage;
+  return { object, usage: { inputTokens: settled?.inputTokens, outputTokens: settled?.outputTokens } };
+}
+
 // The AI SDK has its own retry loop, but the schema-invalid rule and the
 // fallback rule live here and have to be the SAME code the unit tests exercise.
 // So maxRetries is 0 and this loop owns every attempt.
-const defaultGenerate: GenerateFn = async ({ provider, modelId, system, prompt, schema, abortSignal }) => {
-  const model = provider === "anthropic" ? anthropic(modelId) : openai(modelId);
-  const result = await generateObject({ model, schema, system, prompt, abortSignal, maxRetries: 0 });
-  return {
-    object: result.object,
-    usage: { inputTokens: result.usage?.inputTokens, outputTokens: result.usage?.outputTokens },
-  };
-};
+const defaultGenerate: GenerateFn = ({ provider, modelId, ...rest }) =>
+  streamStructuredObject(provider === "anthropic" ? anthropic(modelId) : openai(modelId), rest);
 
 type ErrorKind = "transient" | "invalid" | "fatal";
 

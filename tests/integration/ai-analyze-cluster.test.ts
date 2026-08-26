@@ -179,7 +179,7 @@ describe("analyzeResults", () => {
     const outcome = await t.action(async (ctx) => await runAnalyzeResults(ctx, { scanId, sourceResultIds: [englishId] }, model.fn));
     expect(outcome.ok).toBe(true);
     if (!outcome.ok) return;
-    const run = await readRun(t, outcome.modelRunId);
+    const run = await readRun(t, outcome.modelRunIds[0]);
     expect(run?.status).toBe("succeeded");
     expect(run?.inputTokens).toBe(100);
   });
@@ -235,7 +235,7 @@ describe("analyzeResults", () => {
     ]);
     expect(row.analysis?.dates).toEqual(["2026-08-25"]);
     // Traceable to the call that was paid for.
-    expect(row.analysis?.modelRunId).toBe(outcome.modelRunId);
+    expect(row.analysis?.modelRunId).toBe(outcome.modelRunIds[0]);
   });
 
   it("falls back to the model's reason when it extracted no claim at all", async () => {
@@ -299,7 +299,7 @@ describe("analyzeResults", () => {
     // A later analysis of the same row writes over the earlier one. It never
     // accumulates, so a re-run cannot leave two competing entity lists behind.
     await t.mutation(internal.ai.analyzeResults.persistAnalysis, {
-      modelRunId: first.modelRunId,
+      modelRunId: first.modelRunIds[0],
       items: [{
         sourceResultId: englishId,
         translatedTitle: null, translatedSnippet: null, sourceTypeSuggestion: "unknown" as const,

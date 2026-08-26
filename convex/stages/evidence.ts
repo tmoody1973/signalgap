@@ -43,27 +43,42 @@ export async function runEvidenceStage(
   }
   if (sourceResultIds.length === 0) return { candidates: [], analyzed: false, canceled: false };
 
-  const analyzed = await runAnalyzeResults(ctx, { scanId, sourceResultIds }, generate);
-  if (!analyzed.ok) {
-    await ctx.runMutation(internal.scans.recordFailure, {
-      scanId, purpose: "discovery", code: "analyze_failed", message: analyzed.reason,
-    });
-    // Analysis adds translation and source-type suggestions. Without it the
-    // clusters are thinner, but the sources are real and the scan continues.
-  }
-
-  // Checked again here: analysis above was a model call too, and classification
-  // ahead runs one more PER CLUSTER — an editor cancelling during "Checking
-  // local evidence" must not keep paying for it. `shouldContinue` repeats this
-  // same check at the top of the per-cluster loop inside formation itself.
-  let canceledDuringFormation = false;
+  // Declared BEFORE analysis, because analysis is now up to thirty model calls
+  // instead of one. Classification ahead runs one more PER CLUSTER. An editor
+  // cancelling during "Checking local evidence" must stop paying at the next
+  // batch boundary, not at the end of the stage. `shouldContinue` is re-checked
+  // between analyze batches AND at the top of the per-cluster loop inside
+  // formation itself.
+  let canceled = false;
   const shouldContinue = async () => {
     const s = await ctx.runQuery(internal.scans.getForWorkflow, { scanId });
     const ok = !!s && s.isActive && !s.isCancelRequested;
-    if (!ok) canceledDuringFormation = true;
+    if (!ok) canceled = true;
     return ok;
   };
-  if (!(await shouldContinue())) {
+
+  const analyzed = await runAnalyzeResults(ctx, { scanId, sourceResultIds }, generate, shouldContinue);
+  if (analyzed.failures.length > 0) {
+    // ONE row, not one per batch: `scans.recordFailure` deduplicates by
+    // purpose+code, so a second call would be silently dropped and the editor
+    // would be told about the first failed batch only. The message names every
+    // batch that failed instead.
+    await ctx.runMutation(internal.scans.recordFailure, {
+      scanId, purpose: "discovery", code: "analyze_failed",
+      message: `${analyzed.failures.length} of ${analyzed.batches} analyze batches failed: `
+        + analyzed.failures.map((f) => `batch ${f.batchIndex} ${f.reason}`).join("; "),
+    });
+    // Analysis adds translation and source-type suggestions. Without it the
+    // clusters are thinner, but the sources are real and the scan continues —
+    // and the batches that DID land are already persisted.
+  } else if (!analyzed.ok && !analyzed.canceled) {
+    // No batch even reached the model — no sources, or no primary model.
+    await ctx.runMutation(internal.scans.recordFailure, {
+      scanId, purpose: "discovery", code: "analyze_failed", message: analyzed.reason ?? "analysis did not run",
+    });
+  }
+
+  if (analyzed.canceled || !(await shouldContinue())) {
     return { candidates: [], analyzed: analyzed.ok, canceled: true };
   }
 
@@ -78,7 +93,7 @@ export async function runEvidenceStage(
   return {
     candidates: formed.candidates.map((c) => ({ candidateId: c.candidateId, readyForVerdict: c.readyForVerdict })),
     analyzed: analyzed.ok,
-    canceled: canceledDuringFormation,
+    canceled,
   };
 }
 
