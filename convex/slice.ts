@@ -4,9 +4,9 @@ import type { Id } from "./_generated/dataModel";
 import type { ActionCtx } from "./_generated/server";
 import { internalAction } from "./_generated/server";
 import { runClassifyEvidence } from "./ai/classifyEvidence";
-import { runClusterSignals } from "./ai/clusterSignals";
 import { runGenerateBrief } from "./ai/generateBrief";
 import type { GenerateFn } from "./ai/provider";
+import { groupSignals } from "./editorial/blocking";
 
 /**
  * One captured scan, end to end: cluster the results, form candidates, classify
@@ -74,16 +74,29 @@ export async function runCandidateFormation(
   // of them behind a single top-of-stage check otherwise. final-review.md I2.
   shouldContinue?: () => Promise<boolean>,
 ): Promise<FormationOutcome> {
-  const signals = sourceResultIds.map((id) => ({ sourceResultId: id, entityKeys: [], claimSummary: "" }));
-  const clustered = await runClusterSignals(ctx, { scanId, signals }, generate);
-  if (!clustered.ok) return { ok: false, reason: clustered.reason, errors: clustered.errors };
+  // Grouping is deterministic. `convex/editorial/blocking.ts` blocks, scores and
+  // groups in code; no model is asked which of these sources are the same story.
+  // It reads what `analyzeResults` already extracted and persisted — entity keys,
+  // the claim summary, the translations — so a re-run does not re-pay for it.
+  const signals = await ctx.runQuery(internal.sourceResults.clusteringSignalsFor, { scanId, sourceResultIds });
+  if (signals.length === 0) return { ok: false, reason: "no_signals", errors: ["nothing to cluster"] };
+  const grouped = groupSignals(signals);
+  const titleById = new Map(signals.map((s) => [s.sourceResultId as string, s.title]));
 
   const candidates: FormedCandidate[] = [];
 
-  for (const cluster of clustered.clusters) {
+  for (const cluster of grouped.clusters) {
     if (shouldContinue && !(await shouldContinue())) break;
 
     const failures: string[] = [];
+    // The tell for Task 4's source-id fallback. A cluster with no entity key
+    // still gets a distinct identity, but one built from its own member ids,
+    // which are scan-local — it can never match a prior scan's candidate. That
+    // degradation is invisible everywhere else in the pipeline (every one of
+    // Task 4's tests passes either way), so it is named here, per candidate.
+    if (cluster.entityKeys.length === 0) {
+      failures.push("identity: no entity keys on this cluster; fingerprint falls back to source ids and cannot match a prior scan");
+    }
 
     const formed = await ctx.runMutation(internal.candidates.form.formFromCluster, {
       scanId,
@@ -101,7 +114,12 @@ export async function runCandidateFormation(
       // cross-scan continuity. Removing `beat` from the fingerprint is the real
       // fix; it rewrites every existing one, so it needs a decision doc (Task 9).
       beat: "housing",
-      workingTitle: cluster.similarityBasis.slice(0, 120),
+      // The first member's real headline, verbatim. It used to be the model's
+      // `similarityBasis`, which on the measured 294 produced a lead titled
+      // "placeholder" (task-1-report.md). The deterministic basis is a list of
+      // shared terms — true, but not a headline. A captured title is neither
+      // invented nor a judgment.
+      workingTitle: (titleById.get(cluster.sourceResultIds[0]) ?? cluster.similarityBasis).slice(0, 120),
     });
     if ("rejected" in formed) continue;
     const { candidateId } = formed;
@@ -111,7 +129,7 @@ export async function runCandidateFormation(
     if (!classified.ok) {
       candidates.push({
         candidateId, sourceResultIds: memberIds, evidenceVersion: null,
-        failures: [`classify: ${classified.reason}`], readyForVerdict: false,
+        failures: [...failures, `classify: ${classified.reason}`], readyForVerdict: false,
       });
       continue;
     }

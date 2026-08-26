@@ -6,6 +6,18 @@ import type { Id } from "../../convex/_generated/dataModel";
  * comment thread. Chosen so the slice exercises every branch the demo shows —
  * two independent confirming categories, a bilingual source, and a community
  * post that must stay non-confirming.
+ *
+ * Each row also carries the `analysis` block `analyzeResults` writes — entity
+ * keys, a claim summary, and for the Spanish row the translation that sits beside
+ * the original. That is not decoration: `analyzeResults` runs before clustering
+ * in the real pipeline, and `convex/editorial/blocking.ts` groups these four on
+ * exactly this data. A row with no `analysis` is what an un-analysed source looks
+ * like, and these four are analysed by the time formation sees them.
+ *
+ * The one inference worth naming: the official agenda record's entity keys
+ * include "Harambee", which its snippet does not say — the 3000 block of North
+ * MLK Drive is in Harambee, and a model extracting neighbourhoods says so. That
+ * key is what ties the official record to the news coverage.
  */
 export const SLICE_SOURCES = [
   {
@@ -17,6 +29,14 @@ export const SLICE_SOURCES = [
     publisher: null,
     originalLanguage: "en",
     engine: "google" as const,
+    translatedTitle: null,
+    translatedSnippet: null,
+    analysis: {
+      entityKeys: ["Common Council", "North Dr. Martin Luther King Jr. Drive", "Harambee"],
+      claimSummary: "The Common Council will consider rezoning the 3000 block of North Dr. Martin Luther King Jr. Drive in Harambee.",
+      claims: [{ text: "The rezoning is agenda item 250412.", exactExcerpt: "Rezoning of the 3000 block of North Dr. Martin Luther King Jr. Drive." }],
+      dates: [],
+    },
   },
   {
     key: "news",
@@ -27,6 +47,14 @@ export const SLICE_SOURCES = [
     publisher: "Milwaukee Journal Sentinel",
     originalLanguage: "en",
     engine: "google_news" as const,
+    translatedTitle: null,
+    translatedSnippet: null,
+    analysis: {
+      entityKeys: ["Harambee", "Common Council"],
+      claimSummary: "Residents say they learned of the Harambee rezoning proposal a week before the Common Council vote.",
+      claims: [{ text: "Residents say they learned of the proposal a week before the vote.", exactExcerpt: "Residents say they learned of the proposal a week before the vote." }],
+      dates: [],
+    },
   },
   {
     key: "spanish",
@@ -37,6 +65,14 @@ export const SLICE_SOURCES = [
     publisher: "El Conquistador",
     originalLanguage: "es",
     engine: "google" as const,
+    translatedTitle: "Neighbors question the Harambee rezoning",
+    translatedSnippet: "Residents say they found out a week before the vote.",
+    analysis: {
+      entityKeys: ["Harambee"],
+      claimSummary: "Neighbors say they found out about the Harambee rezoning a week before the vote.",
+      claims: [{ text: "Neighbors say they were notified a week before the vote.", exactExcerpt: null }],
+      dates: [],
+    },
   },
   {
     key: "reddit",
@@ -47,8 +83,62 @@ export const SLICE_SOURCES = [
     publisher: null,
     originalLanguage: "en",
     engine: "google" as const,
+    translatedTitle: null,
+    translatedSnippet: null,
+    analysis: {
+      entityKeys: ["Harambee", "MLK Drive"],
+      claimSummary: "A resident asks what is happening with the Harambee rezoning and reports surveyors on MLK Drive.",
+      claims: [{ text: "A resident reports surveyors on MLK Drive.", exactExcerpt: "Saw surveyors on MLK yesterday. Nobody I know got a notice." }],
+      dates: [],
+    },
   },
 ] as const;
+
+/**
+ * The `sourceResults` row for one `SLICE_SOURCES` entry, including the `analysis`
+ * block. Shared so the three seeders that insert this packet cannot drift apart.
+ */
+export function sliceSourceDoc(
+  source: (typeof SLICE_SOURCES)[number],
+  index: number,
+  refs: { scanId: Id<"scans">; searchRunId: Id<"searchRuns">; ownerId: Id<"users">; modelRunId: Id<"modelRuns">; now: number; dayMs: number },
+) {
+  return {
+    scanId: refs.scanId, searchRunId: refs.searchRunId, ownerId: refs.ownerId,
+    canonicalKey: `k${index}`, canonicalUrl: source.canonicalUrl, originalUrl: source.canonicalUrl,
+    engine: source.engine, sourceFamily: source.sourceFamily, sourceType: "unknown" as const,
+    title: source.title, snippet: source.snippet,
+    translatedTitle: source.translatedTitle ?? undefined,
+    translatedSnippet: source.translatedSnippet ?? undefined,
+    publisher: source.publisher ?? undefined,
+    originalLanguage: source.originalLanguage,
+    publishedAt: refs.now - refs.dayMs, discoveredAt: refs.now,
+    isAccessible: true, contentHash: `h${index}`,
+    analysis: {
+      entityKeys: [...source.analysis.entityKeys],
+      claimSummary: source.analysis.claimSummary,
+      claims: source.analysis.claims.map((c) => ({
+        text: c.text,
+        ...(c.exactExcerpt === null ? {} : { exactExcerpt: c.exactExcerpt }),
+      })),
+      dates: [...source.analysis.dates],
+      modelRunId: refs.modelRunId,
+    },
+  };
+}
+
+/** The succeeded `analyzeResults` run the packet's `analysis` blocks are attributed to. */
+export function sliceAnalyzeRunDoc(scanId: Id<"scans">, ownerId: Id<"users">, now: number) {
+  return {
+    scanId, ownerId,
+    operation: "analyzeResults" as const,
+    idempotencyKey: `slice-analyze-${scanId}`,
+    provider: "anthropic", modelId: "claude-sonnet-5",
+    promptVersion: "1", schemaVersion: "1", inputSnapshotHash: "slice-analyze",
+    status: "succeeded" as const, attempt: 1,
+    startedAt: now, completedAt: now,
+  };
+}
 
 export type SliceSourceKey = (typeof SLICE_SOURCES)[number]["key"];
 

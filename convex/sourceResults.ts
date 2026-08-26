@@ -148,3 +148,44 @@ export const idsForScan = internalQuery({
     return rows.filter((r) => runIds.has(r.searchRunId as string)).map((r) => r._id);
   },
 });
+
+/**
+ * Exactly what the deterministic clusterer reads, in the order it was asked for.
+ *
+ * `analysis` is optional on the row — a source whose `analyzeResults` batch
+ * failed, or that was ingested before analysis ran, is a valid source. It gets
+ * empty entity keys and an empty claim summary and is clustered on its title and
+ * snippet alone, rather than being dropped. Dropping it would mean a scan that
+ * finishes by seeing less.
+ */
+export const clusteringSignalsFor = internalQuery({
+  args: { scanId: v.id("scans"), sourceResultIds: v.array(v.id("sourceResults")) },
+  returns: v.array(v.object({
+    sourceResultId: v.id("sourceResults"),
+    title: v.string(),
+    snippet: v.string(),
+    translatedTitle: v.union(v.string(), v.null()),
+    translatedSnippet: v.union(v.string(), v.null()),
+    entityKeys: v.array(v.string()),
+    claimSummary: v.string(),
+    dates: v.array(v.string()),
+  })),
+  handler: async (ctx, { scanId, sourceResultIds }) => {
+    const rows = [];
+    for (const id of sourceResultIds) {
+      const row = await ctx.db.get(id);
+      if (!row || row.scanId !== scanId) continue;
+      rows.push({
+        sourceResultId: row._id,
+        title: row.title,
+        snippet: row.snippet,
+        translatedTitle: row.translatedTitle ?? null,
+        translatedSnippet: row.translatedSnippet ?? null,
+        entityKeys: row.analysis?.entityKeys ?? [],
+        claimSummary: row.analysis?.claimSummary ?? "",
+        dates: row.analysis?.dates ?? [],
+      });
+    }
+    return rows;
+  },
+});

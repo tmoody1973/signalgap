@@ -47,6 +47,34 @@ const cluster = (ids: Id<"sourceResults">[], entityKeys = ["Harambee", "rezoning
   suggestedExistingCandidateId: null,
 });
 
+/**
+ * A fake model for the formation path. Since Task 5 nothing asks a model to
+ * cluster, so this only answers `classifyEvidence` — echoing back whichever
+ * source the candidate was formed from, so the classifier's known-source-id
+ * validation passes for every cluster.
+ */
+function classifyOnlyModel(): GenerateFn {
+  return async ({ prompt }) => {
+    const sourceResultId = prompt.match(/"sourceResultId": "([^"]+)"/)?.[1] ?? "";
+    return {
+      object: {
+        beatSuggestion: "housing",
+        localityBandSuggestion: "area_city_consequence",
+        relevanceBandSuggestion: "policy_service_change",
+        flags: { isSpeculative: false, isRoutineCrime: false, isDuplicateOfCandidate: false, hasMaterialConflict: false },
+        items: [{
+          sourceResultIds: [sourceResultId], kind: "unverified_signal",
+          claimText: "A claim.", exactExcerpt: null, originalLanguageText: null, translatedText: null,
+          sourceTypeSuggestion: "secondary", independenceGroupSuggestion: null, relationship: "supports",
+          milwaukeeConnection: "A Milwaukee parcel.", accessibilityConcern: false, repeatsPressRelease: false,
+          reason: "One outlet reported it.",
+        }],
+      },
+      usage: { inputTokens: 100, outputTokens: 50 },
+    };
+  };
+}
+
 describe("formFromCluster", () => {
   it("creates one candidate, one membership row per source, and one appearance", async () => {
     const t = setup();
@@ -239,42 +267,17 @@ describe("a scan of N clusters", () => {
   /**
    * The plan's acceptance line, driven through the PRODUCTION path rather than
    * the mutation directly: `runCandidateFormation` is what `stages/evidence.ts`
-   * calls, and `convex/slice.ts:77` sends `entityKeys: []` for every signal with
-   * `beat: "housing"` hardcoded at line 93. Both stay true until Task 5.
+   * calls. Since Task 5 the grouping is deterministic — `convex/editorial/blocking.ts`
+   * decides it, and the injected model is never asked to cluster at all. These two
+   * sources share one token ("rezoning"), which scores below `REJECT_THRESHOLD`,
+   * so they stay two candidates.
    */
   it("forms one candidate per cluster through runCandidateFormation", async () => {
     process.env.AI_PRIMARY_MODEL = "claude-sonnet-5";
     process.env.AI_FALLBACK_ENABLED = "false";
     const t = setup();
     const { scanId, officialId, newsId } = await seed(t);
-
-    const model: GenerateFn = async ({ system, prompt }) => {
-      if (/Group the supplied signals/.test(system)) {
-        return {
-          object: { clusters: [officialId, newsId].map((id, n) => standaloneCluster(id, n)) },
-          usage: { inputTokens: 100, outputTokens: 50 },
-        };
-      }
-      // Echo back whichever source this candidate was formed from, so the
-      // classifier's known-source-id validation passes for both clusters.
-      const sourceResultId = prompt.match(/"sourceResultId": "([^"]+)"/)?.[1] ?? "";
-      return {
-        object: {
-          beatSuggestion: "housing",
-          localityBandSuggestion: "area_city_consequence",
-          relevanceBandSuggestion: "policy_service_change",
-          flags: { isSpeculative: false, isRoutineCrime: false, isDuplicateOfCandidate: false, hasMaterialConflict: false },
-          items: [{
-            sourceResultIds: [sourceResultId], kind: "unverified_signal",
-            claimText: "A claim.", exactExcerpt: null, originalLanguageText: null, translatedText: null,
-            sourceTypeSuggestion: "secondary", independenceGroupSuggestion: null, relationship: "supports",
-            milwaukeeConnection: "A Milwaukee parcel.", accessibilityConcern: false, repeatsPressRelease: false,
-            reason: "One outlet reported it.",
-          }],
-        },
-        usage: { inputTokens: 100, outputTokens: 50 },
-      };
-    };
+    const model = classifyOnlyModel();
 
     const formed = await t.action(async (ctx) =>
       runCandidateFormation(ctx, { scanId, sourceResultIds: [officialId, newsId] }, model));
@@ -284,5 +287,79 @@ describe("a scan of N clusters", () => {
     expect(formed.candidates).toHaveLength(2);
     expect(new Set(formed.candidates.map((c) => c.candidateId)).size).toBe(2);
     expect(await t.run(async (ctx) => await ctx.db.query("candidates").collect())).toHaveLength(2);
+  });
+});
+
+/**
+ * The trapdoor Task 4's review named. `clusterIdentityKeys` gives an entity-less
+ * cluster a distinct identity built from its own source ids — which is scan-local,
+ * so such a candidate can never match a prior scan's. Every one of Task 4's seven
+ * tests passes either way, because they assert distinctness and the fallback
+ * provides it. So the degradation needs a tell, and the tell needs a test.
+ */
+describe("the source-id identity fallback is not silent", () => {
+  it("names the fallback in failures when a cluster carries no entity key", async () => {
+    process.env.AI_PRIMARY_MODEL = "claude-sonnet-5";
+    process.env.AI_FALLBACK_ENABLED = "false";
+    const t = setup();
+    // `seed` inserts sources with no `analysis`, which is what an unanalysed row
+    // looks like — exactly the state that makes every cluster take the fallback.
+    const { scanId, officialId, newsId } = await seed(t);
+
+    const formed = await t.action(async (ctx) =>
+      runCandidateFormation(ctx, { scanId, sourceResultIds: [officialId, newsId] }, classifyOnlyModel()));
+
+    expect(formed.ok).toBe(true);
+    if (!formed.ok) return;
+    expect(formed.candidates).toHaveLength(2);
+    for (const candidate of formed.candidates) {
+      expect(candidate.failures.some((f) => f.startsWith("identity: no entity keys"))).toBe(true);
+    }
+  });
+
+  it("stays quiet, and uses the persisted entity keys, once analyzeResults has run", async () => {
+    process.env.AI_PRIMARY_MODEL = "claude-sonnet-5";
+    process.env.AI_FALLBACK_ENABLED = "false";
+    const t = setup();
+    const { scanId, officialId, newsId } = await seed(t);
+
+    const modelRunId = await t.run(async (ctx) => {
+      const scan = (await ctx.db.get(scanId))!;
+      const runId = await ctx.db.insert("modelRuns", {
+        scanId, ownerId: scan.ownerId, operation: "analyzeResults" as const,
+        idempotencyKey: "analyze-1", provider: "anthropic", modelId: "claude-sonnet-5",
+        promptVersion: "1", schemaVersion: "1", inputSnapshotHash: "h",
+        status: "succeeded" as const, attempt: 1, startedAt: Date.now(),
+      });
+      // Distinct keys, so the two sources still form two candidates and the only
+      // thing under test is whether the persisted keys reach cluster identity.
+      await ctx.db.patch(officialId, {
+        analysis: { entityKeys: ["Common Council"], claimSummary: "An agenda item.", claims: [], dates: [], modelRunId: runId },
+      });
+      await ctx.db.patch(newsId, {
+        analysis: { entityKeys: ["Harambee"], claimSummary: "Neighbours object.", claims: [], dates: [], modelRunId: runId },
+      });
+      return runId;
+    });
+    expect(modelRunId).toBeTruthy();
+
+    const formed = await t.action(async (ctx) =>
+      runCandidateFormation(ctx, { scanId, sourceResultIds: [officialId, newsId] }, classifyOnlyModel()));
+
+    expect(formed.ok).toBe(true);
+    if (!formed.ok) return;
+    for (const candidate of formed.candidates) {
+      expect(candidate.failures.some((f) => f.startsWith("identity: no entity keys"))).toBe(false);
+    }
+
+    // The fingerprints are the entity-key ones, not the source-id fallback. This
+    // is what cross-scan continuity rests on, and it is the assertion that fails
+    // if the grouper ever stops reading `sourceResults.analysis.entityKeys`.
+    const fingerprints = await t.run(async (ctx) =>
+      (await ctx.db.query("candidates").collect()).map((c) => c.fingerprint).sort());
+    expect(fingerprints).toEqual([
+      candidateFingerprint(["Common Council"], "housing"),
+      candidateFingerprint(["Harambee"], "housing"),
+    ].sort());
   });
 });

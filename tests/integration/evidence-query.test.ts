@@ -4,7 +4,7 @@ import type { Id } from "../../convex/_generated/dataModel";
 import type { GenerateFn } from "../../convex/ai/provider";
 import { runSliceForScan } from "../../convex/slice";
 import { scanDoc } from "../fixtures/factories";
-import { SLICE_SOURCES, sliceModelAnswers, type SliceSourceKey } from "../fixtures/slice";
+import { SLICE_SOURCES, sliceAnalyzeRunDoc, sliceModelAnswers, sliceSourceDoc, type SliceSourceKey } from "../fixtures/slice";
 import { asUser, setup } from "./helpers";
 
 const NOW = 1_700_000_000_000;
@@ -34,19 +34,16 @@ async function seedAndRun(t: ReturnType<typeof setup>) {
       reservedAt: NOW, completedAt: NOW,
     });
 
+    const modelRunId = await ctx.db.insert("modelRuns", sliceAnalyzeRunDoc(scanId, ownerId, NOW));
+
     const ids = {} as Record<SliceSourceKey, Id<"sourceResults">>;
+    const refs = { scanId, searchRunId, ownerId, modelRunId, now: NOW, dayMs: DAY };
     for (const [i, source] of SLICE_SOURCES.entries()) {
       ids[source.key] = await ctx.db.insert("sourceResults", {
-        scanId, searchRunId, ownerId,
-        canonicalKey: `k${i}`, canonicalUrl: source.canonicalUrl, originalUrl: source.canonicalUrl,
-        engine: source.engine, sourceFamily: source.sourceFamily, sourceType: "unknown" as const,
-        title: source.title, snippet: source.snippet,
-        publisher: source.publisher ?? undefined,
-        originalLanguage: source.originalLanguage,
-        publishedAt: NOW - DAY, discoveredAt: NOW,
+        ...sliceSourceDoc(source, i, refs),
         // The Reddit source is deliberately unreachable: an unreachable citation
         // must stay visible and marked, never disappear.
-        isAccessible: source.key !== "reddit", contentHash: `h${i}`,
+        isAccessible: source.key !== "reddit",
       });
     }
     return { ownerId, scanId, ids };

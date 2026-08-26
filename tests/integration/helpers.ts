@@ -8,7 +8,7 @@ import type { GenerateFn } from "../../convex/ai/provider";
 import schema from "../../convex/schema";
 import { runCandidateFormation } from "../../convex/slice";
 import { scanDoc, searchRunDoc } from "../fixtures/factories";
-import { SLICE_SOURCES, sliceModelAnswers, type SliceSourceKey } from "../fixtures/slice";
+import { SLICE_SOURCES, sliceAnalyzeRunDoc, sliceModelAnswers, sliceSourceDoc, type SliceSourceKey } from "../fixtures/slice";
 
 export const modules = import.meta.glob("../../convex/**/*.ts");
 
@@ -139,18 +139,12 @@ export async function seedSliceScan(t: ReturnType<typeof setup>) {
     const scanId = await ctx.db.insert("scans", scanDoc(ownerId) as never);
     const searchRunId = await ctx.db.insert("searchRuns", searchRunDoc(scanId, ownerId));
 
+    const modelRunId = await ctx.db.insert("modelRuns", sliceAnalyzeRunDoc(scanId, ownerId, SLICE_NOW));
+
     const sourceIds = {} as Record<SliceSourceKey, Id<"sourceResults">>;
+    const refs = { scanId, searchRunId, ownerId, modelRunId, now: SLICE_NOW, dayMs: SLICE_DAY };
     for (const [i, source] of SLICE_SOURCES.entries()) {
-      sourceIds[source.key] = await ctx.db.insert("sourceResults", {
-        scanId, searchRunId, ownerId,
-        canonicalKey: `k${i}`, canonicalUrl: source.canonicalUrl, originalUrl: source.canonicalUrl,
-        engine: source.engine, sourceFamily: source.sourceFamily, sourceType: "unknown" as const,
-        title: source.title, snippet: source.snippet,
-        publisher: source.publisher ?? undefined,
-        originalLanguage: source.originalLanguage,
-        publishedAt: SLICE_NOW - SLICE_DAY, discoveredAt: SLICE_NOW,
-        isAccessible: true, contentHash: `h${i}`,
-      });
+      sourceIds[source.key] = await ctx.db.insert("sourceResults", sliceSourceDoc(source, i, refs));
     }
     return { scanId, ids: sourceIds };
   });

@@ -32,6 +32,7 @@ import type * as config_coverageOutlets from "../config/coverageOutlets.js";
 import type * as config_officialDomains from "../config/officialDomains.js";
 import type * as config_ruleset from "../config/ruleset.js";
 import type * as config_searchBudget from "../config/searchBudget.js";
+import type * as editorial_blocking from "../editorial/blocking.js";
 import type * as editorial_coverage from "../editorial/coverage.js";
 import type * as editorial_eligibility from "../editorial/eligibility.js";
 import type * as editorial_independence from "../editorial/independence.js";
@@ -98,6 +99,7 @@ declare const fullApi: ApiFromModules<{
   "config/officialDomains": typeof config_officialDomains;
   "config/ruleset": typeof config_ruleset;
   "config/searchBudget": typeof config_searchBudget;
+  "editorial/blocking": typeof editorial_blocking;
   "editorial/coverage": typeof editorial_coverage;
   "editorial/eligibility": typeof editorial_eligibility;
   "editorial/independence": typeof editorial_independence;
