@@ -123,7 +123,7 @@ export type GroupingOutcome = {
  *   block | full | pairs blocked | auto-linked | ambiguous | largest cluster
  *       3 |    3 |           421 |          11 |        49 |               2
  *       6 |    6 |           950 |          33 |       137 |               5
- *       8 |    8 |         1,206 |          51 |       180 |               6
+ *       8 |    8 |         1,206 |          50 |       181 |               6
  *   **8** |  **3** |     **1,206** |      **15** |     **89** |           **2**
  *
  * A single hard cutoff of 3 has a flaw that is easy to miss and disqualifying: a
@@ -150,7 +150,33 @@ export const BLOCK_MAX_DF = 8;
 export const FULL_WEIGHT_MAX_DF = 3;
 export const DISTANT_WEIGHT_FACTOR = 0.5;
 
-/** Per-channel weights. An entity key is a model-extracted proper noun and is worth more than a bag-of-words hit. */
+/**
+ * Per-channel weights. An entity key is a model-extracted proper noun and is
+ * worth more than a bag-of-words hit.
+ *
+ * All three channels are bounded by the same document-frequency cutoffs above,
+ * and dates were the last to get there. `analysis.dates` comes from a prompt
+ * asking for "any dates" with no format constraint, so on a single news day a
+ * model routinely emits the current date or the bare year for most of the scan.
+ * Counting those un-capped was measured on the real 294: one date shared across
+ * the scan took auto-links from 15 to 51 and turned the homeless-family /
+ * mayor's-bike-ride pair — the named must-NOT-merge trap — into an auto-link at
+ * 4.5. Two shared dates rejected nothing at all and produced a cluster of 18.
+ *
+ * The rule is therefore the one the other channels already use rather than a
+ * date parser: a date shared by more than `BLOCK_MAX_DF` sources is describing
+ * the news day and is dropped, and one shared by 4 to 8 counts at
+ * `DISTANT_WEIGHT_FACTOR`. That is also how a shared YEAR and a shared SPECIFIC
+ * DATE are told apart — not by parsing the string, which the unconstrained model
+ * output does not support, but by measuring how many sources say it. A year
+ * everyone mentions is common by observation; an event date three sources
+ * mention is rare by observation. Verified on the real 294: injecting the news
+ * day plus the year onto all 294 rows now changes no score, no verdict and no
+ * cluster, while a date on just two rows still counts at full weight.
+ *
+ * Dates are scored but NOT indexed for blocking, so a date can sharpen a pair
+ * that tokens or entity keys already proposed and can never propose one itself.
+ */
 export const WEIGHT_TOKEN = 1;
 export const WEIGHT_ENTITY_KEY = 2;
 export const WEIGHT_DATE = 1;
@@ -160,10 +186,24 @@ export const WEIGHT_DATE = 1;
  * undo it.
  *
  * CHOSEN: 4 — two shared entity keys, or one entity key plus two full-weight
- * tokens, or four of them. It is pinned from below by a real over-merge in the
- * data: a homeless-family sighting and the mayor's bike ride score 3.5 (the
- * token "east" at full weight, "side" at half, plus the entity key "East Side").
- * Dropping this threshold to 3 merges two unrelated stories.
+ * tokens, or four of them. It sits in a real gap in the score distribution of
+ * the 294, measured after the double count below was removed:
+ *
+ *   - Immediately BELOW it, at 3.5, sits a dense wall of pairs that are plainly
+ *     not the same story — two unrelated r/milwaukee dining threads, a Joint
+ *     Review Board notice against the city events calendar on calendar
+ *     boilerplate, and ten permutations of the same high-school football
+ *     listing across aggregator sites. Dropping the threshold to 3.5 auto-links
+ *     every one of them.
+ *   - The lowest GENUINE merge sits exactly at 4.0: the Sherman Park 2016
+ *     retrospective under two headlines.
+ *
+ * An earlier version of this comment justified the value with the
+ * homeless-family / mayor's-bike-ride pair scoring 3.5. That 3.5 was an
+ * artifact: the pair was being scored through two channels for one observation
+ * (see the entity-key suppression in `groupSignals`). It now scores 2.0, at the
+ * floor of the ambiguous band, so the trap is held apart by a margin of 2 rather
+ * than 0.5 — but it is no longer what pins this threshold. The wall at 3.5 is.
  */
 export const LINK_THRESHOLD = 4;
 
@@ -173,15 +213,17 @@ export const LINK_THRESHOLD = 4;
  * CHOSEN: 2 — one shared key is not a story. Everything in
  * [REJECT_THRESHOLD, LINK_THRESHOLD) is the ambiguous band and is the ONLY input
  * Task 6's model call will ever receive; on the real 294 that band is 89 pairs.
- * Dropping this to 1 was measured too: the band goes to 410 pairs and the code
- * stops rejecting anything blocking let through, which hollows out the claim
- * that code decides.
+ * Dropping this to 1 was re-measured on the shipped two-tier cutoffs: the band
+ * goes to **521** pairs, so 432 pairs the code rejects on its own would become a
+ * model's call, which hollows out the claim that code decides. (An earlier
+ * version of this comment said 410. That figure came from the abandoned
+ * single-cutoff design and was never true of the code it sat next to.)
  */
 export const REJECT_THRESHOLD = 2;
 
 /**
  * Function words carry no identity, and no corpus size thins them out — on a
- * six-source scan "the" has df 5 and would sail past `RARE_TOKEN_MAX_DF`.
+ * six-source scan "the" has df 5 and would sail past `BLOCK_MAX_DF`.
  * English and Spanish, because `analyzeResults` translates and the scan is
  * bilingual by design.
  */
@@ -324,6 +366,12 @@ export function groupSignals(signals: ClusterSignal[]): GroupingOutcome {
   const { blockMaxDf, fullWeightMaxDf } = cutoffsFor(n);
   const tokenIndex = invertedIndex(tokensPerSignal, blockMaxDf);
   const entityIndex = invertedIndex(entityKeysPerSignal, blockMaxDf);
+  // Dates get the same document-frequency treatment as the other two channels,
+  // and for the same reason: a key shared by most of the scan is describing the
+  // news day, not a story. Deliberately NOT added to `candidates` below — a date
+  // may sharpen a pair that tokens or entity keys already proposed, but it may
+  // never propose one on its own.
+  const dateIndex = invertedIndex(datesPerSignal, blockMaxDf);
   const candidates = new Set<string>();
   for (const postings of [tokenIndex, entityIndex]) {
     for (const docs of postings.values()) {
@@ -340,15 +388,24 @@ export function groupSignals(signals: ClusterSignal[]): GroupingOutcome {
   let ambiguousCount = 0;
   for (const key of candidates) {
     const [i, j] = key.split(":").map(Number);
-    const sharedTokens = [...tokensPerSignal[i]]
-      .filter((t) => tokenIndex.has(t) && tokensPerSignal[j].has(t)).sort();
     const sharedEntityKeys = [...entityKeysPerSignal[i]]
       .filter((k) => entityIndex.has(k) && entityKeysPerSignal[j].has(k)).sort();
-    const sharedDates = [...datesPerSignal[i]].filter((d) => datesPerSignal[j].has(d)).sort();
+    // A shared entity key and the words it is spelled with are ONE piece of
+    // evidence, not two. `analyzeResults` extracted "East Side" FROM the sentence
+    // that also produced the tokens "east" and "side", so counting both scored a
+    // single weak geographic locator through two independent channels — 3.5 for
+    // what is really one observation. The entity key is the better witness (a
+    // model called it a proper noun), so it keeps the point and its constituent
+    // words are struck from the token channel for this pair.
+    const claimedByEntityKey = new Set(sharedEntityKeys.flatMap((k) => k.split(" ")));
+    const sharedTokens = [...tokensPerSignal[i]]
+      .filter((t) => tokenIndex.has(t) && tokensPerSignal[j].has(t) && !claimedByEntityKey.has(t)).sort();
+    const sharedDates = [...datesPerSignal[i]]
+      .filter((d) => dateIndex.has(d) && datesPerSignal[j].has(d)).sort();
 
     const score = sharedTokens.reduce((total, t) => total + keyWeight(tokenIndex, t, WEIGHT_TOKEN, fullWeightMaxDf), 0)
       + sharedEntityKeys.reduce((total, k) => total + keyWeight(entityIndex, k, WEIGHT_ENTITY_KEY, fullWeightMaxDf), 0)
-      + sharedDates.length * WEIGHT_DATE;
+      + sharedDates.reduce((total, d) => total + keyWeight(dateIndex, d, WEIGHT_DATE, fullWeightMaxDf), 0);
 
     if (score < REJECT_THRESHOLD) {
       rejectedPairs++;

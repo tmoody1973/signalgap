@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import distinctPacket from "../../fixtures/evaluation/cluster-distinct-01.json";
 import syndicatedPacket from "../../fixtures/evaluation/cluster-syndicated-01.json";
 import scan294 from "../../fixtures/clustering/scan-294.json";
+import datedSignals from "../../fixtures/clustering/dated-signals.json";
 import { type ClusterSignal, groupSignals } from "../../../convex/editorial/blocking";
 
 /**
@@ -221,6 +222,95 @@ describe("the fallback-identity tell", () => {
   });
 });
 
+/**
+ * The date channel, which until this fixture existed no test could see at all:
+ * every row of the real 294 has an empty `dates` array, so `WEIGHT_DATE` was
+ * exercised by nothing while the thresholds were being calibrated against it.
+ *
+ * `dated-signals.json` is synthetic and deliberately so — it is not a captured
+ * scan and must not be read as one. Twelve rows, which is past the `n > BLOCK_MAX_DF`
+ * cliff, so these run on the production branch of `cutoffsFor` rather than the
+ * degenerate one. Every row carries the news day `2026-08-25`, the way a model
+ * asked for "any dates" over a single day's scan routinely will. Exactly two rows
+ * also carry a specific event date.
+ */
+describe("the date channel is bounded by document frequency, like every other channel", () => {
+  const DATED: ClusterSignal[] = datedSignals;
+
+  function scoreOf(outcome: Outcome, a: string, b: string): number | undefined {
+    return outcome.pairs.find((p) => p.a === a && p.b === b)?.score;
+  }
+
+  it("ignores a date every source in the scan carries", () => {
+    // df 12 across 12 sources: this date describes the news day, not a story, and
+    // is dropped exactly as an over-common token or entity key is. Before this
+    // rule the same date auto-LINKED these two unrelated parking stories at 4.
+    const outcome = groupSignals(DATED);
+    expect(pairVerdict(outcome, "broadcast-c", "broadcast-d")).toBe("ambiguous");
+    expect(scoreOf(outcome, "broadcast-c", "broadcast-d")).toBe(3);
+    expect(outcome.pairs.every((p) => !p.sharedDates.includes("2026-08-25"))).toBe(true);
+  });
+
+  it("does not let a shared news day rescue a pair that shares one incidental word", () => {
+    // Four filler pairs share a single ordinary token ("permit", "clears",
+    // "spring", "year") and nothing else. With the news day counted they all rose
+    // into the ambiguous band and the scan stopped rejecting anything at all.
+    const outcome = groupSignals(DATED);
+    expect(outcome.stats.rejectedPairs).toBe(4);
+    expect(outcome.stats.ambiguousPairs).toBe(1);
+  });
+
+  it("still counts a date only two sources share, at full weight", () => {
+    // df 2: this is a real event date, and the channel has to keep earning its
+    // place. The rule bounds the channel; it does not switch it off.
+    const withDates = groupSignals(DATED);
+    const withoutDates = groupSignals(DATED.map((s) => ({ ...s, dates: [] })));
+    expect(scoreOf(withDates, "rare-a", "rare-b")).toBe(6);
+    expect(scoreOf(withoutDates, "rare-a", "rare-b")).toBe(5);
+  });
+
+  it("never lets a date propose a pair on its own", () => {
+    // Dates are scored but not indexed for blocking. Two sources sharing only a
+    // rare date, and no token or entity key, are never even compared.
+    const outcome = groupSignals([
+      { sourceResultId: "x", title: "Zoning vote delayed", snippet: "", entityKeys: [], claimSummary: "", dates: ["2026-09-19"] },
+      { sourceResultId: "y", title: "Ferry schedule trimmed", snippet: "", entityKeys: [], claimSummary: "", dates: ["2026-09-19"] },
+    ]);
+    expect(outcome.stats.blockedPairs).toBe(0);
+    expect(outcome.clusters).toHaveLength(2);
+  });
+});
+
+describe("one piece of evidence is scored once", () => {
+  it("does not count both an entity key and the words it is spelled with", () => {
+    // `analyzeResults` extracts "East Side" from the same sentence that produces
+    // the tokens "east" and "side". Counting all three scored one weak
+    // geographic locator through two channels.
+    const signals: ClusterSignal[] = [
+      { sourceResultId: "a", title: "Trouble on the East Side", snippet: "", entityKeys: ["East Side"], claimSummary: "", dates: [] },
+      { sourceResultId: "b", title: "East Side ride draws a crowd", snippet: "", entityKeys: ["East Side"], claimSummary: "", dates: [] },
+    ];
+    const outcome = groupSignals(signals);
+    const pair = outcome.pairs[0];
+    // The entity key keeps the point; "east" and "side" are struck from the
+    // token channel, so they do not appear in the basis a journalist reads either.
+    expect(pair.sharedEntityKeys).toEqual(["east side"]);
+    expect(pair.sharedTokens).not.toContain("east");
+    expect(pair.sharedTokens).not.toContain("side");
+    expect(pair.score).toBe(2);
+  });
+
+  it("still counts a token that no shared entity key spells", () => {
+    const signals: ClusterSignal[] = [
+      { sourceResultId: "a", title: "East Side rezoning heads to a vote", snippet: "", entityKeys: ["East Side"], claimSummary: "", dates: [] },
+      { sourceResultId: "b", title: "East Side rezoning vote is set", snippet: "", entityKeys: ["East Side"], claimSummary: "", dates: [] },
+    ];
+    const outcome = groupSignals(signals);
+    expect(outcome.pairs[0].sharedTokens).toContain("rezoning");
+    expect(outcome.pairs[0].sharedTokens).toContain("vote");
+  });
+});
+
 describe("grouping", () => {
   it("chains a transitive link: a-b and b-c put all three in one cluster", () => {
     const signals: ClusterSignal[] = [
@@ -231,6 +321,51 @@ describe("grouping", () => {
     const outcome = groupSignals(signals);
     expect(outcome.clusters).toHaveLength(1);
     expect(outcome.clusters[0].sourceResultIds.sort()).toEqual(["a", "b", "c"]);
+  });
+
+  /**
+   * The bound on union-find, pinned so it is a known quantity rather than a
+   * latent one. There is NO cluster-size cap, no coherence re-check, and no
+   * requirement that a cluster's members be pairwise linked — this test states
+   * exactly what that buys and what it costs.
+   *
+   * A roundup source (one article covering four neighbourhoods) links to two
+   * sources that have nothing whatever in common with each other. `a` and `c`
+   * share no key, are never blocked, and are never scored as a pair — yet they
+   * land in one cluster through `b`.
+   *
+   * This is correct union-find and it is what makes syndicated coverage group at
+   * all. It is kept rather than capped because a cap would have to drop one of
+   * two links that both scored above `LINK_THRESHOLD`, with no principle saying
+   * which — trading a visible over-merge for an invisible dropped link. The
+   * guard is instead `stats.largestCluster`, bounded by the canary above, plus
+   * `independence.ts` downstream, which splits a cluster by source category.
+   *
+   * The cost, named: a neighbourhood roundup can chain two unrelated stories into
+   * one lead. If that shows up in real scans, the fix is to stop roundups being
+   * strong blocking keys, not to truncate the cluster after the fact.
+   */
+  it("chains through a roundup source, joining two sources never scored as a pair", () => {
+    const fillers: ClusterSignal[] = Array.from({ length: 12 }, (_, i) => ({
+      sourceResultId: `filler-${i}`, title: "", snippet: "",
+      entityKeys: [`Ward ${i}`], claimSummary: "", dates: [],
+    }));
+    const signals: ClusterSignal[] = [
+      { sourceResultId: "a", title: "", snippet: "", entityKeys: ["Harambee", "Riverwest"], claimSummary: "", dates: [] },
+      { sourceResultId: "b", title: "", snippet: "", entityKeys: ["Harambee", "Riverwest", "Bay View", "Lincoln Village"], claimSummary: "", dates: [] },
+      { sourceResultId: "c", title: "", snippet: "", entityKeys: ["Bay View", "Lincoln Village"], claimSummary: "", dates: [] },
+      ...fillers,
+    ];
+    const outcome = groupSignals(signals);
+
+    // Past the n > BLOCK_MAX_DF cliff, so this is the production branch.
+    expect(outcome.stats.signals).toBe(15);
+    // The a-c pair is never proposed by blocking, so it is never scored at all.
+    expect(pairVerdict(outcome, "a", "c")).toBe("rejected");
+    expect(outcome.pairs.some((p) => [p.a, p.b].sort().join() === ["a", "c"].sort().join())).toBe(false);
+    // And yet all three are one cluster.
+    expect(sameCluster(outcome, "a", "c")).toBe(true);
+    expect(outcome.stats.largestCluster).toBe(3);
   });
 
   it("returns one singleton cluster per signal when nothing is shared", () => {
