@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { candidateFingerprint, normalizeEntityKey } from "../../../convex/candidates/fingerprint";
+import { candidateFingerprint, clusterIdentityKeys, normalizeEntityKey } from "../../../convex/candidates/fingerprint";
 
 describe("normalizeEntityKey", () => {
   it("lowercases, trims, and collapses inner whitespace", () => {
@@ -47,5 +47,29 @@ describe("candidateFingerprint", () => {
   it("drops empty keys instead of letting them change the identity", () => {
     expect(candidateFingerprint(["Harambee", "  "], "housing"))
       .toBe(candidateFingerprint(["Harambee"], "housing"));
+  });
+});
+
+describe("clusterIdentityKeys", () => {
+  it("uses the entity keys when the cluster has any", () => {
+    expect(clusterIdentityKeys(["Harambee"], ["src1", "src2"])).toEqual(["Harambee"]);
+  });
+
+  it("falls back to the cluster's own source ids when it has none", () => {
+    expect(clusterIdentityKeys([], ["src1", "src2"])).toEqual(["src1", "src2"]);
+  });
+
+  it("treats blank-ish entity keys as none, because candidateFingerprint drops them", () => {
+    expect(clusterIdentityKeys(["  ", "!!"], ["src1"])).toEqual(["src1"]);
+  });
+
+  it("gives two entity-less clusters different fingerprints", () => {
+    expect(candidateFingerprint(clusterIdentityKeys([], ["src1"]), "housing"))
+      .not.toBe(candidateFingerprint(clusterIdentityKeys([], ["src2"]), "housing"));
+  });
+
+  it("gives the same entity-less cluster the same fingerprint on a re-run", () => {
+    expect(candidateFingerprint(clusterIdentityKeys([], ["src1", "src2"]), "housing"))
+      .toBe(candidateFingerprint(clusterIdentityKeys([], ["src2", "src1"]), "housing"));
   });
 });

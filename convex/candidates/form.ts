@@ -2,7 +2,7 @@ import { v } from "convex/values";
 import type { Id } from "../_generated/dataModel";
 import { internalMutation } from "../_generated/server";
 import * as V from "../lib/validators";
-import { candidateFingerprint } from "./fingerprint";
+import { candidateFingerprint, clusterIdentityKeys } from "./fingerprint";
 import { defaultIndependenceGroup, signalCategoryFor } from "./toEngineSource";
 
 /**
@@ -43,7 +43,14 @@ export const formFromCluster = internalMutation({
     }
     if (sources.length === 0) return { rejected: "no_valid_sources" as const };
 
-    const fingerprint = candidateFingerprint(cluster.entityKeys, beat);
+    // Identity comes from the cluster's entity keys, or — when it has none —
+    // from the sources that actually survived the re-read above. Never from
+    // nothing: `candidateFingerprint([], beat)` is a constant, and a constant
+    // here merges every cluster in the scan into one candidate.
+    const fingerprint = candidateFingerprint(
+      clusterIdentityKeys(cluster.entityKeys, sources.map((s) => s._id)),
+      beat,
+    );
     const now = Date.now();
 
     const existing = await ctx.db

@@ -88,8 +88,18 @@ export async function runCandidateFormation(
     const formed = await ctx.runMutation(internal.candidates.form.formFromCluster, {
       scanId,
       cluster,
-      // The rules engine needs a beat to start from; the model's beat suggestion
-      // arrives with classification a moment later and can move it.
+      // A placeholder, not a judgment. `candidates.beat` is a three-value union
+      // with no "not yet classified" member (lib/validators.ts:4), and the
+      // classifier that decides the real beat needs a candidateId, so it cannot
+      // run first; `saveJudgment` (candidates/judgment.ts:62) corrects the column
+      // a moment later. Two costs, named rather than hidden: a candidate whose
+      // classification FAILS keeps "housing" permanently in a column the feed can
+      // filter on; and since the value never varies, the beat half of
+      // `candidateFingerprint` contributes nothing to identity. Making it vary
+      // here would be worse — the fingerprint is written once and never
+      // recomputed, so a correctable field inside an immutable identity breaks
+      // cross-scan continuity. Removing `beat` from the fingerprint is the real
+      // fix; it rewrites every existing one, so it needs a decision doc (Task 9).
       beat: "housing",
       workingTitle: cluster.similarityBasis.slice(0, 120),
     });

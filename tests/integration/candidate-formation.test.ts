@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { internal } from "../../convex/_generated/api";
 import type { Doc, Id } from "../../convex/_generated/dataModel";
+import type { GenerateFn } from "../../convex/ai/provider";
+import { runCandidateFormation } from "../../convex/slice";
 import { scanDoc, searchRunDoc } from "../fixtures/factories";
 import { setup } from "./helpers";
 
@@ -150,6 +152,112 @@ describe("formFromCluster", () => {
     await t.mutation(internal.candidates.form.formFromCluster, {
       scanId, cluster: cluster([newsId], ["Bay View"]), beat: "housing", workingTitle: "B",
     });
+    expect(await t.run(async (ctx) => await ctx.db.query("candidates").collect())).toHaveLength(2);
+  });
+});
+
+/**
+ * Defect 3 of the evidence-pipeline repair (MOO-736). `candidateFingerprint` is
+ * `hash(sortedEntityKeys):beat`. Production sends `entityKeys: []`
+ * (`convex/slice.ts:77`) and a hardcoded `beat: "housing"` (`convex/slice.ts:93`),
+ * which makes that expression a CONSTANT — so `by_owner_fingerprint` finds the
+ * candidate the first cluster made and every later cluster patches it instead of
+ * creating its own. The live 294-source scan died in clustering and never reached
+ * formation, so this had never been observed; nothing in 461 tests asserted that a
+ * scan of N clusters yields more than one candidate.
+ */
+describe("a scan of N clusters", () => {
+  const standaloneCluster = (id: Id<"sourceResults">, n: number) => ({
+    sourceResultIds: [id] as string[],
+    // The exact similarityBasis the real 294 clusters carried.
+    similarityBasis: `No claim text or entity data supplied; standalone signal ${n}`,
+    entityKeys: [] as string[],
+    suggestedExistingCandidateId: null,
+  });
+
+  it("does not collapse three unrelated clusters into one candidate", async () => {
+    const t = setup();
+    const { scanId, officialId, newsId } = await seed(t);
+    const thirdId = await t.run(async (ctx) => {
+      const scan = (await ctx.db.get(scanId))!;
+      const run = (await ctx.db.query("searchRuns").first())!;
+      return ctx.db.insert("sourceResults", {
+        scanId, searchRunId: run._id, ownerId: scan.ownerId,
+        canonicalKey: "k-third", canonicalUrl: "https://urbanmilwaukee.com/bus", originalUrl: "https://urbanmilwaukee.com/bus",
+        engine: "google" as const, sourceFamily: "news" as const, sourceType: "unknown" as const,
+        title: "Bus route cut", snippet: "The 15 loses weekend service.", originalLanguage: "en",
+        discoveredAt: Date.now(), isAccessible: true, contentHash: "h-third",
+      });
+    });
+
+    for (const [n, id] of [officialId, newsId, thirdId].entries()) {
+      await t.mutation(internal.candidates.form.formFromCluster, {
+        scanId, cluster: standaloneCluster(id, n), beat: "housing", workingTitle: `Story ${n}`,
+      });
+    }
+
+    const { candidates, memberships } = await t.run(async (ctx) => ({
+      candidates: await ctx.db.query("candidates").collect(),
+      memberships: await ctx.db.query("candidateSources").collect(),
+    }));
+
+    expect(candidates).toHaveLength(3);
+    // The dangerous half: one row carrying every source in the scan is the
+    // fabricated mega-lead, and its independentCategoryCount would treat the
+    // whole scan as evidence for a single story.
+    for (const c of candidates) {
+      expect(memberships.filter((m) => m.candidateId === c._id)).toHaveLength(1);
+    }
+    expect(new Set(candidates.map((c) => c.fingerprint)).size).toBe(3);
+  });
+
+  /**
+   * The plan's acceptance line, driven through the PRODUCTION path rather than
+   * the mutation directly: `runCandidateFormation` is what `stages/evidence.ts`
+   * calls, and `convex/slice.ts:77` sends `entityKeys: []` for every signal with
+   * `beat: "housing"` hardcoded at line 93. Both stay true until Task 5.
+   */
+  it("forms one candidate per cluster through runCandidateFormation", async () => {
+    process.env.AI_PRIMARY_MODEL = "claude-sonnet-5";
+    process.env.AI_FALLBACK_ENABLED = "false";
+    const t = setup();
+    const { scanId, officialId, newsId } = await seed(t);
+
+    const model: GenerateFn = async ({ system, prompt }) => {
+      if (/Group the supplied signals/.test(system)) {
+        return {
+          object: { clusters: [officialId, newsId].map((id, n) => standaloneCluster(id, n)) },
+          usage: { inputTokens: 100, outputTokens: 50 },
+        };
+      }
+      // Echo back whichever source this candidate was formed from, so the
+      // classifier's known-source-id validation passes for both clusters.
+      const sourceResultId = prompt.match(/"sourceResultId": "([^"]+)"/)?.[1] ?? "";
+      return {
+        object: {
+          beatSuggestion: "housing",
+          localityBandSuggestion: "area_city_consequence",
+          relevanceBandSuggestion: "policy_service_change",
+          flags: { isSpeculative: false, isRoutineCrime: false, isDuplicateOfCandidate: false, hasMaterialConflict: false },
+          items: [{
+            sourceResultIds: [sourceResultId], kind: "unverified_signal",
+            claimText: "A claim.", exactExcerpt: null, originalLanguageText: null, translatedText: null,
+            sourceTypeSuggestion: "secondary", independenceGroupSuggestion: null, relationship: "supports",
+            milwaukeeConnection: "A Milwaukee parcel.", accessibilityConcern: false, repeatsPressRelease: false,
+            reason: "One outlet reported it.",
+          }],
+        },
+        usage: { inputTokens: 100, outputTokens: 50 },
+      };
+    };
+
+    const formed = await t.action(async (ctx) =>
+      runCandidateFormation(ctx, { scanId, sourceResultIds: [officialId, newsId] }, model));
+
+    expect(formed.ok).toBe(true);
+    if (!formed.ok) return;
+    expect(formed.candidates).toHaveLength(2);
+    expect(new Set(formed.candidates.map((c) => c.candidateId)).size).toBe(2);
     expect(await t.run(async (ctx) => await ctx.db.query("candidates").collect())).toHaveLength(2);
   });
 });
