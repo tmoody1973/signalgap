@@ -111,3 +111,27 @@ Two other things surfaced in the same pass, both the same shape. A demo card ask
 The finding itself is worth more than the fixture. Four hundred and forty passing tests could not reveal that the product's central gate never fires against real Milwaukee data, because every one of those tests supplies its own inputs. Only real data asks whether the inputs exist. That question now belongs to the live scan, not to a fixture.
 
 **A coda on measurement.** A pagination bug in the same plan was fixed and the fix "proved" by watching the card count across a click. The proof used twenty-seven leads — but twenty-seven fit in a single click, and the defect only appears on the *second*. The measurement could not reach the thing it was certifying, and it took an independent reviewer walking the state machine to notice. Re-run against sixty-five leads, the old code visibly collapsed and the new code held. The lesson is not "measure" — that had been done. It is that a measurement has a reach, and the reach has to be checked against where the defect actually lives.
+
+---
+
+## 2026-08-26 — A pipeline can pass 443 tests and never once have run
+
+**Expected:** The first live Milwaukee scan would mostly work. Every stage had been built and reviewed, 443 tests were green, and the parts had been exercised individually for weeks. Whatever broke would break at a seam.
+
+**Happened:** It returned 294 real search results and produced **zero leads**. Behind that were three defects, and only the first was the one the failure appeared to be.
+
+The obvious one was size: all 294 results went to the model in a single request that needed 27–38 minutes against a two-minute limit. Measurable, fixable, unsurprising.
+
+The second was that **the work was being thrown away**. The system reads every search result and extracts the people, agencies, streets and claims in it — the expensive part. Then it hands the next step, the one that decides which results are about the same story, a list of bare ID codes and nothing else. The model was being asked "which of these 294 are the same story?" while shown nothing to compare. It had never once worked. The proof was one measurement: fed empty inputs it merged nothing at all; fed the real extracted entities it found three correct merges in forty results, and named them — *"both reference the Asian Street Food Festival at Veterans Park organized by Ka Vang."*
+
+The third was the one that mattered. A lead's permanent identity is built from its entity names. With no entity names, **every lead got the same identity**, so each one overwrote the last. Two hundred and ninety-four separate stories would have become one lead claiming 294 sources corroborated it. It does not crash. It produces a confident, well-formed, entirely fabricated lead — and a scan that looks like it succeeded.
+
+**Now believe:** Tests written stage by stage prove each stage against inputs the test itself supplies. They cannot notice that the stage upstream supplies something different, because no test ever runs the real handoff. Every one of these three defects lived in the gap between two well-tested pieces, and the suite was green through all of them.
+
+Two habits did the work here, and neither is "write more tests."
+
+The first is **running the real thing early, and reading the output rather than the exit code**. The scan that failed was worth more than the 443 tests that passed, because it was the first time anything ran end to end on real volume. The measurement that followed cost about a dollar and overturned the repair plan's central recommendation — the plan said batch 25 results at a time; measured, 25 takes 195 seconds and breaches the same limit we were trying to escape.
+
+The second is **assertions about the shape of the output, not just its correctness**. Nothing in 443 tests asserted that a scan of N results yields more than one lead. That single line would have caught the worst defect on day one. The same class of gap appeared twice more in the same repair: a model answering about ten of twenty sources was recorded as a success, because nothing compared what came back to what was sent; and every test of the scoring layer was blind to one of its three inputs, because no test fixture happened to contain a date. In production that input flipped a pair the thresholds were specifically calibrated to keep apart.
+
+**A coda on what the failures said.** When the repaired scan finally ran, seven of its 493 model calls were rejected — three for paraphrasing a quotation instead of copying it, two for quoting under twenty characters, one for citing a source id that does not exist, one for slipping a search operator into a snippet. The screen reported that as a failure. It is the opposite: the product refused to publish a fabricated citation, seven times, on live data. A pipeline whose failure messages name what it declined to do is worth more than one that only reports success.
