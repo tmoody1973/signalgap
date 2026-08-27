@@ -1,7 +1,6 @@
 import { v } from "convex/values";
 import type { Id } from "../_generated/dataModel";
 import { internalMutation } from "../_generated/server";
-import * as V from "../lib/validators";
 import { candidateFingerprint, clusterIdentityKeys } from "./fingerprint";
 import { defaultIndependenceGroup, signalCategoryFor } from "./toEngineSource";
 
@@ -22,14 +21,13 @@ export const formFromCluster = internalMutation({
       entityKeys: v.array(v.string()),
       suggestedExistingCandidateId: v.union(v.string(), v.null()),
     }),
-    beat: V.vBeat,
     workingTitle: v.string(),
   },
   returns: v.union(
     v.object({ candidateId: v.id("candidates"), created: v.boolean(), sourceCount: v.number() }),
     v.object({ rejected: v.union(v.literal("scan_not_found"), v.literal("no_valid_sources")) }),
   ),
-  handler: async (ctx, { scanId, cluster, beat, workingTitle }) => {
+  handler: async (ctx, { scanId, cluster, workingTitle }) => {
     const scan = await ctx.db.get(scanId);
     if (!scan) return { rejected: "scan_not_found" as const };
 
@@ -45,12 +43,9 @@ export const formFromCluster = internalMutation({
 
     // Identity comes from the cluster's entity keys, or — when it has none —
     // from the sources that actually survived the re-read above. Never from
-    // nothing: `candidateFingerprint([], beat)` is a constant, and a constant
-    // here merges every cluster in the scan into one candidate.
-    const fingerprint = candidateFingerprint(
-      clusterIdentityKeys(cluster.entityKeys, sources.map((s) => s._id)),
-      beat,
-    );
+    // nothing: `candidateFingerprint([])` is a constant, and a constant here
+    // merges every cluster in the scan into one candidate.
+    const fingerprint = candidateFingerprint(clusterIdentityKeys(cluster.entityKeys, sources.map((s) => s._id)));
     const now = Date.now();
 
     const existing = await ctx.db
@@ -70,7 +65,9 @@ export const formFromCluster = internalMutation({
         fingerprint,
         currentTitle: workingTitle,
         reportingQuestion: "",
-        beat,
+        // No beat. Formation runs before classification, so any value here would
+        // be a default dressed as a judgment; `saveJudgment` writes the column
+        // when — and only when — the classifier establishes one.
         // "processing" until the rules engine has run. `candidates/evaluate.ts`
         // is the only writer of status, label and score.
         status: "processing",

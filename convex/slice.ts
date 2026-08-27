@@ -195,19 +195,13 @@ export async function runCandidateFormation(
     const formed = await ctx.runMutation(internal.candidates.form.formFromCluster, {
       scanId,
       cluster,
-      // A placeholder, not a judgment. `candidates.beat` is a three-value union
-      // with no "not yet classified" member (lib/validators.ts:4), and the
-      // classifier that decides the real beat needs a candidateId, so it cannot
-      // run first; `saveJudgment` (candidates/judgment.ts:62) corrects the column
-      // a moment later. Two costs, named rather than hidden: a candidate whose
-      // classification FAILS keeps "housing" permanently in a column the feed can
-      // filter on; and since the value never varies, the beat half of
-      // `candidateFingerprint` contributes nothing to identity. Making it vary
-      // here would be worse — the fingerprint is written once and never
-      // recomputed, so a correctable field inside an immutable identity breaks
-      // cross-scan continuity. Removing `beat` from the fingerprint is the real
-      // fix; it rewrites every existing one, so it needs a decision doc (Task 9).
-      beat: "housing",
+      // No beat is passed, because formation cannot establish one: the
+      // classifier that decides it needs a candidateId, so it runs a moment
+      // later and `saveJudgment` writes the column then. Until this change a
+      // hardcoded "housing" stood in here, and the 2026-08-26 live scan shows
+      // what that cost — four of its five most recent candidates are filed under
+      // Housing with `judgment.beat === null` and `no_beat_relevance` among
+      // their exclusion reasons.
       // The first member's real headline, verbatim. It used to be the model's
       // `similarityBasis`, which on the measured 294 produced a lead titled
       // "placeholder" (task-1-report.md). The deterministic basis is a list of

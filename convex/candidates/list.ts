@@ -28,7 +28,10 @@ const vLeadCard = v.object({
   // back to this rather than rendering an empty heading. Already on the row —
   // no extra read, so the no-fan-out rule above still holds.
   currentTitle: v.string(),
-  beat: V.vBeat,
+  // Absent when no beat was ever established — see `schema.ts`. The card must
+  // say so rather than naming one, and the beat filter below excludes these
+  // rather than sweeping them into a beat they were never judged to be in.
+  beat: v.optional(V.vBeat),
   label: V.vProductLabel,
   // Matches evidence.forCandidate's convention: excluded means no score, not
   // zero, and a candidate never evaluated has none either.

@@ -21,32 +21,30 @@ describe("normalizeEntityKey", () => {
 
 describe("candidateFingerprint", () => {
   it("is stable no matter what order the entity keys arrive in", () => {
-    expect(candidateFingerprint(["Harambee", "rezoning"], "housing"))
-      .toBe(candidateFingerprint(["rezoning", "Harambee"], "housing"));
+    expect(candidateFingerprint(["Harambee", "rezoning"]))
+      .toBe(candidateFingerprint(["rezoning", "Harambee"]));
   });
 
   it("ignores duplicates", () => {
-    expect(candidateFingerprint(["Harambee", "Harambee", "rezoning"], "housing"))
-      .toBe(candidateFingerprint(["Harambee", "rezoning"], "housing"));
+    expect(candidateFingerprint(["Harambee", "Harambee", "rezoning"]))
+      .toBe(candidateFingerprint(["Harambee", "rezoning"]));
   });
 
-  it("separates two stories that share a beat but not their entities", () => {
-    expect(candidateFingerprint(["Harambee"], "housing"))
-      .not.toBe(candidateFingerprint(["Bay View"], "housing"));
+  it("separates two stories that do not share their entities", () => {
+    expect(candidateFingerprint(["Harambee"])).not.toBe(candidateFingerprint(["Bay View"]));
   });
 
-  it("separates the same entities on different beats", () => {
-    expect(candidateFingerprint(["Harambee"], "housing"))
-      .not.toBe(candidateFingerprint(["Harambee"], "culture"));
-  });
-
-  it("treats a null beat as its own bucket rather than throwing", () => {
-    expect(candidateFingerprint(["Harambee"], null)).toMatch(/^[0-9a-f]{8}:/);
+  it("takes no beat at all, so a corrected beat cannot change an identity", () => {
+    // Task 4b. The beat used to be half of this string, and `saveJudgment`
+    // corrects the beat a moment after formation without ever recomputing the
+    // fingerprint. Identity is entity keys only; anything correctable inside it
+    // breaks cross-scan continuity the moment it is corrected.
+    expect(candidateFingerprint.length).toBe(1);
+    expect(candidateFingerprint(["Harambee"])).toMatch(/^[0-9a-f]{8}$/);
   });
 
   it("drops empty keys instead of letting them change the identity", () => {
-    expect(candidateFingerprint(["Harambee", "  "], "housing"))
-      .toBe(candidateFingerprint(["Harambee"], "housing"));
+    expect(candidateFingerprint(["Harambee", "  "])).toBe(candidateFingerprint(["Harambee"]));
   });
 });
 
@@ -64,12 +62,12 @@ describe("clusterIdentityKeys", () => {
   });
 
   it("gives two entity-less clusters different fingerprints", () => {
-    expect(candidateFingerprint(clusterIdentityKeys([], ["src1"]), "housing"))
-      .not.toBe(candidateFingerprint(clusterIdentityKeys([], ["src2"]), "housing"));
+    expect(candidateFingerprint(clusterIdentityKeys([], ["src1"])))
+      .not.toBe(candidateFingerprint(clusterIdentityKeys([], ["src2"])));
   });
 
   it("refuses a cluster with nothing to identify it, rather than returning the constant", () => {
-    // `candidateFingerprint([], beat)` is the constant this whole helper exists
+    // `candidateFingerprint([])` is the constant this whole helper exists
     // to keep unreachable. form.ts guards it one file away; this keeps the
     // helper honest for the next caller.
     expect(() => clusterIdentityKeys([], [])).toThrow(/no identity/);
@@ -77,7 +75,7 @@ describe("clusterIdentityKeys", () => {
   });
 
   it("gives the same entity-less cluster the same fingerprint on a re-run", () => {
-    expect(candidateFingerprint(clusterIdentityKeys([], ["src1", "src2"]), "housing"))
-      .toBe(candidateFingerprint(clusterIdentityKeys([], ["src2", "src1"]), "housing"));
+    expect(candidateFingerprint(clusterIdentityKeys([], ["src1", "src2"])))
+      .toBe(candidateFingerprint(clusterIdentityKeys([], ["src2", "src1"])));
   });
 });

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { vProductLabel } from "../../convex/lib/validators";
-import { BEAT_TEXT, PRODUCT_LABELS, STAGE_TEXT, labelTone } from "@/lib/source-labels";
+import { BEAT_TEXT, PRODUCT_LABELS, STAGE_TEXT, beatText, labelTone } from "@/lib/source-labels";
 
 describe("source labels", () => {
   it("uses the exact PRD label text", () => {
@@ -31,6 +31,14 @@ describe("source labels", () => {
     expect(BEAT_TEXT.housing).toBe("Housing and neighborhood development");
     expect(BEAT_TEXT.transportation).toBe("Transportation and access");
     expect(BEAT_TEXT.culture).toBe("Arts, culture, and neighborhood life");
+  });
+
+  it("says so plainly when no beat was ever established, rather than naming one", () => {
+    // `candidates.beat` is absent until the classifier establishes it. A card
+    // that fell back to any of the three would assert a judgment the product
+    // never made — the exact defect Task 4b exists to close.
+    expect(beatText(undefined)).toBe("Beat not established");
+    expect(beatText("transportation")).toBe("Transportation and access");
   });
 
   it("gives every label a tone", () => {

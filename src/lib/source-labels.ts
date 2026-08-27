@@ -30,6 +30,19 @@ export const BEAT_TEXT = {
 
 export type Beat = keyof typeof BEAT_TEXT;
 
+/**
+ * What a card says in the beat slot.
+ *
+ * `candidates.beat` is absent until the classifier establishes one, and a lead
+ * excluded for `no_beat_relevance` never gets one at all. Naming a beat there
+ * would assert a judgment the product never made, so absence gets its own words.
+ * Deliberately not a member of BEAT_TEXT: it is not a fourth beat and must never
+ * appear in the beat filter.
+ */
+export const BEAT_UNSET_TEXT = "Beat not established";
+
+export const beatText = (beat: Beat | undefined): string => (beat === undefined ? BEAT_UNSET_TEXT : BEAT_TEXT[beat]);
+
 export type LabelTone = "neutral" | "caution" | "conflict" | "positive";
 
 const TONES: Record<ProductLabel, LabelTone> = {

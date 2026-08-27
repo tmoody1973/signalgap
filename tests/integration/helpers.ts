@@ -208,7 +208,6 @@ export async function seedManyFormedCandidates(
     const formed = await t.mutation(internal.candidates.form.formFromCluster, {
       scanId,
       cluster: { sourceResultIds: [sourceResultId], similarityBasis: "distinct", entityKeys: [`entity-${i}`], suggestedExistingCandidateId: null },
-      beat: "housing" as const,
       workingTitle: `Candidate ${i}`,
     });
     if ("rejected" in formed) continue;

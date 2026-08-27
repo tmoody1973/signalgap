@@ -3,7 +3,10 @@ import { contentHash } from "../integrations/serpapi/canonical";
 /**
  * A candidate's identity has to survive across scans, or "this lead appeared
  * again on Tuesday" is not a thing we can say. It is built from normalized
- * entity keys plus the beat — never from a title, which rewords constantly.
+ * entity keys ALONE — never from a title, which rewords constantly, and never
+ * from the beat, which the classifier and an editor are both allowed to change.
+ * A fingerprint is written once at formation and never recomputed, so anything
+ * correctable inside it breaks continuity the moment it is corrected.
  */
 export function normalizeEntityKey(raw: string): string {
   return raw
@@ -19,7 +22,7 @@ export function normalizeEntityKey(raw: string): string {
  * What a cluster is identified BY.
  *
  * Entity keys when it has any — that is what survives across scans. When it has
- * none, its own member ids stand in. They must: `candidateFingerprint([], beat)`
+ * none, its own member ids stand in. They must: `candidateFingerprint([])`
  * is a CONSTANT, so without this every entity-less cluster would find the first
  * one's candidate on `by_owner_fingerprint` and patch it, turning a whole scan
  * into a single fabricated lead. Ids are unique per cluster, so nothing merges
@@ -46,7 +49,7 @@ export function clusterIdentityKeys(entityKeys: string[], sourceResultIds: strin
   return keys.length > 0 ? keys : sourceResultIds;
 }
 
-export function candidateFingerprint(entityKeys: string[], beat: string | null): string {
+export function candidateFingerprint(entityKeys: string[]): string {
   const keys = [...new Set(entityKeys.map(normalizeEntityKey).filter((k) => k.length > 0))].sort();
-  return `${contentHash(keys)}:${beat ?? "unassigned"}`;
+  return contentHash(keys);
 }

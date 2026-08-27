@@ -82,7 +82,7 @@ describe("formFromCluster", () => {
     const { scanId, officialId, newsId } = await seed(t);
 
     const result = await t.mutation(internal.candidates.form.formFromCluster, {
-      scanId, cluster: cluster([officialId, newsId]), beat: "housing", workingTitle: "Harambee rezoning",
+      scanId, cluster: cluster([officialId, newsId]), workingTitle: "Harambee rezoning",
     });
 
     const candidateId = "candidateId" in result ? result.candidateId : undefined;
@@ -97,7 +97,8 @@ describe("formFromCluster", () => {
     }));
 
     expect(candidate.status).toBe("processing");
-    expect(candidate.beat).toBe("housing");
+    // Task 4b: formation establishes no beat. The classifier writes the column.
+    expect(candidate.beat).toBeUndefined();
     expect(candidate.currentTitle).toBe("Harambee rezoning");
     expect(memberships).toHaveLength(2);
     expect(appearances).toHaveLength(1);
@@ -108,7 +109,7 @@ describe("formFromCluster", () => {
     const t = setup();
     const { scanId, officialId, newsId } = await seed(t);
     await t.mutation(internal.candidates.form.formFromCluster, {
-      scanId, cluster: cluster([officialId, newsId]), beat: "housing", workingTitle: "T",
+      scanId, cluster: cluster([officialId, newsId]), workingTitle: "T",
     });
 
     const memberships = await t.run(async (ctx) => await ctx.db.query("candidateSources").collect());
@@ -120,7 +121,7 @@ describe("formFromCluster", () => {
     const t = setup();
     const { scanId, officialId } = await seed(t);
     await t.mutation(internal.candidates.form.formFromCluster, {
-      scanId, cluster: cluster([officialId]), beat: "housing", workingTitle: "T",
+      scanId, cluster: cluster([officialId]), workingTitle: "T",
     });
     const memberships = await t.run(async (ctx) => await ctx.db.query("candidateSources").collect());
     expect(memberships[0].addedBy).toBe("ai_suggestion");
@@ -130,7 +131,7 @@ describe("formFromCluster", () => {
     const t = setup();
     const { scanId, officialId, newsId } = await seed(t);
     await t.mutation(internal.candidates.form.formFromCluster, {
-      scanId, cluster: cluster([officialId, newsId]), beat: "housing", workingTitle: "T",
+      scanId, cluster: cluster([officialId, newsId]), workingTitle: "T",
     });
     const memberships = await t.run(async (ctx) => await ctx.db.query("candidateSources").collect());
     expect(memberships.find((m) => m.sourceResultId === officialId)?.signalCategory).toBe("official_record");
@@ -140,7 +141,7 @@ describe("formFromCluster", () => {
   it("reuses the candidate on a second identical cluster and does not duplicate membership", async () => {
     const t = setup();
     const { scanId, officialId, newsId } = await seed(t);
-    const args = { scanId, cluster: cluster([officialId, newsId]), beat: "housing" as const, workingTitle: "T" };
+    const args = { scanId, cluster: cluster([officialId, newsId]), workingTitle: "T" };
 
     const first = await t.mutation(internal.candidates.form.formFromCluster, args);
     const second = await t.mutation(internal.candidates.form.formFromCluster, args);
@@ -158,7 +159,7 @@ describe("formFromCluster", () => {
     const t = setup();
     const { scanId, officialId, foreignId } = await seed(t);
     const result = await t.mutation(internal.candidates.form.formFromCluster, {
-      scanId, cluster: cluster([officialId, foreignId]), beat: "housing", workingTitle: "T",
+      scanId, cluster: cluster([officialId, foreignId]), workingTitle: "T",
     });
     expect("candidateId" in result && result.sourceCount).toBe(1);
   });
@@ -171,17 +172,17 @@ describe("formFromCluster", () => {
     // never become evidence. Letting it into the fingerprint would mean two
     // clusters with different unusable padding read as two different stories.
     const first = await t.mutation(internal.candidates.form.formFromCluster, {
-      scanId, cluster: cluster([officialId, foreignId], []), beat: "housing", workingTitle: "T",
+      scanId, cluster: cluster([officialId, foreignId], []), workingTitle: "T",
     });
 
     const candidates = await t.run(async (ctx) => await ctx.db.query("candidates").collect());
     expect(candidates).toHaveLength(1);
-    expect(candidates[0].fingerprint).toBe(candidateFingerprint(clusterIdentityKeys([], [officialId]), "housing"));
+    expect(candidates[0].fingerprint).toBe(candidateFingerprint(clusterIdentityKeys([], [officialId])));
 
     // Same story, this time proposed without the dead id: same identity, so the
     // existing candidate is reused rather than a near-duplicate created.
     const second = await t.mutation(internal.candidates.form.formFromCluster, {
-      scanId, cluster: cluster([officialId], []), beat: "housing", workingTitle: "T",
+      scanId, cluster: cluster([officialId], []), workingTitle: "T",
     });
     expect("candidateId" in first && "candidateId" in second && second.candidateId === first.candidateId).toBe(true);
     expect("created" in second && second.created).toBe(false);
@@ -191,7 +192,7 @@ describe("formFromCluster", () => {
     const t = setup();
     const { scanId, foreignId } = await seed(t);
     const result = await t.mutation(internal.candidates.form.formFromCluster, {
-      scanId, cluster: cluster([foreignId]), beat: "housing", workingTitle: "T",
+      scanId, cluster: cluster([foreignId]), workingTitle: "T",
     });
     expect(result).toEqual({ rejected: "no_valid_sources" });
     expect(await t.run(async (ctx) => await ctx.db.query("candidates").collect())).toHaveLength(0);
@@ -201,10 +202,10 @@ describe("formFromCluster", () => {
     const t = setup();
     const { scanId, officialId, newsId } = await seed(t);
     await t.mutation(internal.candidates.form.formFromCluster, {
-      scanId, cluster: cluster([officialId], ["Harambee"]), beat: "housing", workingTitle: "A",
+      scanId, cluster: cluster([officialId], ["Harambee"]), workingTitle: "A",
     });
     await t.mutation(internal.candidates.form.formFromCluster, {
-      scanId, cluster: cluster([newsId], ["Bay View"]), beat: "housing", workingTitle: "B",
+      scanId, cluster: cluster([newsId], ["Bay View"]), workingTitle: "B",
     });
     expect(await t.run(async (ctx) => await ctx.db.query("candidates").collect())).toHaveLength(2);
   });
@@ -212,8 +213,8 @@ describe("formFromCluster", () => {
 
 /**
  * Defect 3 of the evidence-pipeline repair (MOO-736). `candidateFingerprint` is
- * `hash(sortedEntityKeys):beat`. Production sends `entityKeys: []`
- * (`convex/slice.ts:77`) and a hardcoded `beat: "housing"` (`convex/slice.ts:93`),
+ * `hash(sortedEntityKeys)` — it was `hash(sortedEntityKeys):beat` until Task 4b
+ * took the beat out. Production sends `entityKeys: []` (`convex/slice.ts:77`),
  * which makes that expression a CONSTANT — so `by_owner_fingerprint` finds the
  * candidate the first cluster made and every later cluster patches it instead of
  * creating its own. The live 294-source scan died in clustering and never reached
@@ -246,7 +247,7 @@ describe("a scan of N clusters", () => {
 
     for (const [n, id] of [officialId, newsId, thirdId].entries()) {
       await t.mutation(internal.candidates.form.formFromCluster, {
-        scanId, cluster: standaloneCluster(id, n), beat: "housing", workingTitle: `Story ${n}`,
+        scanId, cluster: standaloneCluster(id, n), workingTitle: `Story ${n}`,
       });
     }
 
@@ -359,8 +360,8 @@ describe("the source-id identity fallback is not silent", () => {
     const fingerprints = await t.run(async (ctx) =>
       (await ctx.db.query("candidates").collect()).map((c) => c.fingerprint).sort());
     expect(fingerprints).toEqual([
-      candidateFingerprint(["Common Council"], "housing"),
-      candidateFingerprint(["Harambee"], "housing"),
+      candidateFingerprint(["Common Council"]),
+      candidateFingerprint(["Harambee"]),
     ].sort());
   });
 });

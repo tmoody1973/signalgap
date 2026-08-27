@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { api } from "../../../convex/_generated/api";
 import { exclusionSentence } from "@/lib/exclusion-reasons";
 import { routes } from "@/lib/routes";
-import { BEAT_TEXT } from "@/lib/source-labels";
+import { beatText } from "@/lib/source-labels";
 import { StatusLabel } from "@/components/ui/editorial/status-label";
 
 /**
@@ -65,7 +65,7 @@ export function LeadCard({ lead }: { lead: LeadCardView }) {
     <article className="flex flex-col gap-2 border-t border-rule py-3.5 first:border-t-0">
       <div className="flex flex-wrap items-center gap-2">
         <StatusLabel label={lead.label} />
-        <span className="text-xs text-muted">{BEAT_TEXT[lead.beat]}</span>
+        <span className="text-xs text-muted">{beatText(lead.beat)}</span>
       </div>
 
       <h3 className="font-editorial text-lg leading-snug text-pretty">{question}</h3>

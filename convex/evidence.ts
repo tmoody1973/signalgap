@@ -76,7 +76,8 @@ const vEvidenceView = v.object({
     id: v.id("candidates"),
     title: v.string(),
     reportingQuestion: v.string(),
-    beat: V.vBeat,
+    // Absent when no beat was ever established — see `schema.ts`.
+    beat: v.optional(V.vBeat),
     status: V.vCandidateStatus,
     label: V.vProductLabel,
     disposition: V.vDisposition,

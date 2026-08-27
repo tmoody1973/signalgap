@@ -131,7 +131,13 @@ export default defineSchema({
     fingerprint: v.string(),
     currentTitle: v.string(),
     reportingQuestion: v.string(),
-    beat: V.vBeat,
+    // Absent until the classifier establishes one. Formation runs BEFORE
+    // classification (the classifier needs a candidateId), so at insert there is
+    // no honest value to write — and `no_beat_relevance` is a real verdict, so
+    // even a successful classification often names none. Optional rather than an
+    // "unassigned" union member: absence is not a fourth beat, and it must never
+    // appear in the beat filter or in BEAT_TEXT.
+    beat: v.optional(V.vBeat),
     status: V.vCandidateStatus,
     primaryLabel: V.vProductLabel,
     disposition: V.vDisposition,
