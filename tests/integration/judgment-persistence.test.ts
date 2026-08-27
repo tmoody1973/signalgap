@@ -56,7 +56,7 @@ describe("judgment persistence", () => {
     expect(stored.beat).toBe("culture");
   });
 
-  it("refuses a beat that is not one of the three real beats, and clears the column rather than keeping a stale one", async () => {
+  it("refuses a beat that is not one of the four real beats, and clears the column rather than keeping a stale one", async () => {
     // Task 4b changed this from a partial mirror to a total one. It used to
     // leave whatever the column already held, which meant a model naming a
     // fourth beat left the card asserting the old one — a judgment the product
@@ -64,7 +64,7 @@ describe("judgment persistence", () => {
     const t = setup();
     const { candidateId } = await seedCandidate(t);
     await t.mutation(internal.candidates.judgment.saveJudgment, {
-      candidateId, judgment: { ...fullJudgment, beat: judged("sports", "ai_suggested") },
+      candidateId, judgment: { ...fullJudgment, beat: judged("weather", "ai_suggested") },
     });
     const stored = (await t.run(async (ctx) => await ctx.db.get(candidateId))) as Doc<"candidates">;
     expect(stored.beat).toBeUndefined();

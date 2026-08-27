@@ -65,7 +65,7 @@ export const startScan = mutation({
     // nothing executing it.
     //
     // startAsync: the handler must NOT run inline inside this mutation. Inline
-    // execution would run 13 searches and several model calls while the
+    // execution would run 17 searches and several model calls while the
     // caller's click hangs, blow the mutation time limit, and defeat the point
     // of a durable workflow. It also patches the runtime (`delete
     // global.process`), which breaks any step reading an env var.

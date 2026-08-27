@@ -4,8 +4,8 @@ import { COVERAGE_OUTLETS, REQUIRED_COVERAGE_GROUPS, outletGroupForDomain } from
 import { OFFICIAL_DOMAINS } from "../../../convex/config/officialDomains";
 
 describe("editorial config", () => {
-  it("has exactly three beats", () => {
-    expect(Object.keys(BEATS)).toEqual(["housing", "transportation", "culture"]);
+  it("has exactly four beats", () => {
+    expect(Object.keys(BEATS)).toEqual(["housing", "transportation", "culture", "sports"]);
   });
   it("requires both coverage groups", () => {
     expect(REQUIRED_COVERAGE_GROUPS).toEqual(["general", "community"]);

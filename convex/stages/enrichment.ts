@@ -8,6 +8,7 @@ import type { GenerateFn } from "../ai/provider";
 import { runPlanFollowUp } from "../ai/planFollowUp";
 import { SEARCH_BUDGET } from "../config/searchBudget";
 import { runExecuteSearch } from "../integrations/serpapi/executeSearch";
+import { vBeat } from "../lib/validators";
 
 export const vEnrichmentOutcome = v.object({
   plannedFor: v.number(),
@@ -125,7 +126,7 @@ export const enrich = internalAction({
 export const planningContext = internalQuery({
   args: { scanId: v.id("scans"), candidateId: v.id("candidates") },
   returns: v.union(v.null(), v.object({
-    beat: v.union(v.literal("housing"), v.literal("transportation"), v.literal("culture"), v.null()),
+    beat: v.union(vBeat, v.null()),
     gaps: v.array(v.string()),
     priorTemplateIds: v.array(v.string()),
   })),
@@ -150,7 +151,7 @@ export const planningContext = internalQuery({
       .collect();
 
     return {
-      beat: (candidate.judgment?.beat?.value ?? null) as "housing" | "transportation" | "culture" | null,
+      beat: (candidate.judgment?.beat?.value ?? null) as Infer<typeof vBeat> | null,
       gaps,
       priorTemplateIds: [...new Set(runs.map((r) => r.templateId))],
     };

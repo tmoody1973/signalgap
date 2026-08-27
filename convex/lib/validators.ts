@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 
 export const vMarketKey = v.literal("milwaukee-wi");
-export const vBeat = v.union(v.literal("housing"), v.literal("transportation"), v.literal("culture"));
+export const vBeat = v.union(v.literal("housing"), v.literal("transportation"), v.literal("culture"), v.literal("sports"));
 export const vScanStatus = v.union(v.literal("queued"), v.literal("running"), v.literal("completed"), v.literal("partial"), v.literal("canceled"));
 export const vStage = v.union(v.literal("discovery"), v.literal("evidence"), v.literal("coverage"), v.literal("briefs"));
 export const vPurpose = v.union(v.literal("discovery"), v.literal("corroboration"), v.literal("coverage"), v.literal("enrichment"));

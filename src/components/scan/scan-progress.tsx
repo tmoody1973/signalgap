@@ -32,10 +32,25 @@ function stageState(stage: Stage, scan: Scan): keyof typeof STATE_TEXT {
 /**
  * What the scan is doing, in the four names the product uses everywhere else.
  *
- * The cancel button is the only interactive piece here, so the component stays
+ * The two buttons are the only interactive pieces here, so the component stays
  * a plain function — the workspace page's client boundary already covers it.
  */
-export function ScanProgress({ scan, onCancel }: { scan: Scan; onCancel?: () => void }) {
+export function ScanProgress({
+  scan,
+  onCancel,
+  onRunNewScan,
+  runNewScanDisabled,
+}: {
+  scan: Scan;
+  onCancel?: () => void;
+  onRunNewScan?: () => void;
+  runNewScanDisabled?: boolean;
+}) {
+  // The same rule the feed applies: a scan is finished when it is completed,
+  // partial or canceled. Anything else still has work in flight — and
+  // `startScan` throws "A scan is already running" against exactly that, so
+  // this is the guard, not a cosmetic one.
+  const isFinished = scan.status === "completed" || scan.status === "partial" || scan.status === "canceled";
   const terminalLabel =
     scan.status === "canceled" ? PRODUCT_LABELS.canceled
       : scan.status === "partial" ? PRODUCT_LABELS.partial
@@ -83,11 +98,22 @@ export function ScanProgress({ scan, onCancel }: { scan: Scan; onCancel?: () => 
         </ul>
       )}
 
-      {onCancel && scan.status !== "completed" && scan.status !== "partial" && scan.status !== "canceled" && (
-        <Button color="secondary" size="sm" className="mt-4" onPress={onCancel}>
-          Cancel scan
-        </Button>
-      )}
+      {/* Exactly one of these is ever on screen, and which one is decided by
+          the same fact: an unfinished scan can only be stopped, a finished one
+          can only be replaced. The feed's empty state keeps its own copy of
+          this button, but the feed only renders one when a list is EMPTY — so
+          with a lead on screen this panel is the only way to start a scan. */}
+      {!isFinished
+        ? onCancel && (
+          <Button color="secondary" size="sm" className="mt-4" onPress={onCancel}>
+            Cancel scan
+          </Button>
+        )
+        : onRunNewScan && (
+          <Button color="secondary" size="sm" className="mt-4" onPress={onRunNewScan} isDisabled={runNewScanDisabled}>
+            Run new scan
+          </Button>
+        )}
     </section>
   );
 }

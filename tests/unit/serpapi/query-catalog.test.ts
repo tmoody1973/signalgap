@@ -9,18 +9,18 @@ const NOW = Date.parse("2026-08-22T12:00:00Z");
 const render = (id: string) => renderQuery(getTemplate(id as never)!, { now: NOW, terms: ["Bronzeville apartments"] });
 
 describe("query catalog", () => {
-  it("freezes exactly the 13 discovery template ids (decision 005: Events moved to enrichment)", () => {
+  it("freezes exactly the 17 discovery template ids (decision 005: Events moved to enrichment; decision 010 added the sports beat)", () => {
     expect([...DISCOVERY_TEMPLATE_IDS]).toEqual([
       "trend-milwaukee-01",
-      "news-housing-en-01", "news-transport-en-01", "news-culture-en-01",
-      "reddit-housing-01", "reddit-transport-01", "reddit-culture-01",
-      "search-housing-es-01", "search-transport-es-01", "search-culture-es-01",
-      "official-housing-01", "official-transport-01", "official-culture-01",
+      "news-housing-en-01", "news-transport-en-01", "news-culture-en-01", "news-sports-en-01",
+      "reddit-housing-01", "reddit-transport-01", "reddit-culture-01", "reddit-sports-01",
+      "search-housing-es-01", "search-transport-es-01", "search-culture-es-01", "search-sports-es-01",
+      "official-housing-01", "official-transport-01", "official-culture-01", "official-sports-01",
     ]);
   });
 
   it("keeps the Google Events templates as enrichment only, absent from discovery (decision 005)", () => {
-    expect([...ENRICHMENT_TEMPLATE_IDS]).toEqual(["events-housing-01", "events-transport-01", "events-culture-01"]);
+    expect([...ENRICHMENT_TEMPLATE_IDS]).toEqual(["events-housing-01", "events-transport-01", "events-culture-01", "events-sports-01"]);
     for (const id of ENRICHMENT_TEMPLATE_IDS) {
       expect(getTemplate(id)!.purposes).toEqual(["enrichment"]);
       expect(DISCOVERY_TEMPLATE_IDS).not.toContain(id);

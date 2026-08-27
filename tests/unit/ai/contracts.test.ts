@@ -58,7 +58,7 @@ describe("enum fields only accept the schema's literals", () => {
   });
 
   it("rejects an unknown beat", () => {
-    expect(classifyEvidenceOutput.safeParse({ ...validClassify, beatSuggestion: "sports" }).success).toBe(false);
+    expect(classifyEvidenceOutput.safeParse({ ...validClassify, beatSuggestion: "weather" }).success).toBe(false);
   });
 
   it("rejects an unknown search purpose", () => {

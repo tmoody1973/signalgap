@@ -52,6 +52,8 @@ export default function WorkspacePage() {
                 cancelScan({ scanId: scans.page[0]._id })
                   .catch((err: unknown) => setStartError(err instanceof Error ? err.message : "Could not cancel scan"));
               }}
+              onRunNewScan={handleStart}
+              runNewScanDisabled={starting}
             />
             <LeadFeed scan={scans.page[0]} onRunNewScan={handleStart} runNewScanDisabled={starting} />
           </section>

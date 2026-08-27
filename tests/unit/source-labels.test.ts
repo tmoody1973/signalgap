@@ -27,10 +27,11 @@ describe("source labels", () => {
     });
   });
 
-  it("names the three beats", () => {
+  it("names the four beats", () => {
     expect(BEAT_TEXT.housing).toBe("Housing and neighborhood development");
     expect(BEAT_TEXT.transportation).toBe("Transportation and access");
     expect(BEAT_TEXT.culture).toBe("Arts, culture, and neighborhood life");
+    expect(BEAT_TEXT.sports).toBe("Sports, venues, and recreation");
   });
 
   it("says so plainly when no beat was ever established, rather than naming one", () => {

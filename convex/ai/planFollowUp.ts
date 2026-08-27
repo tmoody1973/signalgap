@@ -1,8 +1,10 @@
+import type { Infer } from "convex/values";
 import { v } from "convex/values";
 import type { Id } from "../_generated/dataModel";
 import type { ActionCtx } from "../_generated/server";
 import { internalAction } from "../_generated/server";
 import { SEARCH_BUDGET } from "../config/searchBudget";
+import { vBeat } from "../lib/validators";
 import { validateSearchIntent, type IntentRejection } from "../editorial/searchIntent";
 import type { SearchPurpose, SearchSpec } from "../integrations/serpapi/contracts";
 import { SCHEMA_VERSION, planFollowUpOutput, type PlanFollowUpOutput } from "./contracts";
@@ -26,7 +28,7 @@ export type PlannedIntent =
 export type PlanArgs = {
   scanId: Id<"scans">;
   candidateId: Id<"candidates">;
-  beat: "housing" | "transportation" | "culture" | null;
+  beat: Infer<typeof vBeat> | null;
   gaps: string[];
   priorTemplateIds: string[];
   remainingBudget?: { discovery: number; coverage: number; corroboration: number; enrichment: number };
@@ -88,7 +90,7 @@ export const plan = internalAction({
   args: {
     scanId: v.id("scans"),
     candidateId: v.id("candidates"),
-    beat: v.union(v.literal("housing"), v.literal("transportation"), v.literal("culture"), v.null()),
+    beat: v.union(vBeat, v.null()),
     gaps: v.array(v.string()),
     priorTemplateIds: v.array(v.string()),
   },

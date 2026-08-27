@@ -27,7 +27,7 @@ describe("feed filters", () => {
   it("drops a value that is not in the vocabulary rather than trusting it", () => {
     // The input is a URL a person can type. An unknown beat must not reach the
     // query as a filter that silently matches nothing.
-    const params = new URLSearchParams("beat=sports&label=BREAKING&view=everything");
+    const params = new URLSearchParams("beat=weather&label=BREAKING&view=everything");
     expect(parseFeedFilters(params)).toEqual({
       view: "eligible",
       beat: null,

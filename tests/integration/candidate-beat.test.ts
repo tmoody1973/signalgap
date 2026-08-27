@@ -96,12 +96,12 @@ describe("a candidate whose beat was never established", () => {
     expect((await read(t, candidateId)).beat).toBeUndefined();
   });
 
-  it("claims none when the model invents a fourth beat", async () => {
+  it("claims none when the model invents a fifth beat", async () => {
     const t = setup();
     const { scanId, sourceId } = await seed(t);
     const { candidateId } = await form(t, scanId, sourceId);
 
-    await t.mutation(internal.candidates.judgment.saveJudgment, { candidateId, judgment: judgmentWith(judged("sports")) });
+    await t.mutation(internal.candidates.judgment.saveJudgment, { candidateId, judgment: judgmentWith(judged("weather")) });
 
     expect((await read(t, candidateId)).beat).toBeUndefined();
   });

@@ -53,7 +53,7 @@ type DiscoveryOptions = { fetchImpl?: typeof fetch; sleep?: (ms: number) => Prom
  *
  * Serial on purpose. These are paid calls against a third party with its own
  * rate limits, and the workflow's own workpool already runs stages in parallel
- * with everything else in the deployment. Thirteen sequential calls is seconds,
+ * with everything else in the deployment. Seventeen sequential calls is seconds,
  * not minutes.
  *
  * Extracted from the internalAction so tests inject fetch and sleep: Convex

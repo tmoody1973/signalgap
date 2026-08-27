@@ -544,11 +544,11 @@ Google-indexed Reddit discovery uses the URL-prefix constraint `site:reddit.com/
 
 | Allocation | Maximum calls |
 | --- | ---: |
-| Fixed discovery | 16 |
+| Fixed discovery | 20 |
 | Candidate coverage searches | 20 |
 | Candidate corroboration | 20 |
 | Conditional Trends, Events, YouTube, or Maps enrichment | 30 |
-| Retry and approved supplemental reserve | 34 |
+| Retry and approved supplemental reserve | 30 |
 | **Hard cap** | **120** |
 
 `searchRuns.reserve` increments `searchesReserved` atomically only when the scan has capacity. No code path may call SerpApi without a successful reservation. Required coverage capacity is reserved before optional Maps or YouTube enrichment. Unused allocation is not an invitation for an AI agent to browse autonomously.

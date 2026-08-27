@@ -26,6 +26,7 @@ export const BEAT_TEXT = {
   housing: "Housing and neighborhood development",
   transportation: "Transportation and access",
   culture: "Arts, culture, and neighborhood life",
+  sports: "Sports, venues, and recreation",
 } as const;
 
 export type Beat = keyof typeof BEAT_TEXT;

@@ -100,6 +100,22 @@ test.describe("scan progress", () => {
     const panel = page.getByRole("region", { name: "Scan progress" });
     await expect(panel.getByText("Stopped early")).toBeVisible();
     await expect(panel.getByRole("button", { name: "Cancel scan" })).toHaveCount(0);
+    // A stopped scan is a FINISHED scan, so the way to start another one has to
+    // be here. It used to live only in the feed's empty state, which does not
+    // render once a lead is on screen — leaving no way to scan at all.
+    await expect(panel.getByRole("button", { name: "Run new scan" })).toBeVisible();
+  });
+
+  test("a finished scan offers a new one, whether or not the feed is empty", async ({ page }) => {
+    // eligibleCount 3: the feed renders CARDS, so its empty state — the only
+    // other place this button lives — is not on screen. This is the regression.
+    seed("briefs", "partial", false, { eligibleCount: 3, excludedCount: 5, processingCount: 0 });
+    await signInOnly(page);
+    await page.goto("/workspace");
+
+    const panel = page.getByRole("region", { name: "Scan progress" });
+    await expect(panel.getByRole("button", { name: "Run new scan" })).toBeEnabled();
+    await expect(panel.getByRole("button", { name: "Cancel scan" })).toHaveCount(0);
   });
 
   test("a running scan offers cancel, and cancelling changes the state", async ({ page }) => {
@@ -107,6 +123,9 @@ test.describe("scan progress", () => {
     await signInOnly(page);
     await page.goto("/workspace");
 
+    // `startScan` throws "A scan is already running" against exactly this
+    // state, so the button must not be on screen to be pressed.
+    await expect(page.getByRole("button", { name: "Run new scan" })).toHaveCount(0);
     await page.getByRole("button", { name: "Cancel scan" }).click();
     await expect(page.getByText("Stopped early")).toBeVisible();
   });

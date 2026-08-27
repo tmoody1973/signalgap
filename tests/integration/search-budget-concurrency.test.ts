@@ -75,7 +75,7 @@ describe("search budget accounting", () => {
     expect(discovery + coverage + corroboration + enrichment + reserve).toBe(hardCap);
   });
 
-  it("discovery spends 13 of its 16-call ceiling", async () => {
+  it("discovery spends 17 of its 20-call ceiling", async () => {
     const t = setup();
     await seedUser(t);
     vi.stubEnv("SERPAPI_API_KEY", "test-key");
@@ -84,9 +84,10 @@ describe("search budget accounting", () => {
     await t.action(async (ctx) => runDiscoveryStage(ctx, { scanId, now: NOW }, { fetchImpl: fakeFetch(), sleep: async () => {} }));
 
     const scan = await t.run(async (ctx) => ctx.db.get(scanId));
-    // Decision 005. 16 is the ceiling in the spec's budget table; 13 is what
-    // the frozen catalog actually contains after Google Events moved out.
-    expect(scan!.searchesReserved).toBe(13);
+    // Decision 005 took Google Events out; decision 010 added the sports beat.
+    // 20 is the ceiling in the spec's budget table; 17 is what the frozen
+    // catalog actually contains — four per beat plus the trend feed.
+    expect(scan!.searchesReserved).toBe(17);
     expect(scan!.searchesReserved).toBeLessThanOrEqual(SEARCH_BUDGET.discovery);
   });
 });

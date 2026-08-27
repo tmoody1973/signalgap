@@ -203,9 +203,9 @@ describe("scan state transitions", () => {
 });
 
 describe("discovery stage", () => {
-  it("renders exactly the 13 frozen templates, once each", () => {
+  it("renders exactly the 17 frozen templates, once each", () => {
     const specs = discoverySpecs(NOW);
-    expect(specs).toHaveLength(13);
+    expect(specs).toHaveLength(17);
     expect(specs.map((s) => s.templateId).sort()).toEqual([...DISCOVERY_TEMPLATE_IDS].sort());
     // Decision 005: Google Events is enrichment now, and must not reappear here.
     expect(specs.some((s) => s.engine === "google_events")).toBe(false);
@@ -220,7 +220,7 @@ describe("discovery stage", () => {
     expect(new Set(queries).size).toBe(queries.length);
   });
 
-  it("executes all 13 and reserves 13, not 16", async () => {
+  it("executes all 17 and reserves 17, not 20", async () => {
     vi.stubEnv("SERPAPI_API_KEY", "test-key");
     const t = setup();
     await seedUser(t);
@@ -230,11 +230,11 @@ describe("discovery stage", () => {
       runDiscoveryStage(ctx, { scanId, now: NOW }, { fetchImpl: fakeFetch(), sleep: async () => {} }),
     );
 
-    expect(outcome.executed).toBe(13);
+    expect(outcome.executed).toBe(17);
     expect(outcome.canceled).toBe(false);
     const scan = await t.run(async (ctx) => ctx.db.get(scanId));
-    // 16 is the budget CEILING. Spending 13 is the point of decision 005.
-    expect(scan?.searchesReserved).toBe(13);
+    // 20 is the budget CEILING. Spending 17 is the point of decision 005.
+    expect(scan?.searchesReserved).toBe(17);
   });
 
   it("stops before the next search once cancellation is requested", async () => {
@@ -293,7 +293,7 @@ describe("discovery stage", () => {
 
     // Resuming a workflow after a restart must not re-buy searches we own.
     expect((await t.run(async (ctx) => ctx.db.get(scanId)))?.searchesReserved).toBe(afterFirst);
-    expect(second.skipped).toBe(13);
+    expect(second.skipped).toBe(17);
     expect(second.executed).toBe(0);
   });
 });

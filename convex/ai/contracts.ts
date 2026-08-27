@@ -24,7 +24,7 @@ const claimText = z.string().min(1).max(MAX_CLAIM);
 const reason = z.string().min(1).max(MAX_REASON);
 const sourceId = z.string().min(1);
 
-const beat = z.enum(["housing", "transportation", "culture"]);
+const beat = z.enum(["housing", "transportation", "culture", "sports"]);
 const sourceTypeSuggestion = z.enum(["primary", "secondary", "discussion", "unknown"]);
 const localityBand = z.enum(["direct_city", "county_city_effect", "area_city_consequence", "none"]);
 const relevanceBand = z.enum(["policy_service_change", "community_cultural_impact", "emerging_question", "promotion_only"]);
