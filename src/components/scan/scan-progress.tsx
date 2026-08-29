@@ -1,6 +1,7 @@
 import type { FunctionReturnType } from "convex/server";
 import type { api } from "../../../convex/_generated/api";
 import { Button } from "@/components/ui/untitled/button";
+import { SavedCopyNotice } from "@/components/ui/editorial/saved-copy-notice";
 import { StatusLabel } from "@/components/ui/editorial/status-label";
 import { PRODUCT_LABELS, STAGE_TEXT, type Stage } from "@/lib/source-labels";
 
@@ -32,19 +33,29 @@ function stageState(stage: Stage, scan: Scan): keyof typeof STATE_TEXT {
 /**
  * What the scan is doing, in the four names the product uses everywhere else.
  *
- * The two buttons are the only interactive pieces here, so the component stays
- * a plain function — the workspace page's client boundary already covers it.
+ * The buttons are the only interactive pieces here, so the component stays a
+ * plain function — the workspace page's client boundary already covers it.
+ *
+ * `onOpenSavedDemo` is item 10's dependency-failure action. It sits in this
+ * panel, directly under the named failures, because that is where an editor is
+ * looking at the moment a live scan has just failed them. It is a button, never
+ * an automatic swap: choosing saved data over live data is a human's call, and
+ * whatever it opens arrives carrying `SavedCopyNotice`.
  */
 export function ScanProgress({
   scan,
   onCancel,
   onRunNewScan,
   runNewScanDisabled,
+  onOpenSavedDemo,
+  onShowLatestScan,
 }: {
   scan: Scan;
   onCancel?: () => void;
   onRunNewScan?: () => void;
   runNewScanDisabled?: boolean;
+  onOpenSavedDemo?: () => void;
+  onShowLatestScan?: () => void;
 }) {
   // The same rule the feed applies: a scan is finished when it is completed,
   // partial or canceled. Anything else still has work in flight — and
@@ -62,6 +73,12 @@ export function ScanProgress({
         <h2 id="scan-progress-heading" className="font-editorial text-xl">Scan progress</h2>
         {terminalLabel && <StatusLabel label={terminalLabel} />}
       </div>
+
+      {/* Above the stages, not below them. An editor must know the data is a
+          saved copy BEFORE they read a single number off it. */}
+      {scan.isSavedDemo && scan.captureTimestamp !== undefined && (
+        <SavedCopyNotice captureTimestamp={scan.captureTimestamp} className="mt-2.5" />
+      )}
 
       <ol className="mt-3.5">
         {STAGE_ORDER.map((stage) => (
@@ -103,17 +120,29 @@ export function ScanProgress({
           can only be replaced. The feed's empty state keeps its own copy of
           this button, but the feed only renders one when a list is EMPTY — so
           with a lead on screen this panel is the only way to start a scan. */}
-      {!isFinished
-        ? onCancel && (
-          <Button color="secondary" size="sm" className="mt-4" onPress={onCancel}>
-            Cancel scan
-          </Button>
-        )
-        : onRunNewScan && (
-          <Button color="secondary" size="sm" className="mt-4" onPress={onRunNewScan} isDisabled={runNewScanDisabled}>
-            Run new scan
+      <div className="mt-4 flex flex-wrap gap-2">
+        {!isFinished
+          ? onCancel && (
+            <Button color="secondary" size="sm" onPress={onCancel}>
+              Cancel scan
+            </Button>
+          )
+          : onRunNewScan && (
+            <Button color="secondary" size="sm" onPress={onRunNewScan} isDisabled={runNewScanDisabled}>
+              Run new scan
+            </Button>
+          )}
+        {onOpenSavedDemo && (
+          <Button color="secondary" size="sm" onPress={onOpenSavedDemo}>
+            Open saved demo scan
           </Button>
         )}
+        {onShowLatestScan && (
+          <Button color="secondary" size="sm" onPress={onShowLatestScan}>
+            Back to latest scan
+          </Button>
+        )}
+      </div>
     </section>
   );
 }

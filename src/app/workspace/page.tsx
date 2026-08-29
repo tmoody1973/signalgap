@@ -24,6 +24,13 @@ export default function WorkspacePage() {
   const [startError, setStartError] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
 
+  // Item 10's saved fallback. `viewingSavedDemo` starts false and is only ever
+  // set by the editor pressing `Open saved demo scan` — nothing here ever
+  // reaches for saved data on its own. Whatever ends up on screen carries its
+  // own `Saved copy` notice, so the two can never disagree about what is live.
+  const savedDemo = useQuery(api.scans.savedDemo, me ? {} : "skip");
+  const [viewingSavedDemo, setViewingSavedDemo] = useState(false);
+
   const handleStart = () => {
     setStarting(true);
     setStartError(null);
@@ -43,21 +50,32 @@ export default function WorkspacePage() {
           <p className="text-muted">Loading workspace…</p>
         ) : scans.page.length === 0 ? (
           <FirstRunState onRunFirstScan={handleStart} disabled={starting} />
-        ) : (
-          <section aria-labelledby="latest-scan">
-            <h1 id="latest-scan" className="font-editorial text-3xl">Latest scan</h1>
-            <ScanProgress
-              scan={scans.page[0]}
-              onCancel={() => {
-                cancelScan({ scanId: scans.page[0]._id })
-                  .catch((err: unknown) => setStartError(err instanceof Error ? err.message : "Could not cancel scan"));
-              }}
-              onRunNewScan={handleStart}
-              runNewScanDisabled={starting}
-            />
-            <LeadFeed scan={scans.page[0]} onRunNewScan={handleStart} runNewScanDisabled={starting} />
-          </section>
-        )}
+        ) : (() => {
+          const latest = scans.page[0];
+          const shown = viewingSavedDemo && savedDemo ? savedDemo : latest;
+          const isShowingSaved = shown._id === savedDemo?._id;
+          return (
+            <section aria-labelledby="latest-scan">
+              <h1 id="latest-scan" className="font-editorial text-3xl">
+                {isShowingSaved ? "Saved demo scan" : "Latest scan"}
+              </h1>
+              <ScanProgress
+                scan={shown}
+                onCancel={() => {
+                  cancelScan({ scanId: shown._id })
+                    .catch((err: unknown) => setStartError(err instanceof Error ? err.message : "Could not cancel scan"));
+                }}
+                onRunNewScan={handleStart}
+                runNewScanDisabled={starting}
+                // Offered only when there is a saved scan that is not already
+                // what the editor is looking at.
+                onOpenSavedDemo={savedDemo && !isShowingSaved ? () => setViewingSavedDemo(true) : undefined}
+                onShowLatestScan={isShowingSaved && latest._id !== savedDemo?._id ? () => setViewingSavedDemo(false) : undefined}
+              />
+              <LeadFeed scan={shown} onRunNewScan={handleStart} runNewScanDisabled={starting} />
+            </section>
+          );
+        })()}
       </main>
     </>
   );

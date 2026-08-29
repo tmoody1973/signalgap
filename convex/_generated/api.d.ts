@@ -34,6 +34,7 @@ import type * as config_coverageOutlets from "../config/coverageOutlets.js";
 import type * as config_officialDomains from "../config/officialDomains.js";
 import type * as config_ruleset from "../config/ruleset.js";
 import type * as config_searchBudget from "../config/searchBudget.js";
+import type * as demoScan from "../demoScan.js";
 import type * as editorial_blocking from "../editorial/blocking.js";
 import type * as editorial_coverage from "../editorial/coverage.js";
 import type * as editorial_eligibility from "../editorial/eligibility.js";
@@ -54,6 +55,7 @@ import type * as integrations_serpapi_normalize_google from "../integrations/ser
 import type * as integrations_serpapi_normalize_shared from "../integrations/serpapi/normalize/shared.js";
 import type * as integrations_serpapi_queryCatalog from "../integrations/serpapi/queryCatalog.js";
 import type * as lib_auth from "../lib/auth.js";
+import type * as lib_purgeScan from "../lib/purgeScan.js";
 import type * as lib_validators from "../lib/validators.js";
 import type * as modelRuns from "../modelRuns.js";
 import type * as scanWorkflow from "../scanWorkflow.js";
@@ -103,6 +105,7 @@ declare const fullApi: ApiFromModules<{
   "config/officialDomains": typeof config_officialDomains;
   "config/ruleset": typeof config_ruleset;
   "config/searchBudget": typeof config_searchBudget;
+  demoScan: typeof demoScan;
   "editorial/blocking": typeof editorial_blocking;
   "editorial/coverage": typeof editorial_coverage;
   "editorial/eligibility": typeof editorial_eligibility;
@@ -123,6 +126,7 @@ declare const fullApi: ApiFromModules<{
   "integrations/serpapi/normalize/shared": typeof integrations_serpapi_normalize_shared;
   "integrations/serpapi/queryCatalog": typeof integrations_serpapi_queryCatalog;
   "lib/auth": typeof lib_auth;
+  "lib/purgeScan": typeof lib_purgeScan;
   "lib/validators": typeof lib_validators;
   modelRuns: typeof modelRuns;
   scanWorkflow: typeof scanWorkflow;

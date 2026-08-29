@@ -3,6 +3,7 @@
 import { useConvexAuth, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { SavedCopyNotice } from "@/components/ui/editorial/saved-copy-notice";
 import { CoverageAudit } from "./coverage-audit";
 import { EvidenceItem } from "./evidence-item";
 import { LeadCard } from "./lead-card";
@@ -38,6 +39,10 @@ export function EvidenceViewPanel({ candidateId }: { candidateId: Id<"candidates
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-7 pb-16">
+      {/* First thing on the page, above the lead itself. The demo journey walks
+          from the workspace into this view, and an editor must not have to
+          remember from the previous screen that this is saved data. */}
+      {view.savedCopy && <SavedCopyNotice captureTimestamp={view.savedCopy.captureTimestamp} />}
       <LeadCard candidate={view.candidate} sourceCount={sourceCount} coverage={view.coverage} />
       <ScoreBreakdown score={view.score} judgment={view.judgment} exclusionReasons={view.candidate.exclusionReasons} />
       <WhyThisSurfaced items={view.whySurfaced} />

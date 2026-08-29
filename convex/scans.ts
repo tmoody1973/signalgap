@@ -98,6 +98,34 @@ export const list = query({
   },
 });
 
+/**
+ * The owner's saved demo scan, if one has been imported.
+ *
+ * Item 10's dependency-failure path. The workspace shows the NEWEST scan; when
+ * a live scan cannot run, an editor explicitly chooses `Open saved demo scan`
+ * and this is what that action opens. It is never selected automatically, and
+ * whatever it returns is rendered with the `Saved copy` label and its capture
+ * timestamp — the substitution has to be visible to be honest.
+ *
+ * ponytail: reads the owner's scans newest-first and takes the first saved one.
+ * There is no `by_owner_saved_demo` index because an owner has a handful of
+ * scans; add one if a deployment ever accumulates hundreds.
+ */
+export const savedDemo = query({
+  args: {},
+  returns: v.union(v.null(), vScanSummary),
+  handler: async (ctx) => {
+    const user = await requireUser(ctx);
+    const scan = await ctx.db
+      .query("scans")
+      .withIndex("by_owner_started", (q) => q.eq("ownerId", user._id))
+      .order("desc")
+      .filter((q) => q.eq(q.field("isSavedDemo"), true))
+      .first();
+    return scan ? toSummary(scan) : null;
+  },
+});
+
 export const cancel = mutation({
   args: { scanId: v.id("scans") },
   returns: v.null(),

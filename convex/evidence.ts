@@ -1,4 +1,5 @@
 import { v } from "convex/values";
+import type { Doc } from "./_generated/dataModel";
 import { query } from "./_generated/server";
 import { coverageGapAllowed } from "./editorial/coverage";
 import { requireUser } from "./lib/auth";
@@ -87,6 +88,11 @@ const vEvidenceView = v.object({
     exclusionReasons: v.array(V.vExclusionReason),
     updatedAt: v.number(),
   }),
+  // Set when the scan this lead most recently appeared in is a saved demo.
+  // The demo journey continues from the workspace into this page, and "you are
+  // reading saved data" must not be something the reader has to remember from
+  // the previous screen.
+  savedCopy: v.union(v.null(), v.object({ captureTimestamp: v.number() })),
   judgment: v.union(v.null(), V.vJudgmentRecord),
   score: v.union(v.null(), v.object({
     total: v.number(),
@@ -294,6 +300,22 @@ export const forCandidate = query({
       modelRunId: latestBrief.modelRunId ?? null,
     } : null;
 
+    // The lead's newest appearance decides. A candidate can appear in several
+    // scans; what the reader has in front of them is the latest picture of it.
+    const appearances = await ctx.db
+      .query("candidateAppearances")
+      .withIndex("by_candidate_scan", (q) => q.eq("candidateId", candidateId))
+      .collect();
+    let newestScan: Doc<"scans"> | null = null;
+    for (const appearance of appearances) {
+      const scan = await ctx.db.get(appearance.scanId);
+      if (!scan) continue;
+      if (!newestScan || (scan.startedAt ?? 0) > (newestScan.startedAt ?? 0)) newestScan = scan;
+    }
+    const savedCopy = newestScan?.isSavedDemo && newestScan.captureTimestamp !== undefined
+      ? { captureTimestamp: newestScan.captureTimestamp }
+      : null;
+
     return {
       candidate: {
         id: candidate._id,
@@ -307,6 +329,7 @@ export const forCandidate = query({
         exclusionReasons: candidate.exclusionReasons ?? [],
         updatedAt: candidate.updatedAt,
       },
+      savedCopy,
       judgment: candidate.judgment ?? null,
       score,
       whySurfaced,
