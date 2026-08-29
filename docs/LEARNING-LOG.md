@@ -155,3 +155,53 @@ The third is that the number the diagnosis rests on is still unverified. The act
 The pattern to take from this is not "check the time limit too". It is that **the resource with the discipline is the resource that will not surprise you**, and it is worth asking, before a change ships, which resources it touches that have no discipline at all. A limit nobody has measured is not a limit; it is a rumour that happens to have been true so far.
 
 A smaller note worth keeping: a killed action leaves a ledger row that lies. The row says `running`, and the code that would reopen it treats `in_flight` as a live call and refuses. So the crash did not only stop the scan — it made that one unit of work permanently unrepeatable. Evidence that cannot distinguish "still working" from "died mid-sentence" is evidence with a hole in it.
+
+---
+
+## 2026-08-29 — the backup and the thing that deletes it shared an account
+
+**Expected:** finishing the saved-demo work would be the whole job — mark the
+scan, export it, add the button, commit. The scan was the thing at risk, and
+exporting it was the thing that made it safe.
+
+**Happened:** three things, in order of how uncomfortable they are.
+
+The first is small. The handoff said "run `npm run check`, expect 543 passed".
+It was piped through `tail`, which reports its own exit code, so the run looked
+green. It was not: four TypeScript errors in the new test file meant typecheck
+failed and the tests never ran at all. A test suite that never executed reports
+nothing, and it reports it very quietly.
+
+The second is that the work was better than the note about it suggested. The
+report stopped after step three. Steps four and five — the button, the label,
+the two components — were built, unreported, and correct. An agent that goes
+quiet has not necessarily stopped working, and reading only the report would
+have meant rebuilding what already existed.
+
+The third is the one that matters. Before every browser-test run, a setup step
+wipes the test account clean. It looks up the account by whatever
+`E2E_CLERK_EMAIL` names. It named Tarik's own account — the account that owns
+the scan the whole session was spent preserving. So `npm run test:e2e` would
+have deleted it, along with the 19 raw SerpApi archives that are deliberately
+kept out of the committed fixture and therefore existed in exactly one place.
+The export made the *rows* safe on the same afternoon that an ordinary test
+command could still have destroyed the part the export does not carry.
+
+**Now believe:** a backup is only a backup of what it actually contains, and the
+gap between "we preserved it" and "we preserved the rows and left the files
+where they were" is the whole risk. We had written that gap down honestly — the
+report names `rawStorageId` as deliberately excluded — and still did not
+connect it to the delete path standing right next to it. Naming an exclusion is
+not the same as noticing what can reach the excluded thing.
+
+The fix that held was not a guard on the delete. It was noticing that test data
+and real data were living in the same account, which is the actual cause; the
+delete was only the mechanism. The tempting fix — teach the wipe to skip the
+saved demo — would have left them sharing an account and paid for the guard by
+breaking the first-run test, which needs a genuinely empty workspace to check
+what a new user sees. Separating the identities cost one throwaway account and
+broke nothing. Decision 011.
+
+And the smaller one, which keeps recurring: **a command's exit code is the exit
+code of the last thing in the pipe.** `npm run check | tail` will tell you the
+tail worked.

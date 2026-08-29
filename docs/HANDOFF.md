@@ -1,6 +1,6 @@
 # SignalGap — session handoff
 
-**Last updated:** 2026-08-29, 14:26 CDT.
+**Last updated:** 2026-08-29, 15:05 CDT.
 **Purpose:** everything a fresh Claude session needs to pick this up. Read this, then `docs/hackathon-build/spec.md`.
 
 ---
@@ -11,10 +11,10 @@
 cd /Users/tarikmoody/Projects/SignalGap
 git log --oneline -5
 git status --short          # ANYTHING UNCOMMITTED IS A TASK THAT STALLED MID-FLIGHT
-npm run check               # expect 543 passed / 2 skipped
+npm run check               # expect 547 passed / 2 skipped
 ```
 
-**There is work in flight right now.** A subagent was preserving the live scan as the saved demo (checklist item 10's remaining half) and the session ended mid-task. Expect uncommitted `convex/demoScan.ts` (new) and a modified `convex/testing.ts`. Its brief and progress are in `.superpowers/sdd/2026-08-25-signalgap-ai-batching/saved-demo-report.md`. **Read that first, decide whether to finish it or start it clean, and do not assume it is correct — it was never reviewed.**
+**Nothing is in flight.** The saved-demo work landed in `2a99acf` and the tree is clean. `npm run check` is **547 passed / 2 skipped**; `npm run test:e2e` is **41 passed**.
 
 **Nothing is blocked on Tarik.** The next decision he owes is nothing; the next work is below.
 
@@ -39,7 +39,7 @@ The central claim every decision defends: **SerpApi gives it live eyes. AI conne
 | Repo (public) | https://github.com/tmoody1973/signalgap |
 | Linear | MOO-727…738, one per checklist item |
 | Spec / PRD / checklist | `docs/hackathon-build/` |
-| Decisions | `docs/decisions/` (001–010) |
+| Decisions | `docs/decisions/` (001–011) |
 | Learning log | `docs/LEARNING-LOG.md` |
 | Plans | `docs/superpowers/plans/` |
 | **Research that cost money** | **`docs/research/2026-08-25-evidence-pipeline/`** — measurements, Claude API findings, clustering design. Every number in the repair plan traces here. |
@@ -54,11 +54,11 @@ The central claim every decision defends: **SerpApi gives it live eyes. AI conne
 | --- | --- |
 | 1–8 | **Done** |
 | 9 | **Part A (ranked feed) done.** Parts B (editorial controls) and C (histories/comparison) not started. Box deliberately unticked. |
-| **10** | **Live scan succeeded. Saved-demo half in flight.** See §4. |
+| **10** | **Live scan succeeded. Saved demo built, exported and committed.** Only the full manual demo journey is still owed — that one is Tarik's to walk. See §4. |
 | 11 | Harden, evaluate, deploy — **not started** |
 | 12 | Devpost handoff — **not started** |
 
-**543 unit/integration tests, 40 Playwright. `main` is 2 commits ahead of origin — push early.**
+**547 unit/integration tests, 41 Playwright.** `main` was pushed through `7eabf82`; `2a99acf` and later are local only — push early.
 
 ### The evidence pipeline repair is complete
 
@@ -72,7 +72,7 @@ Clustering is now deterministic (`convex/editorial/blocking.ts`) with AI only in
 
 ---
 
-## 4. The crown jewel — and its risk
+## 4. The crown jewel — now preserved
 
 **Scan `k17d48736cyxjgzq8yz16w11yx8d60a3` (2026-08-26)** is the first successful end-to-end run.
 
@@ -83,7 +83,11 @@ Clustering is now deterministic (`convex/editorial/blocking.ts`) with AI only in
 
 **The 7 rejected calls are the product working, not failing** — three paraphrased a quotation instead of copying it, two quoted under 20 characters, one cited a source id that does not exist, one slipped a search operator into a snippet. Each refused rather than published. **That is the demo moment.**
 
-**⚠️ This scan exists only in the dev Convex deployment on this laptop.** Preserving it is exactly the in-flight task. Until that lands, the best evidence in the project is one `npx convex import --replace` away from gone.
+**It is now preserved.** The scan is flagged `isSavedDemo` with `captureTimestamp` 1787761645190 (its own `startedAt`, the conservative claim), exported verbatim to `tests/fixtures/demo/demo-scan.json` (2.3 MB, 10 tables), and re-importable through `scripts/import-demo-scan.ts`, which is idempotent on owner + capture timestamp. The workspace has an explicit `Open saved demo scan` button — never automatic — and a `Saved copy` notice that follows the reader into the lead page.
+
+**What the fixture does NOT carry:** the 19 raw SerpApi archives in Convex File Storage, deliberately, so no paid payload is committed to a public repo. Those exist in exactly one place. **The fixture has also never been imported into a fresh deployment** — only back into the one it came from. Item 11 is the first real test of that.
+
+Verify the UI without risking the scan: `PORT=3100 npm run dev`, then `npx tsx scripts/check-saved-demo.mts /tmp/sg`. It drives the whole journey and screenshots greyscale and dark mode.
 
 ### A live scan is NOT currently a reliable demo path
 
@@ -97,7 +101,7 @@ Clustering is now deterministic (`convex/editorial/blocking.ts`) with AI only in
 
 ## 5. What to do next, in order
 
-1. **Finish or restart the saved-demo work** (§0). Mark the scan `isSavedDemo` with an honest `captureTimestamp`, export a committed fixture with an idempotent import, and add the manual `Open saved demo scan` action with the `Saved copy` label. This de-risks everything else.
+1. ~~Saved-demo work~~ — **done** (`2a99acf`). What is still owed on item 10 is the **full manual demo journey**: Tarik walks the live path, then the saved path, end to end, and approves it. That is REVIEW PAUSE 3.
 2. **Task 8b** — verify the real action limit, then bound the evidence stage. Also: a killed action leaves a `modelRuns` row reading `running` forever, and `reopen` refuses `in_flight`, so that unit of work is permanently unrepeatable.
 3. **Item 11** — harden, secret scan, deploy prod Convex + Vercel, run the journey against the deployed URL.
 4. **Item 12** — README, four screenshots, 2–4 minute demo video, Devpost story.
@@ -133,7 +137,7 @@ Clustering is now deterministic (`convex/editorial/blocking.ts`) with AI only in
 ## 7. Operational gotchas that cost real time
 
 - **Port 3000 is a different project** on this machine ("Paper Majority"). Run SignalGap on **3100** and pass `PLAYWRIGHT_BASE_URL=http://localhost:3100`.
-- **Do not run scan work through `playwright.config.ts`** — its `globalSetup` calls `deleteScansForClerkUser` and will destroy the live scan.
+- **The e2e reset no longer touches Tarik's data — keep it that way.** `playwright.config.ts` `globalSetup` calls `deleteScansForClerkUser` on whatever `E2E_CLERK_EMAIL` names, and that wipe deletes raw File Storage archives too. It used to name Tarik's own account, which owns the saved demo scan, so `npm run test:e2e` would have destroyed the 19 irreplaceable raw archives. `E2E_CLERK_EMAIL` is now `signalgap-e2e+clerk_test@example.com` (Clerk `user_3IbV25nBwYAOXYBqEssKHITTGdf`, dev instance). Decision 011. **If you restore an old `.env.local`, the trap comes back silently** — check that line before running e2e. Proven 2026-08-29: a full 41-test e2e run left scan `k17d48736…` with all 25 searches and all 19 archives intact.
 - **Clerk sign-in: use the email strategy, not password.** `clerk.signIn({ page, emailAddress })`. The password path hits a `needs_client_trust` device gate. See `tests/e2e/helpers/auth.ts`.
 - **`Run new scan` now lives in the scan-progress panel.** It used to render only in the empty state, so it vanished the moment a lead qualified.
 - **Spurious typecheck failure** from stale `.next/dev/types/` reproduces on clean `main`. `rm -rf .next/dev/types` clears it.
