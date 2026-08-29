@@ -79,6 +79,25 @@ than half-fixed.
 **What is NOT known:** whether the one qualifying lead would still qualify under
 a correct coverage search. Nobody has run that check.
 
+**And that question is only half-answerable without spending a search.** The two
+halves are not symmetric, which is the trap:
+
+- **The archive can prove the lead FAILS.** If the 308 sources already captured
+  in this scan happen to contain three or more qualifying original local reports
+  about the grant, then a correct coverage check would have found them and the
+  lead loses its `Coverage gap` label. That is decidable from the committed
+  fixture alone.
+- **The archive can never prove the lead HOLDS.** Finding nothing in what was
+  captured is not evidence that a correct search would find nothing. The broken
+  query is the very reason the right sources were never fetched in the first
+  place — absence in the archive is absence of a search, not absence in the
+  world.
+
+So an offline check ends in one of two places: "it definitely no longer
+qualifies", or "unresolved, and it needs one real coverage search to settle."
+A null result is **not** a clean bill of health, and reading it as one would be
+exactly the kind of claim the rest of this product is built to refuse.
+
 Root cause: `convex/candidates/coverage.ts`, `termsFor` — it returns
 `candidate.currentTitle` truncated to 80 characters.
 
