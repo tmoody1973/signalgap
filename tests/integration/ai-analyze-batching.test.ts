@@ -232,4 +232,35 @@ describe("the evidence stage over batched analysis", () => {
     expect(failures[0].message).toContain("1 of 3");
     expect(failures[0].message).toContain("batch 1");
   });
+
+  it("publishes the total before any batch runs, and reaches it when they are done", async () => {
+    // The panel's only moving part while a scan reads. The denominator has to
+    // exist before the first batch lands, or the line appears late and jumps.
+    const t = setup();
+    const n = ANALYZE_BATCH_SIZE * 3;
+    const { scanId, ids } = await seedSources(t, n);
+
+    await t.action(async (ctx) => await runAnalyzeResults(ctx, { scanId, sourceResultIds: ids }, echoModel().fn));
+
+    const scan = await t.run(async (ctx) => await ctx.db.get(scanId));
+    expect(scan?.sourcesTotal).toBe(n);
+    expect(scan?.sourcesAnalyzed).toBe(n);
+  });
+
+  it("keeps the line moving through a failed batch instead of stalling short", async () => {
+    // Counting only sources successfully read would park the line at "20 of 30"
+    // for the whole of clustering and rebuild the dead zone this exists to
+    // remove. Which batches failed is reported separately, in the failure
+    // summaries -- the progress line reports position in the work.
+    const t = setup();
+    const n = ANALYZE_BATCH_SIZE * 3;
+    const { scanId, ids } = await seedSources(t, n);
+    const model = echoModel({ failTitle: `Story ${ANALYZE_BATCH_SIZE}` });
+
+    const outcome = await t.action(async (ctx) => await runAnalyzeResults(ctx, { scanId, sourceResultIds: ids }, model.fn));
+    expect(outcome.failures.length).toBeGreaterThan(0);
+
+    const scan = await t.run(async (ctx) => await ctx.db.get(scanId));
+    expect(scan?.sourcesAnalyzed).toBe(n);
+  });
 });

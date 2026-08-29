@@ -215,6 +215,14 @@ export async function runAnalyzeResults(
   // One call for 294 sources is 27-38 minutes of output against a 120 s timeout.
   // It is not a big request; it is thirty requests wearing a trenchcoat.
   const batches = chunk(sources, ANALYZE_BATCH_SIZE);
+
+  // Publish the denominator BEFORE the first batch runs. This stage is the
+  // longest stretch of a scan and the only one with nothing else to show: the
+  // search counter is already finished and no lead exists yet. Without this the
+  // panel sits unchanged for the whole of it, and a healthy scan is
+  // indistinguishable from a dead one — which is why one was cancelled at 3.1
+  // minutes on 2026-08-29, twenty batches deep and fine.
+  await ctx.runMutation(internal.scans.setAnalysisProgress, { scanId, total: sources.length });
   const results: Array<
     | {
         ok: true; items: AnalyzeResultsOutput["items"]; modelRunId: Id<"modelRuns">;
@@ -300,6 +308,13 @@ export async function runAnalyzeResults(
       const batchIndex = nextBatch++;
       if (batchIndex >= batches.length) return;
       await runBatch(batchIndex);
+      // Advanced here rather than inside runBatch's success path, so a failed
+      // batch moves the line too. This counts POSITION IN THE WORK, not sources
+      // successfully read — a stage that stopped advancing on failure would
+      // stall at "370 of 380" through clustering and rebuild the dead zone it
+      // exists to remove. Which batches failed is reported separately, and
+      // prominently, in the scan's failure summaries.
+      await ctx.runMutation(internal.scans.setAnalysisProgress, { scanId, advanceBy: batches[batchIndex].length });
     }
   };
   await Promise.all(

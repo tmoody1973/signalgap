@@ -26,6 +26,8 @@ const vScanSummary = v.object({
   failureSummaries: v.array(V.vFailureSummary),
   isSavedDemo: v.boolean(),
   captureTimestamp: v.optional(v.number()),
+  sourcesTotal: v.optional(v.number()),
+  sourcesAnalyzed: v.optional(v.number()),
 });
 
 const toSummary = (s: Doc<"scans">) => ({
@@ -34,6 +36,7 @@ const toSummary = (s: Doc<"scans">) => ({
   searchesSucceeded: s.searchesSucceeded, searchesFailed: s.searchesFailed, eligibleCount: s.eligibleCount,
   excludedCount: s.excludedCount, processingCount: s.processingCount, failureSummaries: s.failureSummaries,
   isSavedDemo: s.isSavedDemo, captureTimestamp: s.captureTimestamp,
+  sourcesTotal: s.sourcesTotal, sourcesAnalyzed: s.sourcesAnalyzed,
 });
 
 export const startScan = mutation({
@@ -165,6 +168,44 @@ export const setStage = internalMutation({
     // A terminal scan's stage is history. Nothing may move it.
     if (scan.status !== "queued" && scan.status !== "running") return null;
     await ctx.db.patch(scanId, { stage, status: "running" });
+    return null;
+  },
+});
+
+/**
+ * How far the reading stage has got: the total once, then one advance per batch.
+ *
+ * Guarded exactly like `setStage` — a terminal scan is a snapshot, and a
+ * snapshot whose progress line keeps moving is not one. `advanceBy` accumulates
+ * rather than being assigned, because batches finish out of order across four
+ * workers and the last one to land is not the furthest along.
+ *
+ * ponytail: two counters on the scan row rather than counting analysed
+ * sourceResults in the query. The panel is subscribed live during a scan, and
+ * re-counting 380 documents on every tick to render one line is the wrong trade.
+ */
+export const setAnalysisProgress = internalMutation({
+  args: {
+    scanId: v.id("scans"),
+    total: v.optional(v.number()),
+    advanceBy: v.optional(v.number()),
+  },
+  returns: v.null(),
+  handler: async (ctx, { scanId, total, advanceBy }) => {
+    const scan = await ctx.db.get(scanId);
+    if (!scan) return null;
+    if (scan.status !== "queued" && scan.status !== "running") return null;
+    const patch: { sourcesTotal?: number; sourcesAnalyzed?: number } = {};
+    if (total !== undefined) {
+      patch.sourcesTotal = total;
+      // Starting a reading stage resets the count. A scan that reads twice
+      // must not report the first pass added to the second.
+      patch.sourcesAnalyzed = 0;
+    }
+    if (advanceBy !== undefined) {
+      patch.sourcesAnalyzed = (total !== undefined ? 0 : scan.sourcesAnalyzed ?? 0) + advanceBy;
+    }
+    await ctx.db.patch(scanId, patch);
     return null;
   },
 });

@@ -1,6 +1,7 @@
 import type { FunctionReturnType } from "convex/server";
 import type { api } from "../../../convex/_generated/api";
 import { Button } from "@/components/ui/untitled/button";
+import { analysisProgressText } from "@/lib/analysis-progress";
 import { SavedCopyNotice } from "@/components/ui/editorial/saved-copy-notice";
 import { StatusLabel } from "@/components/ui/editorial/status-label";
 import { PRODUCT_LABELS, STAGE_TEXT, type Stage } from "@/lib/source-labels";
@@ -57,6 +58,8 @@ export function ScanProgress({
   onOpenSavedDemo?: () => void;
   onShowLatestScan?: () => void;
 }) {
+  const analysisProgress = analysisProgressText(scan.sourcesAnalyzed, scan.sourcesTotal);
+
   // The same rule the feed applies: a scan is finished when it is completed,
   // partial or canceled. Anything else still has work in flight — and
   // `startScan` throws "A scan is already running" against exactly that, so
@@ -103,6 +106,14 @@ export function ScanProgress({
         {scan.searchesReserved} of {scan.searchBudgetLimit} searches used
         {scan.searchesFailed > 0 && ` · ${scan.searchesFailed} failed`}
       </p>
+
+      {/* The only thing that moves while the scan reads its sources. Searches
+          are already spent by then and no lead exists yet, so without this line
+          the panel is motionless for the longest part of a scan. Hidden once
+          the scan is finished: a snapshot does not report progress. */}
+      {!isFinished && analysisProgress && (
+        <p className="mt-1 text-sm text-muted">{analysisProgress}</p>
+      )}
 
       {scan.failureSummaries.length > 0 && (
         <ul className="mt-3">

@@ -35,6 +35,13 @@ export default defineSchema({
     failureSummaries: v.array(V.vFailureSummary),
     isSavedDemo: v.boolean(),
     captureTimestamp: v.optional(v.number()),
+    // How far the reading stage has got. Optional on purpose: every scan that
+    // ran before 2026-08-29 has no such fields, and the committed saved-demo
+    // fixture is inserted verbatim — a required field here would break its
+    // import. Absent means "this scan never reported progress", which is
+    // exactly true of those rows.
+    sourcesTotal: v.optional(v.number()),
+    sourcesAnalyzed: v.optional(v.number()),
   })
     .index("by_owner_started", ["ownerId", "startedAt"])
     .index("by_owner_status", ["ownerId", "status"])
