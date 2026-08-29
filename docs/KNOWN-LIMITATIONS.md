@@ -122,9 +122,46 @@ running twenty-four minutes after a call whose ceiling is six.
 
 This is why the saved fallback exists.
 
-**Unverified:** the server task time limit is believed to be about 30 minutes.
-That figure came from research and **has never been confirmed first-hand.** It
-should not be quoted as fact.
+**Measured on 2026-08-29, and this is now first-hand rather than research.** A
+third live scan was run specifically to watch where it dies. It died in the same
+stage, and for the first time we can say exactly where:
+
+| Phase | Result |
+| --- | --- |
+| 17 searches | all succeeded, 0 failed, done in about a minute |
+| 380 sources read, 38 batches | **380 of 380, every batch succeeded** |
+| clustering into leads | worked — **215 leads** |
+| evidence, one AI call per lead | **224 calls, 223 succeeded, then stopped** |
+
+The last call started 31 minutes into the run and sat marked `running` for
+**16.6 minutes** against a hard ceiling of **6**. No further call was ever made.
+That is a task killed without unwinding, not a slow model.
+
+**What this rules out.** Reading the sources — the stage that was rewritten in
+the August repair — is not the bottleneck. It finished cleanly, with no
+failures, well inside the clock. The whole of the remaining problem is the
+evidence stage's one-call-per-lead loop, exactly where the 2026-08-27 diagnosis
+put it.
+
+**Still unverified:** the precise task time limit. We know a task was killed
+after roughly 31 minutes of work; we do not know the exact ceiling, and the
+"about 30 minutes" figure remains research rather than measurement.
+
+**Three live scans, one wall:**
+
+| Scan | Sources | Leads | Outcome |
+| --- | ---: | ---: | --- |
+| 2026-08-26 | 285 | 236 | **completed**, 54 minutes |
+| 2026-08-27 | 368 | ~280 | died in the evidence stage |
+| 2026-08-29 | 380 | 215 | died in the evidence stage, 224 calls in |
+
+A live scan is therefore not a demo path. The saved copy is — and that is now a
+measured conclusion rather than a precaution.
+
+**The known fix, not yet done.** Batch the evidence stage the way the August
+repair batched source analysis: bounded batches, a worker pool, and a cancel
+check between batches. That is the same shape that fixed the identical timeout
+on the reading side, and the reading side is now the part that works.
 
 A related consequence: a task killed this way leaves a ledger row that reads
 "running" forever, and the code that would retry it treats that as a live call
