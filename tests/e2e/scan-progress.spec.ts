@@ -1,22 +1,11 @@
 import { execSync } from "node:child_process";
 import { expect, test } from "@playwright/test";
-import { signInOnly } from "./helpers/auth";
+import { clerkUserId, signInOnly } from "./helpers/auth";
 
 /**
  * The scan progress panel, against a seeded scan in a known state. No live
  * SerpApi call: what is under test is the rendering, not the network.
  */
-async function clerkUserId(): Promise<string> {
-  const email = process.env.E2E_CLERK_EMAIL;
-  const secretKey = process.env.CLERK_SECRET_KEY;
-  if (!email || !secretKey) throw new Error("Set E2E_CLERK_EMAIL and CLERK_SECRET_KEY");
-  const res = await fetch(`https://api.clerk.com/v1/users?email_address=${encodeURIComponent(email)}`, {
-    headers: { Authorization: `Bearer ${secretKey}` },
-  });
-  const users = (await res.json()) as Array<{ id: string }>;
-  if (!users[0]?.id) throw new Error("No Clerk user found for E2E_CLERK_EMAIL");
-  return users[0].id;
-}
 
 function seed(stage: string, status: string, withFailure = false, counts: Partial<Record<"eligibleCount" | "excludedCount" | "processingCount", number>> = {}) {
   const userId = process.env.__CLERK_ID__!;

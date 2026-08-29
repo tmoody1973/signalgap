@@ -1,6 +1,6 @@
 import { execSync } from "node:child_process";
 import { expect, test } from "@playwright/test";
-import { signInOnly } from "./helpers/auth";
+import { clerkUserId, signInOnly } from "./helpers/auth";
 
 /**
  * The Review Pause 2 gate, automated: one lead traced from `Why this surfaced`
@@ -12,19 +12,6 @@ import { signInOnly } from "./helpers/auth";
 
 let candidateId = "";
 
-async function clerkUserId(): Promise<string> {
-  const email = process.env.E2E_CLERK_EMAIL;
-  const secretKey = process.env.CLERK_SECRET_KEY;
-  if (!email || !secretKey) throw new Error("Set E2E_CLERK_EMAIL and CLERK_SECRET_KEY");
-  const res = await fetch(`https://api.clerk.com/v1/users?email_address=${encodeURIComponent(email)}`, {
-    headers: { Authorization: `Bearer ${secretKey}` },
-  });
-  if (!res.ok) throw new Error(`Clerk lookup failed: ${res.status}`);
-  const users = (await res.json()) as Array<{ id: string }>;
-  const id = users[0]?.id;
-  if (!id) throw new Error("No Clerk user found for E2E_CLERK_EMAIL");
-  return id;
-}
 
 test.beforeAll(async () => {
   const userId = await clerkUserId();

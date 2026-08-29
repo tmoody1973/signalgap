@@ -1,6 +1,6 @@
 import { execSync } from "node:child_process";
 import { expect, test, type Locator, type Page } from "@playwright/test";
-import { signInOnly } from "./helpers/auth";
+import { clerkUserId, signInOnly } from "./helpers/auth";
 
 /**
  * The ranked feed, against `seedFeedFixture` — thirty leads built from real
@@ -39,19 +39,6 @@ const TRANSPORTATION = [
  */
 const BAR_MOVING_WORDS = ["lower", "relax", "loosen", "widen", "broaden", "threshold", "less strict"];
 
-async function clerkUserId(): Promise<string> {
-  const email = process.env.E2E_CLERK_EMAIL;
-  const secretKey = process.env.CLERK_SECRET_KEY;
-  if (!email || !secretKey) throw new Error("Set E2E_CLERK_EMAIL and CLERK_SECRET_KEY");
-  const res = await fetch(`https://api.clerk.com/v1/users?email_address=${encodeURIComponent(email)}`, {
-    headers: { Authorization: `Bearer ${secretKey}` },
-  });
-  if (!res.ok) throw new Error(`Clerk lookup failed: ${res.status}`);
-  const users = (await res.json()) as Array<{ id: string }>;
-  const id = users[0]?.id;
-  if (!id) throw new Error("No Clerk user found for E2E_CLERK_EMAIL");
-  return id;
-}
 
 /** The feed's own section, so nothing here can be satisfied by the progress panel above it. */
 const feedOf = (page: Page): Locator => page.getByRole("region", { name: "Leads" });

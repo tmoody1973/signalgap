@@ -24,3 +24,24 @@ export async function signInOnly(page: Page) {
   await page.goto("/");
   await clerk.signIn({ page, emailAddress: email });
 }
+
+/**
+ * The Clerk user id behind `E2E_CLERK_EMAIL`, which is what every
+ * `internal.testing.*` seeder keys on.
+ *
+ * One copy, because decision 011 had to repoint this account once already and
+ * four drifting copies of the lookup is how the next repoint half-lands.
+ */
+export async function clerkUserId(): Promise<string> {
+  const email = process.env.E2E_CLERK_EMAIL;
+  const secretKey = process.env.CLERK_SECRET_KEY;
+  if (!email || !secretKey) throw new Error("Set E2E_CLERK_EMAIL and CLERK_SECRET_KEY");
+  const res = await fetch(`https://api.clerk.com/v1/users?email_address=${encodeURIComponent(email)}`, {
+    headers: { Authorization: `Bearer ${secretKey}` },
+  });
+  if (!res.ok) throw new Error(`Clerk lookup failed: ${res.status}`);
+  const users = (await res.json()) as Array<{ id: string }>;
+  const id = users[0]?.id;
+  if (!id) throw new Error("No Clerk user found for E2E_CLERK_EMAIL");
+  return id;
+}
