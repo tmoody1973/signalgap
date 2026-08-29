@@ -1,6 +1,6 @@
 # SignalGap — session handoff
 
-**Last updated:** 2026-08-29, 15:05 CDT.
+**Last updated:** 2026-08-29, 15:52 CDT.
 **Purpose:** everything a fresh Claude session needs to pick this up. Read this, then `docs/hackathon-build/spec.md`.
 
 ---
@@ -11,10 +11,12 @@
 cd /Users/tarikmoody/Projects/SignalGap
 git log --oneline -5
 git status --short          # ANYTHING UNCOMMITTED IS A TASK THAT STALLED MID-FLIGHT
-npm run check               # expect 547 passed / 2 skipped
+npm run check               # expect 552 passed / 2 skipped -- run it BARE, never piped
 ```
 
-**Nothing is in flight.** The saved-demo work landed in `2a99acf` and the tree is clean. `npm run check` is **547 passed / 2 skipped**; `npm run test:e2e` is **41 passed**.
+**Nothing is in flight.** `npm run check` is **552 passed / 2 skipped**; the Playwright suite is **48 passed**. Everything through `0e1ef5d` is pushed.
+
+**The most serious open defect is `docs/KNOWN-LIMITATIONS.md` §2** — the 30-day coverage check searches the initiating source's headline, not the story. Read that before touching coverage.
 
 **Nothing is blocked on Tarik.** The next decision he owes is nothing; the next work is below.
 
@@ -55,11 +57,11 @@ The central claim every decision defends: **SerpApi gives it live eyes. AI conne
 | --- | --- |
 | 1–8 | **Done** |
 | 9 | **Part A (ranked feed) done.** Parts B (editorial controls) and C (histories/comparison) not started. Box deliberately unticked. |
-| **10** | **Live scan succeeded. Saved demo built, exported and committed.** Only the full manual demo journey is still owed — that one is Tarik's to walk. See §4. |
+| **10** | **Live scan succeeded. Saved demo built, exported, committed, and covered by `tests/e2e/saved-demo-fallback.spec.ts` (7 tests).** Only the full manual demo journey is still owed — Tarik's to walk. See §4. |
 | 11 | Harden, evaluate, deploy — **not started** |
 | 12 | Devpost handoff — **not started** |
 
-**547 unit/integration tests, 41 Playwright.** `main` was pushed through `7eabf82`; `2a99acf` and later are local only — push early.
+**552 unit/integration tests, 48 Playwright**, all green, all pushed.
 
 ### The evidence pipeline repair is complete
 
