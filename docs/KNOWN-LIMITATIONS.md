@@ -32,7 +32,57 @@ nobody has traced it.
 A second instance of the same shape: the scan reserved **28** searches but left
 **25** search records. Three reservations produced no row.
 
-## 2. One qualifying lead is one news day, not a sample
+## 2. The 30-day coverage check searches the headline, not the story
+
+This is the most serious defect on this list.
+
+To decide whether a story has already been covered, the product searches local
+news outlets for prior reporting. **It searches for the headline of the source
+that started the lead, as an exact phrase** — not for what the story is about.
+
+For the demo lead, the phrase it searched was:
+
+```
+"Milwaukee County Executive David Crowley Announces ..."
+```
+
+That is a headline the search engine had already cut short, ellipsis and all.
+The story's actual subject — MCTS, the $13.9 million federal grant — never
+appeared in the query. So the check came back with any Crowley announcement it
+could find: a community centre, a person, an election result. Those three
+articles are visible in `Existing coverage` on the lead page, and they have
+nothing to do with the story.
+
+**How widespread.** Of 227 leads in the saved scan, **9** carry a headline the
+search engine truncated and **21** carry a Reddit thread title. Searching
+`jsonline.com` for `"Renter rights?? : r/milwaukee"` cannot succeed. But the
+problem is not confined to those 30: searching for a headline finds
+*republications of that headline*, which is not the same question as *has anyone
+else reported this story*.
+
+**Which way it fails, and why that matters.** Irrelevant matches make a lead look
+*more* covered than it is, which is the safe direction — it makes the product
+more reluctant to call something a coverage gap. The dangerous direction is the
+other one: a story that genuinely *has* been covered, whose headline happens to
+be unusual, returns nothing and gets labelled a **coverage gap**. The code that
+draws that section says it plainly — claiming an absence of reporting is "the
+most damaging thing this product could get wrong."
+
+**Not fixed before submission, deliberately.** The fix is to search the story's
+entities and claims, which the pipeline already extracts and stores. But the
+saved demo is frozen data: changing what future scans search would not change
+what the demo shows, and it would leave the code and the demonstrated data
+disagreeing about how coverage was decided. A live scan cannot currently be
+relied on to produce a fresh one (see below). So the defect is named here rather
+than half-fixed.
+
+**What is NOT known:** whether the one qualifying lead would still qualify under
+a correct coverage search. Nobody has run that check.
+
+Root cause: `convex/candidates/coverage.ts`, `termsFor` — it returns
+`candidate.currentTitle` truncated to 80 characters.
+
+## 3. One qualifying lead is one news day, not a sample
 
 Of 236 leads formed, exactly **one** cleared every gate. That single result is
 the demo, and it should not be read as a hit rate.
@@ -43,7 +93,7 @@ release. It fired once in 236. Whether that is a strict rule doing its job or a
 rule set too tight cannot be settled by one scan on one day. It needs more
 scans, not more argument.
 
-## 3. A live scan is not currently a reliable demo path
+## 4. A live scan is not currently a reliable demo path
 
 The second full scan (2026-08-27, four beats, 368 sources) **stalled at roughly
 280 leads and had to be cancelled.** The stage that checks evidence makes one AI
@@ -61,7 +111,7 @@ A related consequence: a task killed this way leaves a ledger row that reads
 "running" forever, and the code that would retry it treats that as a live call
 and refuses. So that one unit of work becomes permanently unrepeatable.
 
-## 4. The saved copy is a faithful copy, with two exceptions
+## 5. The saved copy is a faithful copy, with two exceptions
 
 The saved demo reproduces the scan verbatim out of the database. Two things
 cannot travel:
@@ -85,13 +135,13 @@ it. It is never selected automatically; a person has to press
 it came from, twice, and proven not to double. It has **never been imported into
 a fresh deployment.**
 
-## 5. Reddit is never treated as verified
+## 6. Reddit is never treated as verified
 
 Reddit results are indexed through search and can suggest a story, but nothing
 sourced from Reddit is ever counted as a confirmed fact or as one of the two
 independent categories. This is a deliberate limit, not a gap.
 
-## 6. Source counts in older documents disagree
+## 7. Source counts in older documents disagree
 
 The build checklist records "285 real sources" for the saved demo scan. The
 database holds **308**. Nobody has traced where 285 came from — it may have

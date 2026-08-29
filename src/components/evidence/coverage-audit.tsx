@@ -1,3 +1,4 @@
+import { coverageCheckText } from "@/lib/coverage-copy";
 import type { EvidenceEntry, EvidenceView } from "@/lib/evidence-view";
 import { CitationTrace } from "./citation-trace";
 import { EvidenceItem } from "./evidence-item";
@@ -15,9 +16,11 @@ export function CoverageAudit({ coverage, entries }: {
   entries: EvidenceEntry[];
 }) {
   const complete = coverage.passStatus === "complete";
-  const partText = complete
-    ? "Checked · nothing found"
-    : coverage.passStatus === "failed" ? "Did not finish" : "Not run yet";
+  // Was hardcoded to "Checked · nothing found" for every completed check, which
+  // put that phrase directly above "2 original reports found" and a list of
+  // three articles. `coverageCheckText` is unit-tested precisely so the three
+  // outcomes cannot collapse into each other again.
+  const partText = coverageCheckText(coverage.passStatus, coverage.originalReportCount);
 
   const status = complete
     ? `The 30-day check completed. ${coverage.originalReportCount} original ${coverage.originalReportCount === 1 ? "report" : "reports"} found.`
