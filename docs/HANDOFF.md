@@ -41,6 +41,7 @@ The central claim every decision defends: **SerpApi gives it live eyes. AI conne
 | Spec / PRD / checklist | `docs/hackathon-build/` |
 | Decisions | `docs/decisions/` (001–011) |
 | Learning log | `docs/LEARNING-LOG.md` |
+| **Known limitations** | **`docs/KNOWN-LIMITATIONS.md`** — measured, honest, and the source for item 12's README section. |
 | Plans | `docs/superpowers/plans/` |
 | **Research that cost money** | **`docs/research/2026-08-25-evidence-pipeline/`** — measurements, Claude API findings, clustering design. Every number in the repair plan traces here. |
 | Agent reports | `.superpowers/sdd/2026-08-25-signalgap-ai-batching/` — **gitignored, laptop-only** |
@@ -104,7 +105,7 @@ Verify the UI without risking the scan: `PORT=3100 npm run dev`, then `npx tsx s
 1. ~~Saved-demo work~~ — **done** (`2a99acf`). What is still owed on item 10 is the **full manual demo journey**: Tarik walks the live path, then the saved path, end to end, and approves it. That is REVIEW PAUSE 3.
 2. **Task 8b** — verify the real action limit, then bound the evidence stage. Also: a killed action leaves a `modelRuns` row reading `running` forever, and `reopen` refuses `in_flight`, so that unit of work is permanently unrepeatable.
 3. **Item 11** — harden, secret scan, deploy prod Convex + Vercel, run the journey against the deployed URL.
-4. **Item 12** — README, four screenshots, 2–4 minute demo video, Devpost story.
+4. **Item 12** — README, four screenshots, 2–4 minute demo video, Devpost story. The limitations section is already written: `docs/KNOWN-LIMITATIONS.md`.
 
 ---
 
