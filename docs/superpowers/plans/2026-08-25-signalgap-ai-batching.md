@@ -221,6 +221,38 @@ The canopy pattern removes the need instead of working around it:
 
 ---
 
+## Task 8b: The evidence stage does not fit in one Convex action at real volume
+
+**Found by the second live scan, 2026-08-27. Scan `k1793qd2r69gcg213emzpy5x9s8dceby`, cancelled after 60 minutes.**
+
+Adding the sports beat (decision 010) took discovery from 13 searches to 17, and from **285 sources to 368**. The evidence stage then **stalled and never recovered**.
+
+**Observed, not deduced:**
+
+| | scan 1 (2026-08-26) | scan 2 (2026-08-27) |
+| --- | --- | --- |
+| discovery searches | 13 | 17 |
+| sources | 285 | **368** |
+| candidates formed | 236 | **280, then frozen** |
+| model runs | 493, all terminal | **336, then frozen** |
+| outcome | `partial`, 45 min | **stalled at ~30 min, cancelled at 60** |
+
+A `classifyEvidence` model run (`jx7cdv2mqmxnpcygte0y5nqd8s8dd9p1`) sat in status `running` with **no `completedAt` and no `durationMs` for 24 minutes** — against `TIMEOUT_MS = 120_000` with at most 3 attempts, which caps any single call at 6 minutes. The row could only be left that way by the **action being killed without unwinding**. Candidate and model-run counts were identical 19 minutes apart.
+
+**Hypothesis, and it is a hypothesis:** `runEvidenceStage` does one `classifyEvidence` call **per candidate**, serially, inside a single Convex action, on top of ~30 analyze batches. At 280 candidates that exceeds the action's wall-clock limit. The 30-minute figure for that limit comes from `research-anthropic.md` §1 and **has not been verified first-hand** — Task 3's report flagged it as unverified and it stayed that way.
+
+**Why this was invisible until now.** Scan 1 finished in 45 minutes at 236 candidates. It was already close and nothing said so. The stage has no time budget, no candidate ceiling, and no tell — it either finishes or is killed mid-flight, and a killed action leaves a `modelRuns` row lying about being in progress.
+
+- [ ] **Verify the actual limit** rather than inheriting the number. What is the real ceiling, and what does Convex do when a workflow step exceeds it?
+- [ ] **Decide how to bound the stage.** Per-candidate classification is the cost driver. Options include splitting classification into its own workflow step, chunking candidates across steps, or capping how many candidates a scan classifies — the last changes what the scan can see, so it is a rule change, not an optimisation.
+- [ ] **A killed action must not leave a `modelRuns` row reading `running` forever.** `reopen` treats `in_flight` as a live call and refuses it, so that row is now permanently unusable. Decide the honest treatment — a heartbeat, a staleness rule, or a reconciliation pass.
+- [ ] **The stage needs a tell before it dies**, not after. Scan 1 was at ~90% of the ceiling with nothing on screen saying so.
+- [ ] The retry path is already known-bad here: Task 6's fix makes an `already_generated` adjudication fail loudly rather than silently regroup, and `classifyEvidence` has no equivalent. Check what a retried evidence stage actually does before choosing a fix.
+
+**Cost of the finding:** 17 SerpApi searches and about 60 minutes. Nothing was corrupted; the scan cancelled cleanly to `canceled` with every stage marked stopped.
+
+---
+
 ## Task 9: Write it down
 
 - [ ] Decision doc for the clustering architecture — options, costs, what was chosen, what was given up. **Leave "What actually happened" blank for Tarik.**

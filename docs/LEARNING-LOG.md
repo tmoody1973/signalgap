@@ -135,3 +135,23 @@ The first is **running the real thing early, and reading the output rather than 
 The second is **assertions about the shape of the output, not just its correctness**. Nothing in 443 tests asserted that a scan of N results yields more than one lead. That single line would have caught the worst defect on day one. The same class of gap appeared twice more in the same repair: a model answering about ten of twenty sources was recorded as a success, because nothing compared what came back to what was sent; and every test of the scoring layer was blind to one of its three inputs, because no test fixture happened to contain a date. In production that input flipped a pair the thresholds were specifically calibrated to keep apart.
 
 **A coda on what the failures said.** When the repaired scan finally ran, seven of its 493 model calls were rejected — three for paraphrasing a quotation instead of copying it, two for quoting under twenty characters, one for citing a source id that does not exist, one for slipping a search operator into a snippet. The screen reported that as a failure. It is the opposite: the product refused to publish a fabricated citation, seven times, on live data. A pipeline whose failure messages name what it declined to do is worth more than one that only reports success.
+
+---
+
+## 2026-08-27 — Adding a beat cost more than the searches it bought
+
+**Expected:** Adding a fourth beat — sports — would cost four extra searches per scan and produce a few more leads. The change was small: a config entry, a vocabulary member, four search templates, two test counts updated.
+
+**Happened:** Three costs surfaced, and only the first was the one we had priced.
+
+The first was arithmetic and we nearly got it wrong. The brief said each beat contributes three discovery searches. It is **four** — a Google News query, a Reddit query, a Spanish query, and an official-domains query. So the fixed opening set went 13 → 17, not 13 → 16. And 17 exceeded the discovery allocation of 16, which means the seventeenth search — the sports beat's official-domains query — would have been **silently skipped on every scan forever**. The beat would have run at three-quarters strength and nothing would have said so. It was caught by measuring the catalog rather than trusting the brief, and paid for out of the retry reserve so the 120-call hard cap never moved.
+
+The second was that the scan then **stalled**. Sports took the scan from 285 sources to 368, and the evidence stage — which makes one model call per candidate, serially, inside a single Convex action — ran out of wall clock at around 280 candidates. It did not fail. It stopped, leaving a model-run row claiming to be in progress with no completion time, twenty-four minutes after a call whose hard ceiling is six. The previous scan had finished at 236 candidates in forty-five minutes. It was already near the edge, and nothing on the screen or in the data said so.
+
+The third is that the number the diagnosis rests on is still unverified. The action time limit came from research a week ago, was flagged as unverified then, and is still being quoted now.
+
+**Now believe:** A change is priced by the resource it obviously consumes, and the bill arrives from the one it does not. Sports was priced in SerpApi searches, which is where our budget discipline lives — there is a hard cap, a per-purpose allocation, and a committed test asserting the allocations sum. There is no equivalent for *time*: the evidence stage has no budget, no ceiling on candidates, and no tell. So the search cost was caught by arithmetic before the scan ran, and the time cost was caught by a sixty-minute stall.
+
+The pattern to take from this is not "check the time limit too". It is that **the resource with the discipline is the resource that will not surprise you**, and it is worth asking, before a change ships, which resources it touches that have no discipline at all. A limit nobody has measured is not a limit; it is a rumour that happens to have been true so far.
+
+A smaller note worth keeping: a killed action leaves a ledger row that lies. The row says `running`, and the code that would reopen it treats `in_flight` as a live call and refuses. So the crash did not only stop the scan — it made that one unit of work permanently unrepeatable. Evidence that cannot distinguish "still working" from "died mid-sentence" is evidence with a hole in it.
