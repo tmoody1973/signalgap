@@ -12,7 +12,6 @@ export function AppHeader() {
           <span className="text-xs text-muted">Milwaukee workspace</span>
         </div>
         <div className="flex items-center gap-3">
-          <Link href={routes.compare()} className="text-sm text-muted hover:text-ink">Compare scans</Link>
           <ThemeToggle />
           <UserButton />
         </div>
