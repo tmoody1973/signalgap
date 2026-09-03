@@ -4,7 +4,7 @@ import { clerkUserId, signInOnly } from "./helpers/auth";
 
 /**
  * Item 10's dependency-failure path: when a live scan cannot be trusted, an
- * editor explicitly chooses `Open saved demo scan` and gets data that is
+ * editor explicitly chooses `Open saved scan` and gets data that is
  * unmistakably saved.
  *
  * **What this file is for is the UI contract, not the import.** The export and
@@ -71,11 +71,11 @@ test.describe("saved demo fallback", () => {
     await expect(page.getByText("Saved copy")).toHaveCount(0);
     await expect(page.getByText(/^Captured /)).toHaveCount(0);
     // And it is offered, not taken.
-    await expect(progress(page).getByRole("button", { name: "Open saved demo scan" })).toBeVisible();
+    await expect(progress(page).getByRole("button", { name: "Open saved scan" })).toBeVisible();
   });
 
   test("the action is keyboard reachable", async ({ page }) => {
-    const action = progress(page).getByRole("button", { name: "Open saved demo scan" });
+    const action = progress(page).getByRole("button", { name: "Open saved scan" });
     await expect(action).toBeVisible();
     for (let i = 0; i < 20; i++) {
       await page.keyboard.press("Tab");
@@ -83,13 +83,13 @@ test.describe("saved demo fallback", () => {
     }
     await expect(action).toBeFocused();
     await page.keyboard.press("Enter");
-    await expect(page.getByRole("heading", { name: "Saved demo scan" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Saved scan" })).toBeVisible();
   });
 
   test("choosing it says so in words, not colour", async ({ page }) => {
-    await progress(page).getByRole("button", { name: "Open saved demo scan" }).click();
+    await progress(page).getByRole("button", { name: "Open saved scan" }).click();
 
-    await expect(page.getByRole("heading", { name: "Saved demo scan" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Saved scan" })).toBeVisible();
     // The label is TEXT inside a rule, and the sentence beside it names both the
     // capture moment and the caveat. That is what survives greyscale — asserting
     // the words is the real guarantee, where asserting a colour would not be.
@@ -99,7 +99,7 @@ test.describe("saved demo fallback", () => {
   });
 
   test("going back to the live scan drops the notice", async ({ page }) => {
-    await progress(page).getByRole("button", { name: "Open saved demo scan" }).click();
+    await progress(page).getByRole("button", { name: "Open saved scan" }).click();
     await expect(progress(page).getByText("Saved copy", { exact: true })).toBeVisible();
 
     await progress(page).getByRole("button", { name: "Back to latest scan" }).click();
@@ -108,7 +108,7 @@ test.describe("saved demo fallback", () => {
   });
 
   test("filtering the saved feed does not silently flip back to live data", async ({ page }) => {
-    await progress(page).getByRole("button", { name: "Open saved demo scan" }).click();
+    await progress(page).getByRole("button", { name: "Open saved scan" }).click();
     const feed = page.getByRole("region", { name: "Leads" });
     await expect(feed.getByRole("navigation", { name: "Feed view" }).getByRole("link", { name: "Did not qualify (30)" })).toBeVisible();
 
@@ -117,13 +117,13 @@ test.describe("saved demo fallback", () => {
     // notice — that would put live results on screen still labelled saved, or
     // saved results on screen with no label at all.
     await feed.getByRole("navigation", { name: "Feed view" }).getByRole("link", { name: "Did not qualify (30)" }).click();
-    await expect(page.getByRole("heading", { name: "Saved demo scan" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Saved scan" })).toBeVisible();
     await expect(progress(page).getByText(NOTICE)).toBeVisible();
   });
 
   test("a reload does not leave saved data on screen", async ({ page }) => {
-    await progress(page).getByRole("button", { name: "Open saved demo scan" }).click();
-    await expect(page.getByRole("heading", { name: "Saved demo scan" })).toBeVisible();
+    await progress(page).getByRole("button", { name: "Open saved scan" }).click();
+    await expect(page.getByRole("heading", { name: "Saved scan" })).toBeVisible();
 
     // Saved is never sticky. A fresh load is a fresh choice, and the safe
     // default is the live scan.
@@ -133,7 +133,7 @@ test.describe("saved demo fallback", () => {
   });
 
   test("the notice follows the reader into the evidence view", async ({ page }) => {
-    await progress(page).getByRole("button", { name: "Open saved demo scan" }).click();
+    await progress(page).getByRole("button", { name: "Open saved scan" }).click();
     const feed = page.getByRole("region", { name: "Leads" });
     await feed.getByRole("navigation", { name: "Feed view" }).getByRole("link", { name: "Did not qualify (30)" }).click();
     await feed.getByRole("link", { name: "Open evidence", exact: true }).first().click();

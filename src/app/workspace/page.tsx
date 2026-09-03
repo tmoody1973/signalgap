@@ -57,7 +57,7 @@ export default function WorkspacePage() {
           return (
             <section aria-labelledby="latest-scan">
               <h1 id="latest-scan" className="font-editorial text-3xl">
-                {isShowingSaved ? "Saved demo scan" : "Latest scan"}
+                {isShowingSaved ? "Saved scan" : "Latest scan"}
               </h1>
               <ScanProgress
                 scan={shown}

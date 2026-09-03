@@ -39,7 +39,7 @@ const report = async (stage: string) => {
 await report("latest");
 
 // The explicit action.
-await page.getByRole("button", { name: "Open saved demo scan" }).click();
+await page.getByRole("button", { name: "Open saved scan" }).click();
 await page.waitForTimeout(2500);
 await report("saved");
 
@@ -66,13 +66,13 @@ for (let i = 0; i < 40; i++) {
     return el ? `${el.tagName}:${(el.innerText ?? "").slice(0, 40)}` : "none";
   });
   reached.push(label);
-  if (label.includes("Open saved demo scan")) break;
+  if (label.includes("Open saved scan")) break;
 }
-console.log(`\n[keyboard] reached "Open saved demo scan" after ${reached.length} tabs: ${reached.includes("BUTTON:Open saved demo scan")}`);
+console.log(`\n[keyboard] reached "Open saved scan" after ${reached.length} tabs: ${reached.includes("BUTTON:Open saved scan")}`);
 console.log(`[keyboard] focus trail tail: ${JSON.stringify(reached.slice(-4))}`);
 
 // The lead itself, on the saved scan.
-await page.getByRole("button", { name: "Open saved demo scan" }).click();
+await page.getByRole("button", { name: "Open saved scan" }).click();
 await page.waitForTimeout(2500);
 const firstLead = page.locator('a[href^="/leads/"]').first();
 const leadHref = await firstLead.getAttribute("href");

@@ -145,7 +145,7 @@ export function ScanProgress({
           )}
         {onOpenSavedDemo && (
           <Button color="secondary" size="sm" onPress={onOpenSavedDemo}>
-            Open saved demo scan
+            Open saved scan
           </Button>
         )}
         {onShowLatestScan && (
