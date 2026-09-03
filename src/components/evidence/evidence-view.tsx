@@ -18,7 +18,7 @@ import { WhyThisSurfaced } from "./why-this-surfaced";
  * coverage, potential sources, query log, brief.
  */
 const KIND_SECTIONS = [
-  { kind: "confirmed_fact", heading: "Confirmed facts", empty: "Nothing here has been independently confirmed yet. Treat every claim below as unverified." },
+  { kind: "confirmed_fact", heading: "Confirmed facts", empty: "Nothing here has been independently confirmed yet. Treat every claim on this page as unverified." },
   { kind: "unverified_signal", heading: "Unverified signals", empty: "No unverified claims were extracted from the cited sources." },
   { kind: "conflicting_claim", heading: "Conflicting claims", empty: "No conflicting reports were found among the cited sources." },
   { kind: "potential_source", heading: "Potential human sources", empty: "No named people were identified in the cited sources." },
@@ -49,21 +49,38 @@ export function EvidenceViewPanel({ candidateId }: { candidateId: Id<"candidates
       <ScoreBreakdown score={view.score} judgment={view.judgment} exclusionReasons={view.candidate.exclusionReasons} />
       <WhyThisSurfaced items={view.whySurfaced} />
 
-      {KIND_SECTIONS.map(({ kind, heading, empty }) => {
-        const entries = view.evidence.filter((e) => e.kind === kind);
+      {(() => {
+        const present = KIND_SECTIONS.filter(({ kind }) => view.evidence.some((e) => e.kind === kind));
+        const absent = KIND_SECTIONS.filter(({ kind }) => !view.evidence.some((e) => e.kind === kind));
         return (
-          <section key={kind} aria-labelledby={`section-${kind}`} className="border-t border-rule pt-5">
-            <h2 id={`section-${kind}`} className="font-editorial text-xl">{heading}</h2>
-            {entries.length === 0 ? (
-              <p className="mt-2 text-sm italic text-muted">{empty}</p>
-            ) : (
-              <div className="mt-3.5 flex flex-col gap-3.5">
-                {entries.map((entry) => <EvidenceItem key={entry.id} entry={entry} />)}
-              </div>
+          <>
+            {present.map(({ kind, heading }) => (
+              <section key={kind} aria-labelledby={`section-${kind}`} className="border-t border-rule pt-5">
+                <h2 id={`section-${kind}`} className="font-editorial text-xl">{heading}</h2>
+                <div className="mt-3.5 flex flex-col gap-3.5">
+                  {view.evidence.filter((e) => e.kind === kind).map((entry) => <EvidenceItem key={entry.id} entry={entry} />)}
+                </div>
+              </section>
+            ))}
+            {/* Three headed sections that each say "nothing" read as thinness.
+                One list says the same thing, and the confirmed-facts caveat
+                keeps its full wording because it is the product's central
+                warning, not a placeholder. */}
+            {absent.length > 0 && (
+              <section aria-labelledby="absent-heading" className="border-t border-rule pt-5">
+                <h2 id="absent-heading" className="font-editorial text-xl">Not found in the cited sources</h2>
+                <ul className="mt-2 flex flex-col gap-1.5 text-sm text-muted">
+                  {absent.map(({ kind, heading, empty }) => (
+                    <li key={kind}>
+                      <span className="font-medium text-ink">{heading}.</span> {empty}
+                    </li>
+                  ))}
+                </ul>
+              </section>
             )}
-          </section>
+          </>
         );
-      })}
+      })()}
 
       {/* An unreachable citation is repeated here so it cannot be missed, and it
           is never removed from the section it belongs to. */}

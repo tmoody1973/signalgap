@@ -169,4 +169,15 @@ test.describe("evidence vertical slice", () => {
     expect(startTop).toBeGreaterThan(h1Top);
     expect(startTop).toBeLessThan(scoreTop);
   });
+
+  test("empty evidence kinds share one compact section instead of three empty ones", async ({ page }) => {
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible({ timeout: 20_000 });
+    const absent = page.getByRole("region", { name: "Not found in the cited sources" });
+    await expect(absent).toBeVisible();
+    // The confirmed-facts caveat is the product's central warning and keeps
+    // its full wording wherever it lands.
+    await expect(absent.getByText(/Treat every claim on this page as unverified/)).toBeVisible();
+    // An empty kind no longer gets its own level-2 heading.
+    await expect(page.getByRole("heading", { level: 2, name: "Conflicting claims" })).toHaveCount(0);
+  });
 });
