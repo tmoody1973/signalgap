@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { vProductLabel } from "../../convex/lib/validators";
-import { BEAT_TEXT, PRODUCT_LABELS, STAGE_TEXT, beatText, labelTone } from "@/lib/source-labels";
+import { BEAT_TEXT, PRODUCT_LABELS, STAGE_TEXT, beatText, displayBeat, BEAT_UNSET_TEXT, labelTone } from "@/lib/source-labels";
 
 describe("source labels", () => {
   it("uses the exact PRD label text", () => {
@@ -53,5 +53,18 @@ describe("source labels", () => {
     for (const member of vProductLabel.members) {
       expect(productLabels).toContain(member.value);
     }
+  });
+
+  it("does not name a beat the rules rejected", () => {
+    // A card that says \"Housing\" and, two lines down, \"does not fall in a
+    // covered beat\" is the product contradicting itself. The rules' verdict
+    // wins over the classifier's suggestion on screen, as it does everywhere.
+    expect(displayBeat("housing", ["no_beat_relevance", "speculative"])).toBe(BEAT_UNSET_TEXT);
+  });
+
+  it("names the beat when the rules did not reject it", () => {
+    expect(displayBeat("housing", [])).toBe(BEAT_TEXT.housing);
+    expect(displayBeat("housing", ["weak_locality"])).toBe(BEAT_TEXT.housing);
+    expect(displayBeat(undefined, [])).toBe(BEAT_UNSET_TEXT);
   });
 });

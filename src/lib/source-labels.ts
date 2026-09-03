@@ -44,6 +44,14 @@ export const BEAT_UNSET_TEXT = "Beat not established";
 
 export const beatText = (beat: Beat | undefined): string => (beat === undefined ? BEAT_UNSET_TEXT : BEAT_TEXT[beat]);
 
+/**
+ * The beat a card may show. `no_beat_relevance` is the rules engine saying
+ * "this is not in a covered beat", and the classifier's suggestion does not
+ * outrank that on screen any more than it does in scoring.
+ */
+export const displayBeat = (beat: Beat | undefined, exclusionReasons: readonly string[]): string =>
+  exclusionReasons.includes("no_beat_relevance") ? BEAT_UNSET_TEXT : beatText(beat);
+
 export type LabelTone = "neutral" | "caution" | "conflict" | "positive";
 
 const TONES: Record<ProductLabel, LabelTone> = {

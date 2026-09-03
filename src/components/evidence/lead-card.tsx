@@ -1,6 +1,6 @@
 import { StatusLabel } from "@/components/ui/editorial/status-label";
 import type { EvidenceView } from "@/lib/evidence-view";
-import { beatText } from "@/lib/source-labels";
+import { displayBeat } from "@/lib/source-labels";
 
 const DISPOSITION_TEXT = {
   new: "New",
@@ -22,7 +22,7 @@ export function LeadCard({ candidate, sourceCount, coverage }: {
     <header className="flex flex-col gap-2.5">
       <div className="flex flex-wrap items-center gap-2">
         <StatusLabel label={candidate.label} />
-        <span className="text-xs text-muted">{beatText(candidate.beat)}</span>
+        <span className="text-xs text-muted">{displayBeat(candidate.beat, candidate.exclusionReasons)}</span>
       </div>
 
       <h1 className="font-editorial text-3xl leading-tight text-pretty">
