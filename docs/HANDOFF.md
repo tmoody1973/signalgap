@@ -56,12 +56,14 @@ The central claim every decision defends: **SerpApi gives it live eyes. AI conne
 | Item | State |
 | --- | --- |
 | 1–8 | **Done** |
-| 9 | **Part A (ranked feed) done.** Parts B (editorial controls) and C (histories/comparison) not started. Box deliberately unticked. |
+| 9 | **Part A (ranked feed) done. Part B partly done on branch `journalist-first`:** Reject / Monitor / Assign and editor notes ship via `api.candidates.disposition.set` + `DispositionBar` on the lead page, each change writing an `editorEvents` row. **Still not done in Part B:** corrections and recalculation, immutable brief regeneration. **Notes are write-only until Part C** (the UI says so under the field). Part C (histories/comparison) not started. Box deliberately unticked. |
 | **10** | **Live scan succeeded. Saved demo built, exported, committed, and covered by `tests/e2e/saved-demo-fallback.spec.ts` (7 tests).** Only the full manual demo journey is still owed — Tarik's to walk. See §4. |
 | 11 | Harden, evaluate, deploy — **not started** |
 | 12 | Devpost handoff — **not started** |
 
-**552 unit/integration tests, 48 Playwright**, all green, all pushed.
+**580 unit/integration tests, 56 Playwright**, all green on `journalist-first` at `72049ca`.
+
+**The journalist-first branch** implements `docs/reviews/2026-08-30-journalist-ux-review.md` via `docs/superpowers/plans/2026-08-30-signalgap-journalist-first.md`: leads before telemetry, Start here under the headline, empty evidence kinds folded, a beat the rules rejected never shown (and never matched by the beat filter), rejection chips, English failure strings, the saved scan no longer called a demo, the dead Compare link gone, and the disposition bar. Eleven task commits plus one final-review fix commit, every task independently reviewed.
 
 ### The evidence pipeline repair is complete
 
@@ -148,6 +150,7 @@ Verify the UI without risking the scan: `PORT=3100 npm run dev`, then `npx tsx s
 - **Read WHAT RAN, not just the tail.** `check` is `lint && typecheck && test`, so a failing typecheck means vitest never starts. The presence of the `Test Files  57 passed` block is therefore the real proof typecheck passed — a green-looking tail with **no** `Test Files` line means it died upstream. A pipe can hide an exit code; it cannot fabricate that block.
 - **`npm run typecheck` does NOT regenerate `convex/_generated/`.** It runs `next typegen && tsc --noEmit`; Next route types are rebuilt, Convex api types are not — only `npx convex dev` / `npx convex codegen` writes those. Verified 2026-08-29 by deleting `demoScan` from `api.d.ts` and running typecheck: it stayed deleted. **It fails loudly rather than silently** (`Property 'demoScan' does not exist`), so this is a stale-artifact trap, not a false-green one. Run `npx convex dev --once` after adding a file under `convex/`. Do NOT wire `convex codegen` into the `typecheck` script — it needs network and a deployment on every run. Item 11's CI should instead run `npx convex codegen && git diff --exit-code convex/_generated`, which is the documented way to catch generated code that was not checked in.
 - **`seedFeedFixture`'s date anchor is now a test contract, and it fails in the FIXTURE, not the feature.** `convex/testing.ts:469` sets `FEED_NOW = Date.UTC(2026, 7, 24)`; minus 300,000 ms that is **Aug 23, 2026, 6:55 PM CDT**, and `tests/e2e/saved-demo-fallback.spec.ts` pins it twice — the `CAPTURED` string (line 27) and a `beforeAll` assertion on `1787529300000` (line 51). Both fail loudly on purpose. But if you ever move that anchor, the failure reads as a broken saved-demo feature when it is really a moved fixture date. The handoff already says never to "modernise" it; this is the second reason.
+- **`scripts/check-saved-demo.mts` signs in as `E2E_CLERK_EMAIL`**, which since decision 011 is the throwaway account that owns no saved scan, so it finds nothing. Pass the owner's email another way before relying on it; until then, seed a scan for the e2e user or check by hand.
 - **Spurious typecheck failure** from stale `.next/dev/types/` reproduces on clean `main`. `rm -rf .next/dev/types` clears it.
 - Convex CLI needs env sourced: `set -a; . ./.env.local; set +a`. `npx convex codegen` does **not** deploy — also `npx convex dev --once`.
 - **`.superpowers/` is gitignored.** Agent reports do not commit. Anything worth keeping goes in `docs/`.
