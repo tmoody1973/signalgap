@@ -10,16 +10,15 @@ import { FeedFilters, isLeadLabel, type LeadFilters } from "@/components/feed/fe
 import { LeadCard } from "@/components/feed/lead-card";
 import { Button } from "@/components/ui/untitled/button";
 import { feedFiltersToParams, parseFeedFilters } from "@/lib/feed-filters";
+import { isScanFinished } from "@/lib/scan-status";
 import { cx } from "@/lib/utils/cx";
 
 type Scan = NonNullable<FunctionReturnType<typeof api.scans.get>>;
 
 const PAGE_SIZE = 25;
 
-// The same rule the progress panel applies: a scan is finished when it is
-// completed, partial or canceled. Anything else still has work in flight.
-const isFinished = (scan: Scan) =>
-  scan.status === "completed" || scan.status === "partial" || scan.status === "canceled";
+// The same rule the progress panel applies.
+const isFinished = (scan: Scan) => isScanFinished(scan.status);
 
 /**
  * The ranked feed and the did-not-qualify list, as one screen with two views.

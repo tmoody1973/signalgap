@@ -103,7 +103,11 @@ export const listForScan = query({
       if (appearance.statusAtScan !== view) continue;
       const candidate = await ctx.db.get(appearance.candidateId);
       if (!candidate) continue;
+      // The filter and displayBeat must obey one rule: a lead the rules
+      // rejected for beat is not in any beat, so it cannot satisfy a beat
+      // filter even when its raw `beat` column happens to match.
       if (beat !== undefined && candidate.beat !== beat) continue;
+      if (beat !== undefined && (candidate.exclusionReasons ?? []).includes("no_beat_relevance")) continue;
       if (label !== undefined && candidate.primaryLabel !== label) continue;
       if (disposition !== undefined && candidate.disposition !== disposition) continue;
       candidates.push(candidate);

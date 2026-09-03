@@ -14,9 +14,14 @@ import { StartHere } from "./start-here";
 import { WhyThisSurfaced } from "./why-this-surfaced";
 
 /**
- * The section order is the spec's, not a preference: question and disposition,
- * score, why this surfaced, confirmed, unverified, conflicts, reverification,
- * coverage, potential sources, query log, brief.
+ * The section order, top to bottom: saved-copy notice, lead card, decision
+ * bar, Start here, score, why this surfaced, evidence kinds with entries,
+ * kinds without entries, needs a recheck, coverage, full brief, query log,
+ * brief versions.
+ *
+ * Start here and the decision bar sit directly under the headline, above the
+ * score — that hoist is the spec's, not a preference. See
+ * `docs/reviews/2026-08-30-journalist-ux-review.md`.
  */
 const KIND_SECTIONS = [
   { kind: "confirmed_fact", heading: "Confirmed facts", empty: "Nothing here has been independently confirmed yet. Treat every claim on this page as unverified." },

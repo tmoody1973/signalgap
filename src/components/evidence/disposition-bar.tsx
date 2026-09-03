@@ -77,6 +77,7 @@ export function DispositionBar({ candidate }: { candidate: EvidenceView["candida
           maxLength={2000}
           className="scheme-light dark:scheme-dark w-full rounded-md border border-rule bg-raised px-2 py-1.5 text-sm text-ink"
         />
+        <span className="text-xs text-muted">Recorded in the editor log. Not shown on this page yet.</span>
       </label>
       <div className="mt-2 flex flex-wrap items-center gap-3">
         <Button color="secondary" size="sm" isDisabled={busy || note.trim() === ""} onPress={() => void run(candidate.disposition, note.trim())}>

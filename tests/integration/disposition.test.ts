@@ -99,4 +99,25 @@ describe("candidates.disposition.set", () => {
     const { candidateId } = await seedLeadFor(t, "editor");
     await expect(t.mutation(api.candidates.disposition.set, { candidateId, disposition: "rejected" })).rejects.toThrow(/Unauthenticated/);
   });
+
+  it("writes only disposition and updatedAt, never the rules engine's columns", async () => {
+    const t = setup();
+    const { candidateId } = await seedLeadFor(t, "editor");
+    const editor = asUser(t, "editor");
+
+    const before = await t.run(async (ctx) => await ctx.db.get(candidateId));
+
+    await editor.mutation(api.candidates.disposition.set, { candidateId, disposition: "rejected", note: "Checking this out" });
+
+    const after = await t.run(async (ctx) => await ctx.db.get(candidateId));
+    expect(after?.disposition).not.toBe(before?.disposition);
+
+    const omit = (doc: NonNullable<typeof before>) => {
+      const rest: Record<string, unknown> = { ...doc };
+      delete rest.disposition;
+      delete rest.updatedAt;
+      return rest;
+    };
+    expect(omit(after as NonNullable<typeof after>)).toEqual(omit(before as NonNullable<typeof before>));
+  });
 });

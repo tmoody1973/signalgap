@@ -6,6 +6,7 @@ import { api } from "../../../convex/_generated/api";
 import { AppHeader } from "@/components/shell/app-header";
 import { LeadFeed } from "@/components/feed/lead-feed";
 import { ScanProgress } from "@/components/scan/scan-progress";
+import { isScanFinished } from "@/lib/scan-status";
 import { FirstRunState } from "./workspace-shell";
 
 export default function WorkspacePage() {
@@ -54,7 +55,7 @@ export default function WorkspacePage() {
           const latest = scans.page[0];
           const shown = viewingSavedDemo && savedDemo ? savedDemo : latest;
           const isShowingSaved = shown._id === savedDemo?._id;
-          const finished = shown.status === "completed" || shown.status === "partial" || shown.status === "canceled";
+          const finished = isScanFinished(shown.status);
           const progress = (
             <ScanProgress
               scan={shown}
