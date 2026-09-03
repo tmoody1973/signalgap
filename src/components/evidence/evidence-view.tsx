@@ -5,6 +5,7 @@ import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { SavedCopyNotice } from "@/components/ui/editorial/saved-copy-notice";
 import { CoverageAudit } from "./coverage-audit";
+import { DispositionBar } from "./disposition-bar";
 import { EvidenceItem } from "./evidence-item";
 import { LeadCard } from "./lead-card";
 import { ReportingBrief } from "./reporting-brief";
@@ -45,6 +46,7 @@ export function EvidenceViewPanel({ candidateId }: { candidateId: Id<"candidates
           remember from the previous screen that this is saved data. */}
       {view.savedCopy && <SavedCopyNotice captureTimestamp={view.savedCopy.captureTimestamp} />}
       <LeadCard candidate={view.candidate} sourceCount={sourceCount} coverage={view.coverage} />
+      <DispositionBar candidate={view.candidate} />
       <StartHere brief={view.brief} />
       <ScoreBreakdown score={view.score} judgment={view.judgment} exclusionReasons={view.candidate.exclusionReasons} />
       <WhyThisSurfaced items={view.whySurfaced} />
