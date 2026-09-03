@@ -152,4 +152,21 @@ test.describe("evidence vertical slice", () => {
     });
     expect(outline).not.toBe("0px");
   });
+
+  test("the brief's summary and questions sit directly under the headline", async ({ page }) => {
+    // The one sentence that names the coverage gap, and the questions a
+    // reporter would actually ask, used to be the last things on the page.
+    const h1 = page.getByRole("heading", { level: 1 });
+    await expect(h1).toBeVisible({ timeout: 20_000 });
+    const start = page.getByRole("region", { name: "Start here" });
+    await expect(start).toBeVisible();
+    await expect(start.getByText("Questions to ask")).toBeVisible();
+
+    const h1Top = await h1.evaluate((el) => el.getBoundingClientRect().top);
+    const startTop = await start.evaluate((el) => el.getBoundingClientRect().top);
+    const score = page.getByRole("region", { name: "Score" });
+    const scoreTop = await score.evaluate((el) => el.getBoundingClientRect().top);
+    expect(startTop).toBeGreaterThan(h1Top);
+    expect(startTop).toBeLessThan(scoreTop);
+  });
 });

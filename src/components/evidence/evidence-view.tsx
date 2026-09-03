@@ -9,6 +9,7 @@ import { EvidenceItem } from "./evidence-item";
 import { LeadCard } from "./lead-card";
 import { ReportingBrief } from "./reporting-brief";
 import { ScoreBreakdown } from "./score-breakdown";
+import { StartHere } from "./start-here";
 import { WhyThisSurfaced } from "./why-this-surfaced";
 
 /**
@@ -44,6 +45,7 @@ export function EvidenceViewPanel({ candidateId }: { candidateId: Id<"candidates
           remember from the previous screen that this is saved data. */}
       {view.savedCopy && <SavedCopyNotice captureTimestamp={view.savedCopy.captureTimestamp} />}
       <LeadCard candidate={view.candidate} sourceCount={sourceCount} coverage={view.coverage} />
+      <StartHere brief={view.brief} />
       <ScoreBreakdown score={view.score} judgment={view.judgment} exclusionReasons={view.candidate.exclusionReasons} />
       <WhyThisSurfaced items={view.whySurfaced} />
 

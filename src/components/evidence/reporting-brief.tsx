@@ -29,7 +29,7 @@ export function ReportingBrief({ brief }: { brief: BriefView | null }) {
 
   return (
     <section aria-labelledby="brief-heading" className="border-t border-rule pt-5">
-      <h2 id="brief-heading" className="font-editorial text-xl">Reporting brief</h2>
+      <h2 id="brief-heading" className="font-editorial text-xl">Full brief</h2>
 
       <div className="mt-3 rounded-md border border-rule bg-[var(--ai-tint)] px-5 py-4.5">
         <p className="text-xs font-medium uppercase tracking-wide text-[var(--status-caution)]">
@@ -37,7 +37,6 @@ export function ReportingBrief({ brief }: { brief: BriefView | null }) {
         </p>
 
         <p className="mt-2.5 font-editorial text-[22px] leading-snug text-pretty">{brief.reportingQuestion}</p>
-        <p className="mt-2 text-sm">{brief.whySurfaced}</p>
 
         {(Object.keys(SECTION_TITLES) as (keyof typeof SECTION_TITLES)[]).map((key) => (
           <div key={key} className="mt-4">
@@ -59,17 +58,6 @@ export function ReportingBrief({ brief }: { brief: BriefView | null }) {
             </ul>
           </div>
         ))}
-
-        {brief.interviewQuestions.length > 0 && (
-          <div className="mt-4">
-            <h3 className="text-sm font-semibold">Suggested interview questions</h3>
-            <ol className="mt-1 list-decimal pl-5 text-sm marker:text-muted">
-              {brief.interviewQuestions.map((question) => (
-                <li key={question} className="pl-1">{question}</li>
-              ))}
-            </ol>
-          </div>
-        )}
       </div>
     </section>
   );
