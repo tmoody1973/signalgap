@@ -1,7 +1,7 @@
 import type { FunctionReturnType } from "convex/server";
 import Link from "next/link";
 import type { api } from "../../../convex/_generated/api";
-import { exclusionSentence } from "@/lib/exclusion-reasons";
+import { exclusionChips } from "@/lib/exclusion-reasons";
 import { routes } from "@/lib/routes";
 import { displayBeat } from "@/lib/source-labels";
 import { StatusLabel } from "@/components/ui/editorial/status-label";
@@ -40,13 +40,13 @@ function relativeTime(ms: number, now = Date.now()): string {
  * A row in the ranked feed's eligible or excluded list.
  *
  * A different component from the evidence page's `LeadCard` — same name,
- * different surface, different shape. This one carries `exclusionSentence()`
+ * different surface, different shape. This one carries `exclusionChips()`
  * inline, because the excluded list is where most of a scan lives (at most
  * ten leads per scan can ever qualify) and an editor must be able to triage
  * it without opening anything.
  */
 export function LeadCard({ lead }: { lead: LeadCardView }) {
-  const reasons = exclusionSentence(lead.exclusionReasons);
+  const chips = exclusionChips(lead.exclusionReasons);
   // The query has no separate coverage-pass-status field for this card (only
   // evidence.forCandidate does). "coverage_pass_incomplete" is the one signal
   // this shape carries for "never checked" — every eligible lead's coverage
@@ -71,7 +71,19 @@ export function LeadCard({ lead }: { lead: LeadCardView }) {
       <h3 className="font-editorial text-lg leading-snug text-pretty">{question}</h3>
       {isWorkingTitle && <p className="text-xs text-muted">Working title — no reporting question yet.</p>}
 
-      {reasons && <p className="text-sm text-muted">{reasons}</p>}
+      {chips.length > 0 && (
+        <ul aria-label="Why it did not qualify" className="flex flex-wrap gap-1.5">
+          {chips.map(({ short, long }) => (
+            <li
+              key={short}
+              title={long}
+              className="inline-flex items-center rounded-sm border border-rule px-1.5 py-0.5 font-ui text-xs text-muted"
+            >
+              {short}
+            </li>
+          ))}
+        </ul>
+      )}
 
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
         <span>

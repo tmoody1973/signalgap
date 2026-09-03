@@ -114,9 +114,8 @@ test.describe("ranked feed", () => {
     await expect(feed.getByRole("article")).toHaveCount(30);
     await expect(feed.getByRole("button", { name: "Load next 25" })).toHaveCount(0);
 
-    // Anchored at the start of the element's own text, so an article that
-    // merely contains the phrase cannot stand in for a card that shows it.
-    await expect(feed.getByText(/^Did not qualify: /)).toHaveCount(30);
+    // One chip list per card. The full sentence lives on the lead page.
+    await expect(feed.getByRole("list", { name: "Why it did not qualify" })).toHaveCount(30);
   });
 
   test("a lead links to its evidence page, and the link works", async ({ page }) => {

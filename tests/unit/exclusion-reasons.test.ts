@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { vExclusionReason } from "../../convex/lib/validators";
-import { EXCLUSION_REASON_TEXT, exclusionSentence } from "@/lib/exclusion-reasons";
+import { EXCLUSION_REASON_SHORT, EXCLUSION_REASON_TEXT, exclusionChips, exclusionSentence } from "@/lib/exclusion-reasons";
 
 const ALL = Object.keys(EXCLUSION_REASON_TEXT) as (keyof typeof EXCLUSION_REASON_TEXT)[];
 
@@ -41,5 +41,30 @@ describe("exclusion reasons", () => {
 
   it("ignores a reason it does not recognise rather than printing a code", () => {
     expect(exclusionSentence(["something_new"])).toBeNull();
+  });
+
+  it("has a short form for every reason, and only those reasons", () => {
+    expect(Object.keys(EXCLUSION_REASON_SHORT).sort()).toEqual(ALL.slice().sort());
+  });
+
+  it("keeps the short form short enough to be a chip", () => {
+    for (const text of Object.values(EXCLUSION_REASON_SHORT)) {
+      expect(text.length).toBeLessThanOrEqual(20);
+      expect(text).not.toMatch(/_/);
+      expect(text[0]).toEqual(text[0].toUpperCase());
+    }
+  });
+
+  it("pairs each chip with the full sentence it stands for", () => {
+    const chips = exclusionChips(["insufficient_independence", "stale"]);
+    expect(chips).toEqual([
+      { short: EXCLUSION_REASON_SHORT.insufficient_independence, long: EXCLUSION_REASON_TEXT.insufficient_independence },
+      { short: EXCLUSION_REASON_SHORT.stale, long: EXCLUSION_REASON_TEXT.stale },
+    ]);
+  });
+
+  it("drops unknown codes from chips too", () => {
+    expect(exclusionChips(["not_a_real_code"])).toEqual([]);
+    expect(exclusionChips(undefined)).toEqual([]);
   });
 });

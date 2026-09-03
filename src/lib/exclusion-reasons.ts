@@ -28,6 +28,31 @@ function isKnown(reason: string): reason is ExclusionReason {
 }
 
 /**
+ * The same reasons, short enough to sit in a chip. Keyed identically so a
+ * reason can never have a sentence without a chip or a chip without a
+ * sentence; the unit test enforces that.
+ */
+export const EXCLUSION_REASON_SHORT: Record<ExclusionReason, string> = {
+  weak_locality: "Not Milwaukee",
+  stale: "Too old",
+  insufficient_independence: "One source",
+  no_beat_relevance: "Off-beat",
+  already_covered: "Already covered",
+  inaccessible_evidence: "Source unreachable",
+  coverage_pass_incomplete: "Coverage unchecked",
+  promotional: "Promotion",
+  duplicate: "Duplicate",
+  speculative: "Speculation",
+  routine_crime: "Routine crime",
+  unreadable_evidence: "Unreadable",
+};
+
+/** One chip per known reason, each carrying the full sentence for its title. */
+export function exclusionChips(reasons: readonly string[] | undefined): { short: string; long: string }[] {
+  return (reasons ?? []).filter(isKnown).map((r) => ({ short: EXCLUSION_REASON_SHORT[r], long: EXCLUSION_REASON_TEXT[r] }));
+}
+
+/**
  * One sentence naming every rule the lead failed, or null if it failed none.
  *
  * Unknown codes are dropped rather than printed. A future rule reaching an old
