@@ -2,6 +2,7 @@ import type { FunctionReturnType } from "convex/server";
 import type { api } from "../../../convex/_generated/api";
 import { Button } from "@/components/ui/untitled/button";
 import { analysisProgressText } from "@/lib/analysis-progress";
+import { failureText } from "@/lib/failure-text";
 import { SavedCopyNotice } from "@/components/ui/editorial/saved-copy-notice";
 import { StatusLabel } from "@/components/ui/editorial/status-label";
 import { PRODUCT_LABELS, STAGE_TEXT, type Stage } from "@/lib/source-labels";
@@ -117,12 +118,24 @@ export function ScanProgress({
 
       {scan.failureSummaries.length > 0 && (
         <ul className="mt-3">
-          {scan.failureSummaries.map((failure) => (
-            <li key={`${failure.purpose}:${failure.code}`} className="border-t border-rule py-2 text-sm">
-              <span className="text-xs uppercase tracking-wide text-muted">{failure.purpose}</span>
-              <span className="mt-0.5 block">{failure.message}</span>
-            </li>
-          ))}
+          {scan.failureSummaries.map((failure) => {
+            const { headline, detail } = failureText(failure.code, failure.message);
+            return (
+              <li key={`${failure.purpose}:${failure.code}`} className="border-t border-rule py-2 text-sm">
+                {/* The purpose span keeps its exact text: the e2e suite asserts
+                    "coverage" here, and the stage name above is the longer
+                    "Reviewing existing coverage", so this is what it targets. */}
+                <span className="text-xs uppercase tracking-wide text-muted">{failure.purpose}</span>
+                <span className="mt-0.5 block">{headline}</span>
+                {detail && (
+                  <details className="mt-1">
+                    <summary className="cursor-pointer text-xs text-muted">Technical detail</summary>
+                    <p className="mt-1 font-mono text-xs break-words text-muted">{detail}</p>
+                  </details>
+                )}
+              </li>
+            );
+          })}
         </ul>
       )}
 
