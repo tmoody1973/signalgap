@@ -44,6 +44,19 @@ function stageState(stage: Stage, scan: Scan): keyof typeof STATE_TEXT {
  * an automatic swap: choosing saved data over live data is a human's call, and
  * whatever it opens arrives carrying `SavedCopyNotice`.
  */
+function StageRows({ scan }: { scan: Scan }) {
+  return (
+    <ol className="mt-3.5">
+      {STAGE_ORDER.map((stage) => (
+        <li key={stage} className="grid grid-cols-[1fr_auto] gap-4 border-t border-rule py-2.5 last:border-b">
+          <span className="text-sm">{STAGE_TEXT[stage]}</span>
+          <span className="text-xs uppercase tracking-wide text-muted">{STATE_TEXT[stageState(stage, scan)]}</span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
 export function ScanProgress({
   scan,
   onCancel,
@@ -84,17 +97,8 @@ export function ScanProgress({
         <SavedCopyNotice captureTimestamp={scan.captureTimestamp} className="mt-2.5" />
       )}
 
-      <ol className="mt-3.5">
-        {STAGE_ORDER.map((stage) => (
-          <li key={stage} className="grid grid-cols-[1fr_auto] gap-4 border-t border-rule py-2.5 last:border-b">
-            <span className="text-sm">{STAGE_TEXT[stage]}</span>
-            <span className="text-xs uppercase tracking-wide text-muted">{STATE_TEXT[stageState(stage, scan)]}</span>
-          </li>
-        ))}
-      </ol>
-
-      {/* All three counts, always. Two zeroes and a number is information; one
-          number on its own is a number an editor cannot place. */}
+      {/* All three counts, always, and always visible: two zeroes and a
+          number is information, and it is the first thing an editor reads. */}
       <p className="mt-3 text-sm text-muted">
         <strong className="font-semibold text-ink">{scan.eligibleCount}</strong> ready
         {" · "}
@@ -103,10 +107,27 @@ export function ScanProgress({
         <strong className="font-semibold text-ink">{scan.processingCount}</strong> still working
       </p>
 
-      <p className="mt-1 text-sm text-muted">
-        {scan.searchesReserved} of {scan.searchBudgetLimit} searches used
-        {scan.searchesFailed > 0 && ` · ${scan.searchesFailed} failed`}
-      </p>
+      {/* While the scan runs, the stages are what an editor watches, so they
+          stay open. Once it is finished they are four rows reading DONE and a
+          budget counter -- one click away, never gone. */}
+      {isFinished ? (
+        <details className="mt-2">
+          <summary className="cursor-pointer text-sm text-muted">How this scan ran</summary>
+          <StageRows scan={scan} />
+          <p className="mt-1 text-sm text-muted">
+            {scan.searchesReserved} of {scan.searchBudgetLimit} searches used
+            {scan.searchesFailed > 0 && ` · ${scan.searchesFailed} failed`}
+          </p>
+        </details>
+      ) : (
+        <>
+          <StageRows scan={scan} />
+          <p className="mt-1 text-sm text-muted">
+            {scan.searchesReserved} of {scan.searchBudgetLimit} searches used
+            {scan.searchesFailed > 0 && ` · ${scan.searchesFailed} failed`}
+          </p>
+        </>
+      )}
 
       {/* The only thing that moves while the scan reads its sources. Searches
           are already spent by then and no lead exists yet, so without this line

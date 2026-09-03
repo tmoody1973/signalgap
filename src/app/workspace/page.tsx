@@ -54,25 +54,30 @@ export default function WorkspacePage() {
           const latest = scans.page[0];
           const shown = viewingSavedDemo && savedDemo ? savedDemo : latest;
           const isShowingSaved = shown._id === savedDemo?._id;
+          const finished = shown.status === "completed" || shown.status === "partial" || shown.status === "canceled";
+          const progress = (
+            <ScanProgress
+              scan={shown}
+              onCancel={() => {
+                cancelScan({ scanId: shown._id })
+                  .catch((err: unknown) => setStartError(err instanceof Error ? err.message : "Could not cancel scan"));
+              }}
+              onRunNewScan={handleStart}
+              runNewScanDisabled={starting}
+              onOpenSavedDemo={savedDemo && !isShowingSaved ? () => setViewingSavedDemo(true) : undefined}
+              onShowLatestScan={isShowingSaved && latest._id !== savedDemo?._id ? () => setViewingSavedDemo(false) : undefined}
+            />
+          );
+          const feed = <LeadFeed scan={shown} onRunNewScan={handleStart} runNewScanDisabled={starting} />;
           return (
             <section aria-labelledby="latest-scan">
               <h1 id="latest-scan" className="font-editorial text-3xl">
                 {isShowingSaved ? "Saved scan" : "Latest scan"}
               </h1>
-              <ScanProgress
-                scan={shown}
-                onCancel={() => {
-                  cancelScan({ scanId: shown._id })
-                    .catch((err: unknown) => setStartError(err instanceof Error ? err.message : "Could not cancel scan"));
-                }}
-                onRunNewScan={handleStart}
-                runNewScanDisabled={starting}
-                // Offered only when there is a saved scan that is not already
-                // what the editor is looking at.
-                onOpenSavedDemo={savedDemo && !isShowingSaved ? () => setViewingSavedDemo(true) : undefined}
-                onShowLatestScan={isShowingSaved && latest._id !== savedDemo?._id ? () => setViewingSavedDemo(false) : undefined}
-              />
-              <LeadFeed scan={shown} onRunNewScan={handleStart} runNewScanDisabled={starting} />
+              {/* An editor watches a running scan and reads a finished one.
+                  The order follows that: progress first while work is in
+                  flight, leads first once there is a verdict to read. */}
+              {finished ? <>{feed}{progress}</> : <>{progress}{feed}</>}
             </section>
           );
         })()}

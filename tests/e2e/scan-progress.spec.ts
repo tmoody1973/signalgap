@@ -127,4 +127,45 @@ test.describe("scan progress", () => {
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
     expect(overflow).toBe(false);
   });
+
+  test("a finished scan folds its stages away, and they can be opened", async ({ page }) => {
+    // Four rows reading DONE are not information to an editor reading a
+    // finished scan; the counts and the failures are. The stages stay one
+    // click away rather than being removed.
+    seed("briefs", "partial", true, { eligibleCount: 1, excludedCount: 9, processingCount: 0 });
+    await signInOnly(page);
+    await page.goto("/workspace");
+
+    const panel = page.getByRole("region", { name: "Scan progress" });
+    await expect(panel.getByText("1 ready")).toBeVisible();
+    await expect(panel.getByText("Discovering signals", { exact: true })).toBeHidden();
+
+    await panel.getByText("How this scan ran").click();
+    await expect(panel.getByText("Discovering signals", { exact: true })).toBeVisible();
+    await expect(panel.getByText(/of 120 searches/)).toBeVisible();
+  });
+
+  test("a finished scan shows its leads above its progress", async ({ page }) => {
+    seed("briefs", "partial", false, { eligibleCount: 1, excludedCount: 9, processingCount: 0 });
+    await signInOnly(page);
+    await page.goto("/workspace");
+
+    const leads = page.getByRole("region", { name: "Leads" });
+    const progress = page.getByRole("region", { name: "Scan progress" });
+    const leadsTop = await leads.evaluate((el) => el.getBoundingClientRect().top);
+    const progressTop = await progress.evaluate((el) => el.getBoundingClientRect().top);
+    expect(leadsTop).toBeLessThan(progressTop);
+  });
+
+  test("a running scan keeps its progress above its leads", async ({ page }) => {
+    seed("coverage", "running");
+    await signInOnly(page);
+    await page.goto("/workspace");
+
+    const leads = page.getByRole("region", { name: "Leads" });
+    const progress = page.getByRole("region", { name: "Scan progress" });
+    const leadsTop = await leads.evaluate((el) => el.getBoundingClientRect().top);
+    const progressTop = await progress.evaluate((el) => el.getBoundingClientRect().top);
+    expect(progressTop).toBeLessThan(leadsTop);
+  });
 });
