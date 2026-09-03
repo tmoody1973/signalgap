@@ -84,6 +84,15 @@ export function ScanProgress({
       : scan.status === "partial" ? PRODUCT_LABELS.partial
         : null;
 
+  // One line, referenced from both the open and folded layouts below, so the
+  // budget text is never two places to update.
+  const searchBudget = (
+    <p className="mt-1 text-sm text-muted">
+      {scan.searchesReserved} of {scan.searchBudgetLimit} searches used
+      {scan.searchesFailed > 0 && ` · ${scan.searchesFailed} failed`}
+    </p>
+  );
+
   return (
     <section aria-labelledby="scan-progress-heading" className="border-t border-rule pt-5">
       <div className="flex flex-wrap items-baseline gap-2.5">
@@ -114,18 +123,12 @@ export function ScanProgress({
         <details className="mt-2">
           <summary className="cursor-pointer text-sm text-muted">How this scan ran</summary>
           <StageRows scan={scan} />
-          <p className="mt-1 text-sm text-muted">
-            {scan.searchesReserved} of {scan.searchBudgetLimit} searches used
-            {scan.searchesFailed > 0 && ` · ${scan.searchesFailed} failed`}
-          </p>
+          {searchBudget}
         </details>
       ) : (
         <>
           <StageRows scan={scan} />
-          <p className="mt-1 text-sm text-muted">
-            {scan.searchesReserved} of {scan.searchBudgetLimit} searches used
-            {scan.searchesFailed > 0 && ` · ${scan.searchesFailed} failed`}
-          </p>
+          {searchBudget}
         </>
       )}
 
